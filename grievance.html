@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Udbhav Solar | Advanced Grievance & Tracking</title>
+    <link rel="icon" type="image/jpeg" href="Donna Stroupe.jpg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.5); }
+        .input-focus:focus { border-color: #0f172a; box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.05); }
+        .status-badge { transition: all 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-results { animation: fadeIn 0.4s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-[#f1f5f9] text-slate-900 pb-20">
+
+    <nav class="bg-white/80 backdrop-blur-md border-b px-8 h-24 flex justify-between items-center sticky top-0 z-[100]">
+        <div class="flex items-center gap-4">
+            <div class="h-12 w-12 rounded-2xl bg-slate-900 flex items-center justify-center shadow-lg shadow-blue-900/20">
+                <img src="Donna Stroupe.jpg" class="h-10 w-10 rounded-xl object-cover">
+            </div>
+            <div>
+                <span class="block font-black text-blue-900 uppercase tracking-tight text-xl">Udbhav Solar</span>
+                <span class="text-orange-600 text-[10px] font-black uppercase tracking-[0.3em]">Support Ecosystem</span>
+            </div>
+        </div>
+        <div class="hidden md:flex items-center gap-2 bg-green-50 px-4 py-2 rounded-2xl border border-green-100">
+            <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            </span>
+            <span class="text-[10px] font-bold text-green-700 uppercase tracking-widest">Server Live</span>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto mt-12 px-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <div class="lg:col-span-5 space-y-6">
+            <div class="bg-slate-900 p-8 rounded-[2.5rem] shadow-2xl text-white">
+                <h3 class="text-xs font-black uppercase text-orange-500 mb-6 tracking-widest flex items-center gap-2">
+                    <i data-lucide="crosshair" class="w-4 h-4"></i> Track Grievance
+                </h3>
+                <div class="space-y-4">
+                    <div class="relative">
+                        <input type="text" id="gNumSearch" placeholder="Grievance No..." 
+                               class="w-full pl-12 pr-4 py-4 bg-white/10 border border-white/10 rounded-2xl outline-none focus:bg-white/20 transition-all font-mono font-bold text-sm uppercase">
+                        <i data-lucide="ticket" class="absolute left-4 top-4 w-5 h-5 text-white/40"></i>
+                    </div>
+                    <button onclick="trackGrievance()" id="trackBtn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-4 rounded-2xl transition-all active:scale-95 shadow-lg shadow-orange-500/20 uppercase tracking-widest text-xs">
+                        Fetch Status
+                    </button>
+                </div>
+            </div>
+
+            <div id="trackingResult" class="hidden glass-card p-8 rounded-[2.5rem] border-2 border-slate-200 shadow-xl animate-results">
+                <div class="flex justify-between items-start mb-6 border-b border-slate-100 pb-4">
+                    <div>
+                        <span class="text-[9px] font-black text-slate-400 uppercase block tracking-tighter">Current Status</span>
+                        <span id="trackStatus" class="text-[10px] font-black bg-blue-100 text-blue-700 px-3 py-1 rounded-full uppercase">Pending</span>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.classList.add('hidden')" class="bg-slate-100 p-2 rounded-full hover:bg-red-50 hover:text-red-500 transition-colors">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <div class="space-y-6">
+                    <div>
+                        <label class="text-[9px] font-black uppercase text-slate-400 block mb-2 tracking-widest">Submitted Issue</label>
+                        <p id="trackQuery" class="text-sm font-semibold text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-100 italic">---</p>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-black uppercase text-blue-900 block mb-2 tracking-widest">Operator Response</label>
+                        <p id="trackReply" class="text-sm font-black text-slate-800 p-5 rounded-2xl bg-orange-50 border-l-4 border-orange-500 shadow-sm">Waiting for official reply...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-7 space-y-6">
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-200">
+                <h3 class="text-xs font-black uppercase text-blue-900 mb-6 flex items-center gap-2 tracking-widest">
+                    <i data-lucide="user-check" class="w-4 h-4 text-orange-500"></i> New Submission
+                </h3>
+                <div class="flex gap-3">
+                    <input type="text" id="clientIdInput" placeholder="Enter Client ID" 
+                           class="flex-1 px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none input-focus transition-all font-mono font-bold uppercase text-sm">
+                    <button onclick="fetchClientDetails()" id="fetchBtn" class="bg-blue-900 text-white px-6 rounded-2xl hover:bg-orange-500 transition shadow-lg">
+                        <i data-lucide="search"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="grievanceArea" class="opacity-20 pointer-events-none transition-all duration-500 scale-[0.98]">
+                <div class="bg-white p-10 rounded-[2.5rem] shadow-xl border border-slate-200 space-y-8 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4">
+                        <i data-lucide="file-text" class="w-20 h-20 text-slate-50"></i>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-6 relative z-10">
+                        <div>
+                            <label class="text-[9px] font-black uppercase text-slate-400 tracking-widest block mb-1">Client Name</label>
+                            <p id="clientNameDisplay" class="font-black text-blue-900 uppercase text-lg">---</p>
+                        </div>
+                        <div class="text-right">
+                            <label class="text-[9px] font-black uppercase text-slate-400 tracking-widest block mb-1">Capacity</label>
+                            <p id="clientCapacityDisplay" class="font-black text-orange-600 text-lg">---</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <label class="text-[10px] font-black uppercase text-slate-600 tracking-widest">Issue Description</label>
+                            <span id="charCount" class="text-[9px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded">0 / 500</span>
+                        </div>
+                        <textarea id="grievanceText" rows="6" maxlength="500" 
+                                  placeholder="Describe the technical query..." 
+                                  class="w-full px-6 py-6 bg-slate-50 border border-slate-200 rounded-[2rem] outline-none input-focus transition-all text-sm leading-relaxed"
+                                  oninput="updateCount(this)"></textarea>
+                    </div>
+
+                    <button onclick="submitAndSend()" id="submitBtn" class="w-full bg-slate-900 text-white py-5 rounded-[2rem] font-black uppercase tracking-[0.2em] shadow-2xl hover:bg-orange-600 transition-all flex items-center justify-center gap-3 active:scale-[0.98]">
+                        <i data-lucide="send" class="w-5 h-5"></i> Submit & Open WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        const scriptURL = "https://script.google.com/macros/s/AKfycbynlS4yj9CEgmv75ltDfh4EilZSK28cMBG-diwmJD8zhU6nx-1ga0JiTVpGcMhtQWug/exec";
+        const supportPhone = "919660711101";
+
+        let activeClient = null;
+
+        async function fetchClientDetails() {
+            const id = document.getElementById('clientIdInput').value.trim();
+            if(!id) return alert("Please enter Client ID");
+
+            const btn = document.getElementById('fetchBtn');
+            btn.innerHTML = `<i class="animate-spin" data-lucide="loader-2"></i>`;
+            lucide.createIcons();
+
+            try {
+                const response = await fetch(`${scriptURL}?action=search&query=${encodeURIComponent(id)}`);
+                const result = await response.json();
+
+                if(result.status === "success") {
+                    activeClient = result.data[0];
+                    document.getElementById('clientNameDisplay').innerText = activeClient.name;
+                    document.getElementById('clientCapacityDisplay').innerText = activeClient.capacity;
+                    document.getElementById('grievanceArea').classList.remove('opacity-20', 'pointer-events-none', 'scale-[0.98]');
+                } else {
+                    alert("Client ID not found.");
+                }
+            } catch (e) { alert("Server connection failed."); }
+            btn.innerHTML = `<i data-lucide="search"></i>`;
+            lucide.createIcons();
+        }
+
+        async function trackGrievance() {
+            const gNum = document.getElementById('gNumSearch').value.trim();
+            if(!gNum) return alert("Please enter a Ticket Number");
+
+            const btn = document.getElementById('trackBtn');
+            const originalText = btn.innerText;
+            btn.innerText = "SEARCHING...";
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${scriptURL}?action=track&gNum=${encodeURIComponent(gNum)}`);
+                const res = await response.json();
+
+                if(res.status === "success") {
+                    document.getElementById('trackingResult').classList.remove('hidden');
+                    document.getElementById('trackStatus').innerText = res.data.status || "PENDING";
+                    document.getElementById('trackQuery').innerText = res.data.query || "---";
+                    document.getElementById('trackReply').innerText = res.data.reply || "Waiting for reply...";
+                } else {
+                    alert("Ticket Number not found.");
+                }
+            } catch (e) { alert("Tracking failed."); }
+            finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function submitAndSend() {
+            const message = document.getElementById('grievanceText').value.trim();
+            const btn = document.getElementById('submitBtn');
+            if(message.length < 10) return alert("Please provide more detail.");
+
+            btn.disabled = true;
+            btn.innerText = "GENERATING TICKET...";
+
+            try {
+                const response = await fetch(`${scriptURL}?action=addGrievance&clientId=${activeClient.clientId}&query=${encodeURIComponent(message)}`);
+                const res = await response.json();
+
+                if(res.status === "success") {
+                    const ticketNo = res.gNum; // This is the Grievance Number from your Sheet
+                    
+                    // WHATSAPP URL CONSTRUCTION (Ensured Ticket No is included)
+                    const waText = `*NEW GRIEVANCE - UDBHAV SOLAR*%0A%0A` +
+                                 `*Ticket No:* ${ticketNo}%0A` +
+                                 `*Client ID:* ${activeClient.clientId}%0A` +
+                                 `*Name:* ${activeClient.name}%0A%0A` +
+                                 `*Issue Details:*%0A${encodeURIComponent(message)}`;
+
+                    const waUrl = `https://wa.me/${supportPhone}?text=${waText}`;
+                    
+                    // Alert the user first, then redirect
+                    alert(`REGISTERED! Ticket No: ${ticketNo}`);
+                    window.location.href = waUrl; 
+                } else {
+                    alert("Submission failed: " + res.message);
+                    btn.disabled = false;
+                    btn.innerText = "Submit & Open WhatsApp";
+                }
+            } catch (e) { 
+                alert("Network error. Please check your internet connection."); 
+                btn.disabled = false;
+                btn.innerText = "Submit & Open WhatsApp";
+            }
+        }
+
+        function updateCount(el) {
+            document.getElementById('charCount').innerText = `${el.value.length} / 500`;
+        }
+    </script>
+</body>
+</html>

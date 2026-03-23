@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Query | Udbhav Solar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .glass-morphism { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        body { background-color: #f8fafc; }
+    </style>
+</head>
+<body class="text-slate-900 selection:bg-orange-100">
+
+    <nav class="glass-morphism sticky top-0 w-full z-40 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <span class="font-black text-blue-900 uppercase tracking-tight text-lg">Udbhav Solar</span>
+            </div>
+            <a href="index.html" class="text-xs font-bold text-slate-500 uppercase hover:text-orange-500 transition">Back to Home</a>
+        </div>
+    </nav>
+
+    <section class="py-16 px-6">
+        <div class="max-w-2xl mx-auto">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-black text-blue-900 uppercase">Submit <span class="text-orange-500">Query</span></h2>
+                <p class="text-slate-500 text-sm mt-2">Get a customized solar quote for your property</p>
+            </div>
+
+            <form id="queryForm" class="bg-white p-8 md:p-10 rounded-[2.5rem] shadow-xl border border-slate-100 space-y-6">
+                <div>
+                    <label class="block text-xs font-black text-blue-900 uppercase tracking-widest mb-2 ml-1">Full Name</label>
+                    <input type="text" id="name" name="Full Name" required placeholder="Enter your name"
+                           class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-blue-900 uppercase tracking-widest mb-2 ml-1">Phone Number</label>
+                    <input type="tel" id="phone" name="Phone Number" required placeholder="e.g. 9660711101"
+                           class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-blue-900 uppercase tracking-widest mb-2 ml-1">Site Address</label>
+                    <textarea id="address" name="Address" required rows="2" placeholder="Where do you need the installation?"
+                              class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none transition-all"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-blue-900 uppercase tracking-widest mb-2 ml-1">Solar Requirements</label>
+                    <select id="requirements" name="Requirements" class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none transition-all appearance-none">
+                        <option value="3kW Residential">3kW Residential (Small Home)</option>
+                        <option value="5kW Residential">5kW Residential (Medium Home)</option>
+                        <option value="10kW+ Commercial">10kW+ Commercial</option>
+                        <option value="Not Sure - Need Survey">Not Sure - Need Site Survey</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="submitBtn"
+                        class="w-full bg-blue-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-lg hover:bg-orange-600 transition-all active:scale-[0.98] flex items-center justify-center gap-3">
+                    whatsapp for fast reply <i data-lucide="send" class="w-5 h-5"></i>
+                </button>
+
+                <div class="max-w-2xl mx-auto">
+                    <div class="text-center mb-10">
+                        <h2 class="text-3xl font-black text-blue-900 uppercase">whatsapp for <span class="text-orange-500">fast reply</span></h2>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <script>
+        lucide.createIcons();
+
+        // 1. YOUR SCRIPT URL
+        const scriptURL = "https://script.google.com/macros/s/AKfycbwOwFXWaAq5j5ylSy19zbi7uz-ii33TkieCntYq23DP4SuTQojeFfJYm00YUL2zykzR7g/exec"; 
+        const form = document.getElementById('queryForm');
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Generating Query ID...";
+
+            // Capture Values
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const address = document.getElementById('address').value;
+            const req = document.getElementById('requirements').value;
+
+            // 1. Submit to Google Sheets first to get the QNO
+            fetch(scriptURL, { 
+                method: 'POST', 
+                body: new FormData(form) 
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Get the QNO returned from the Apps Script
+                const qno = data.qno || "NEW";
+
+                // Format WhatsApp Message (Encoded for URLs) including the QNO
+                const text = `*NEW SOLAR QUERY* [${qno}]%0A` +
+                             `--------------------------%0A` +
+                             `*Query No:* ${qno}%0A` +
+                             `*Name:* ${encodeURIComponent(name)}%0A` +
+                             `*Phone:* ${encodeURIComponent(phone)}%0A` +
+                             `*Address:* ${encodeURIComponent(address)}%0A` +
+                             `*Requirement:* ${encodeURIComponent(req)}%0A` +
+                             `--------------------------%0A` +
+                             `_Submitted via Website Portal_`;
+
+                // Official WhatsApp API link for +919660711101
+                const whatsappURL = `https://api.whatsapp.com/send?phone=919660711101&text=${text}`;
+
+                // 2. Redirect to WhatsApp immediately on success
+                window.location.href = whatsappURL;
+            })
+            .catch(error => {
+                console.error('Spreadsheet Error!', error.message);
+                // Fallback: Still open WhatsApp even if the sheet fails
+                const fallbackText = `*NEW SOLAR QUERY*%0A*Name:* ${encodeURIComponent(name)}%0A_Note: System busy, QID pending_`;
+                window.location.href = `https://api.whatsapp.com/send?phone=919660711101&text=${fallbackText}`;
+            });
+        });
+    </script>
+</body>
+</html>
