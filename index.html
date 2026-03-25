@@ -12,14 +12,84 @@
     <style>
         html { scroll-behavior: smooth; }
         .glass-morphism { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        .whatsapp-float { position: fixed; bottom: 30px; right: 30px; z-index: 100; }
+        .whatsapp-float { position: fixed; bottom: 30px; right: 30px; z-index: 40; }
         .brand-card { transition: all 0.3s ease; border: 1px solid #f1f5f9; }
         .brand-card:hover { transform: translateY(-5px); border-color: #f97316; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
         .social-link { transition: all 0.3s ease; }
         .social-link:hover { color: #f97316; transform: translateY(-3px); }
+
+        /* Side Panel Styles */
+        #sidePanel { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .side-link { transition: all 0.2s ease; border: 1px solid transparent; }
+        .side-link:hover { border-color: #f97316; background: #fff7ed; transform: translateX(-5px); }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 selection:bg-orange-100">
+
+    <!-- Side Panel Trigger (Arrow) -->
+    <button onclick="toggleSidePanel()" class="fixed right-0 top-1/2 -translate-y-1/2 z-[60] bg-blue-900 text-white p-3 rounded-l-2xl shadow-2xl border-y border-l border-white/20 hover:bg-orange-500 transition-all group" id="sidePanelArrow">
+        <i data-lucide="chevron-left" class="w-6 h-6 transition-transform duration-300" id="arrowIcon"></i>
+    </button>
+
+    <!-- Side Panel Overlay -->
+    <div id="sidePanelOverlay" onclick="toggleSidePanel()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[55] hidden opacity-0 transition-opacity duration-300"></div>
+
+    <!-- Side Panel Content -->
+    <aside id="sidePanel" class="fixed top-0 right-0 h-full w-80 bg-white/95 backdrop-blur-xl z-[65] shadow-[-20px_0_50px_rgba(0,0,0,0.15)] transform translate-x-full border-l border-slate-100">
+        <div class="p-8 flex flex-col h-full">
+            <div class="flex items-center justify-between mb-10">
+                <div class="flex flex-col">
+                    <span class="font-black text-blue-900 uppercase tracking-tighter text-2xl">Menu</span>
+                    <span class="text-[10px] font-bold text-orange-600 tracking-[0.3em] uppercase">Quick Access</span>
+                </div>
+                <button onclick="toggleSidePanel()" class="p-2 hover:bg-slate-100 rounded-full transition-colors">
+                    <i data-lucide="x" class="w-6 h-6 text-slate-400"></i>
+                </button>
+            </div>
+
+            <nav class="flex flex-col gap-4">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-2">Main Navigation</p>
+                <a href="#home" onclick="toggleSidePanel()" class="side-link flex items-center gap-4 p-4 rounded-2xl bg-slate-50">
+                    <i data-lucide="home" class="w-5 h-5 text-blue-900"></i>
+                    <span class="font-bold text-blue-900 uppercase text-xs tracking-widest">Home</span>
+                </a>
+                <a href="#subsidy" onclick="toggleSidePanel()" class="side-link flex items-center gap-4 p-4 rounded-2xl bg-slate-50">
+                    <i data-lucide="banknote" class="w-5 h-5 text-blue-900"></i>
+                    <span class="font-bold text-blue-900 uppercase text-xs tracking-widest">Subsidy Details</span>
+                </a>
+                
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-6 mb-2 ml-2">Services & Portals</p>
+                <a href="query.html" class="side-link flex items-center gap-4 p-4 rounded-2xl bg-orange-50 border-orange-100">
+                    <div class="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center text-white shadow-lg">
+                        <i data-lucide="help-circle" class="w-4 h-4"></i>
+                    </div>
+                    <span class="font-black text-orange-700 uppercase text-xs tracking-widest">Subsidy Query</span>
+                </a>
+
+                <a href="grievance.html" class="side-link flex items-center gap-4 p-4 rounded-2xl bg-blue-50 border-blue-100">
+                    <div class="w-8 h-8 rounded-lg bg-blue-900 flex items-center justify-center text-white shadow-lg">
+                        <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                    </div>
+                    <span class="font-black text-blue-900 uppercase text-xs tracking-widest">Grievance</span>
+                </a>
+
+                <a href="login.html" class="side-link flex items-center gap-4 p-4 rounded-2xl bg-slate-900 border-slate-800">
+                    <div class="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-slate-900">
+                        <i data-lucide="user" class="w-4 h-4"></i>
+                    </div>
+                    <span class="font-black text-white uppercase text-xs tracking-widest">Admin Portal</span>
+                </a>
+            </nav>
+
+            <div class="mt-auto pt-8 border-t border-slate-100 flex items-center gap-3">
+                <img src="Donna Stroupe.jpg" class="h-12 w-12 rounded-full border-2 border-orange-500 object-cover">
+                <div>
+                    <p class="text-xs font-black text-blue-900 uppercase">Udbhav Solar</p>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase">Support Desk</p>
+                </div>
+            </div>
+        </div>
+    </aside>
 
     <a href="https://wa.me/919660711101" target="_blank" class="whatsapp-float group transition-transform hover:scale-110">
         <img src="wp.jpg" alt="WhatsApp" class="w-16 h-16 drop-shadow-2xl">
@@ -224,6 +294,31 @@
 
     <script>
         lucide.createIcons();
+
+        function toggleSidePanel() {
+            const panel = document.getElementById('sidePanel');
+            const overlay = document.getElementById('sidePanelOverlay');
+            const arrowIcon = document.getElementById('arrowIcon');
+            const arrowBtn = document.getElementById('sidePanelArrow');
+
+            const isOpen = panel.classList.contains('translate-x-0');
+
+            if (isOpen) {
+                // Close Logic
+                panel.classList.replace('translate-x-0', 'translate-x-full');
+                overlay.classList.replace('opacity-100', 'opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+                arrowIcon.style.transform = 'rotate(0deg)';
+                arrowBtn.style.right = '0px';
+            } else {
+                // Open Logic
+                panel.classList.replace('translate-x-full', 'translate-x-0');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.replace('opacity-0', 'opacity-100'), 10);
+                arrowIcon.style.transform = 'rotate(180deg)';
+                arrowBtn.style.right = '320px'; // Panel width
+            }
+        }
     </script>
 </body>
 </html>
