@@ -3,87 +3,270 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submit Query | Udbhav Solar</title>
+
+    <!-- SEO Primary -->
+    <title>Get Free Solar Quote | Udbhav Solar Solutions Ajmer</title>
+    <meta name="description" content="Official Tata Solar retailer in Ajmer. Start your solar journey today with PM Surya Ghar Yojana subsidies. Get a free site survey.">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
-        .glass-morphism { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        body { background-color: #f8fafc; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #020617;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        /* Modern Gradient Background */
+        .bg-mesh {
+            background-color: #020617;
+            background-image:
+                radial-gradient(at 0% 0%, hsla(222,47%,11%,1) 0, transparent 50%),
+                radial-gradient(at 50% 0%, hsla(217,91%,60%,0.15) 0, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(25,95%,53%,0.1) 0, transparent 50%);
+        }
+
+        .glass {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .trust-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .trust-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #f97316;
+            box-shadow: 0 20px 25px -5px rgba(249, 115, 22, 0.1);
+        }
+
+        .input-style {
+            background: rgba(30, 41, 59, 0.5) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white !important;
+            transition: all 0.3s ease;
+        }
+
+        .input-style:focus {
+            background: rgba(30, 41, 59, 0.8) !important;
+            border-color: #f97316;
+            box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.1);
+            outline: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .glow-text {
+            text-shadow: 0 0 20px rgba(249, 115, 22, 0.5);
+        }
+
+        /* Pulsing Glow for Toggle Button */
+        @keyframes pulse-orange {
+            0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4); }
+            70% { box-shadow: 0 0 0 20px rgba(249, 115, 22, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
+        }
+        .pulse-btn {
+            animation: pulse-orange 2s infinite;
+        }
     </style>
 </head>
-<body class="text-slate-900 selection:bg-orange-100">
+<body class="bg-mesh min-h-screen">
 
-    <nav class="glass-morphism sticky top-0 w-full z-40 border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <span class="font-black text-blue-900 uppercase tracking-tight text-lg">Udbhav Solar</span>
+    <!-- Header -->
+    <header class="w-full z-50 py-6 px-8 flex justify-between items-center border-b border-white/5 bg-slate-950/50 backdrop-blur-md">
+        <div class="flex items-center gap-4">
+            <img src="Donna Stroupe.jpg" alt="Udbhav Solar" class="h-12 w-12 rounded-full border-2 border-orange-500 shadow-lg shadow-orange-500/20">
+            <div class="flex flex-col">
+                <span class="font-black text-white uppercase tracking-tighter text-xl leading-none">Udbhav Solar</span>
+                <span class="text-[10px] font-bold text-orange-500 tracking-[0.3em] uppercase">Premier Solutions</span>
             </div>
-            <a href="index.html" class="text-xs font-bold text-slate-500 uppercase hover:text-orange-500 transition">Back to Home</a>
         </div>
-    </nav>
+        <a href="index.html" class="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest hover:text-orange-500 transition-all">
+            <i data-lucide="home" class="w-4 h-4"></i> Home
+        </a>
+    </header>
 
-    <section class="py-16 px-6">
-        <div class="max-w-2xl mx-auto">
-            <div class="text-center mb-10">
-                <h2 class="text-3xl font-black text-blue-900 uppercase">Submit <span class="text-orange-500">Query</span></h2>
-                <p class="text-slate-500 text-sm mt-2">Get a customized solar quote for your property</p>
-            </div>
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Main Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
 
-            <form id="queryForm" class="bg-white p-8 md:p-10 rounded-[2.5rem] shadow-xl border border-slate-100 space-y-6">
-                <div>
-                    <label class="block text-xs font-black text-blue-900 uppercase tracking-widest mb-2 ml-1">Full Name</label>
-                    <input type="text" id="name" name="Full Name" required placeholder="Enter your name"
-                           class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none transition-all">
-                </div>
+            <!-- Content Side -->
+            <div class="space-y-10 order-2 lg:order-1">
+                <div class="space-y-6">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border-orange-500/20 text-orange-500 text-[10px] font-black uppercase tracking-widest">
+                        <span class="w-2 h-2 rounded-full bg-orange-500"></span> Official Audit Portal
+                    </div>
+                    <h1 class="text-5xl lg:text-7xl font-black text-white leading-[0.9] uppercase tracking-tighter text-center lg:text-left">
+                        Solar Smart <br>
+                        <span class="text-orange-500 glow-text italic">Savings.</span>
+                    </h1>
+                    <p class="text-slate-400 text-lg leading-relaxed max-w-lg font-medium text-center lg:text-left mx-auto lg:mx-0">
+                        Join 500+ families in Ajmer. Start your solar journey with <span class="text-white font-bold">₹95,000 subsidy</span> support.
+                    </p>
 
-                <div>
-                    <label class="block text-xs font-black text-blue-900 uppercase tracking-widest mb-2 ml-1">Phone Number</label>
-                    <input type="tel" id="phone" name="Phone Number" required placeholder="e.g. 9660711101"
-                           class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none transition-all">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-black text-blue-900 uppercase tracking-widest mb-2 ml-1">Site Address</label>
-                    <textarea id="address" name="Address" required rows="2" placeholder="Where do you need the installation?"
-                              class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none transition-all"></textarea>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-black text-blue-900 uppercase tracking-widest mb-2 ml-1">Solar Requirements</label>
-                    <select id="requirements" name="Requirements" class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none transition-all appearance-none">
-                        <option value="3kW Residential">3kW Residential (Small Home)</option>
-                        <option value="5kW Residential">5kW Residential (Medium Home)</option>
-                        <option value="10kW+ Commercial">10kW+ Commercial</option>
-                        <option value="Not Sure - Need Survey">Not Sure - Need Site Survey</option>
-                    </select>
-                </div>
-
-                <button type="submit" id="submitBtn"
-                        class="w-full bg-blue-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-lg hover:bg-orange-600 transition-all active:scale-[0.98] flex items-center justify-center gap-3">
-                    whatsapp for fast reply <i data-lucide="send" class="w-5 h-5"></i>
-                </button>
-
-                <div class="max-w-2xl mx-auto">
-                    <div class="text-center mb-10">
-                        <h2 class="text-3xl font-black text-blue-900 uppercase">whatsapp for <span class="text-orange-500">fast reply</span></h2>
+                    <!-- Toggle Button (Visible when form is hidden) -->
+                    <div class="flex justify-center lg:justify-start">
+                        <button id="toggleBtn" onclick="toggleInquiryForm()" class="pulse-btn inline-flex items-center gap-3 bg-orange-600 hover:bg-orange-500 text-white px-8 py-5 rounded-2xl font-black uppercase tracking-widest transition-all active:scale-95 shadow-2xl">
+                            <i data-lucide="file-edit" class="w-5 h-5"></i>
+                            <span id="toggleBtnText">Start Inquiry Now</span>
+                        </button>
                     </div>
                 </div>
-            </form>
-        </div>
-    </section>
 
+                <!-- Animated Trust Cards -->
+                <div class="grid gap-4">
+                    <div class="trust-card p-5 rounded-3xl flex items-center gap-5 group">
+                        <div class="h-14 w-14 rounded-2xl bg-orange-500/10 flex items-center justify-center text-orange-500 transition-colors">
+                            <i data-lucide="shield-check" class="w-7 h-7"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-black text-white uppercase tracking-tight text-xs">Tata Authorized Retailer</h3>
+                            <p class="text-[10px] text-slate-400 font-medium">25 years performance warranty on modules.</p>
+                        </div>
+                    </div>
+
+                    <div class="trust-card p-5 rounded-3xl flex items-center gap-5">
+                        <div class="h-14 w-14 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500">
+                            <i data-lucide="badge-percent" class="w-7 h-7"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-black text-white uppercase tracking-tight text-xs">Subsidy Experts</h3>
+                            <p class="text-[10px] text-slate-400 font-medium">Full PM Surya Ghar Yojana paperwork support.</p>
+                        </div>
+                    </div>
+
+                    <div class="trust-card p-5 rounded-3xl flex items-center gap-5">
+                        <div class="h-14 w-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                            <i data-lucide="zap" class="w-7 h-7"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-black text-white uppercase tracking-tight text-xs">Site Survey in 24h</h3>
+                            <p class="text-[10px] text-slate-400 font-medium">Fastest response time in Ajmer & Rajasthan.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Side (Hidden by default, parallel alignment) -->
+            <div id="formWrapper" class="relative order-1 lg:order-2 transition-all duration-500 opacity-0 transform translate-y-10 pointer-events-none hidden">
+                <div class="absolute -top-10 -right-10 w-64 h-64 bg-orange-600/10 rounded-full blur-[80px] -z-10 animate-pulse"></div>
+
+                <div class="form-glass p-8 md:p-10 rounded-[3rem] relative">
+                    <div class="mb-8 text-center">
+                        <button onclick="toggleInquiryForm()" class="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors">
+                            <i data-lucide="x" class="w-6 h-6"></i>
+                        </button>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 text-orange-500 text-[9px] font-black uppercase tracking-widest mb-3">
+                            <i data-lucide="zap" class="w-3 h-3"></i> Quick Survey Request
+                        </div>
+                        <h2 class="text-3xl font-black text-white uppercase tracking-tighter">Get Expert <span class="text-orange-500">Quote</span></h2>
+                    </div>
+
+                    <form id="queryForm" class="space-y-5">
+                        <div class="space-y-1.5">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+                            <input type="text" id="name" name="Full Name" required placeholder="Enter Name"
+                                   class="input-style w-full px-6 py-4 rounded-2xl font-bold tracking-tight">
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
+                            <input type="tel" id="phone" name="Phone Number" required placeholder="e.g. 9660711101"
+                                   class="input-style w-full px-6 py-4 rounded-2xl font-bold tracking-tight">
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Installation Site Address</label>
+                            <textarea id="address" name="Address" required rows="2" placeholder="Street, Area, City"
+                                      class="input-style w-full px-6 py-4 rounded-2xl font-bold tracking-tight"></textarea>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Target Capacity</label>
+                            <div class="relative">
+                                <select id="requirements" name="Requirements"
+                                        class="input-style w-full px-6 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest appearance-none">
+                                    <option value="3kW Residential">3kW Residential (Best Seller)</option>
+                                    <option value="5kW Residential">5kW Residential (Medium Home)</option>
+                                    <option value="10kW+ Commercial">10kW+ Commercial</option>
+                                    <option value="Not Sure - Need Survey">Request Free Site Survey</option>
+                                </select>
+                                <i data-lucide="chevron-down" class="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="submitBtn"
+                                class="w-full bg-orange-600 hover:bg-orange-500 text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-orange-600/20 transition-all active:scale-[0.98] flex items-center justify-center gap-3 group relative overflow-hidden mt-2">
+                            <span id="btnText" class="z-10 text-sm text-center">Send via WhatsApp</span>
+                            <i data-lucide="send" class="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform z-10"></i>
+                            <div class="absolute inset-0 bg-gradient-to-r from-orange-600 to-orange-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Strictly preserved JS logic -->
     <script>
         lucide.createIcons();
 
-        // 1. YOUR SCRIPT URL
+        function toggleInquiryForm() {
+            const wrapper = document.getElementById('formWrapper');
+            const toggleBtn = document.getElementById('toggleBtn');
+
+            if (wrapper.classList.contains('hidden')) {
+                wrapper.classList.remove('hidden');
+                setTimeout(() => {
+                    wrapper.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
+                    wrapper.classList.add('opacity-100', 'translate-y-0');
+                }, 10);
+                toggleBtn.classList.add('opacity-0', 'scale-90', 'pointer-events-none');
+            } else {
+                wrapper.classList.remove('opacity-100', 'translate-y-0');
+                wrapper.classList.add('opacity-0', 'translate-y-10');
+                setTimeout(() => {
+                    wrapper.classList.add('hidden', 'pointer-events-none');
+                    toggleBtn.classList.remove('opacity-0', 'scale-90', 'pointer-events-none');
+                }, 500);
+            }
+        }
+
+        // 1. YOUR SCRIPT URL (UNCHANGED)
         const scriptURL = "https://script.google.com/macros/s/AKfycbwOwFXWaAq5j5ylSy19zbi7uz-ii33TkieCntYq23DP4SuTQojeFfJYm00YUL2zykzR7g/exec"; 
         const form = document.getElementById('queryForm');
 
         form.addEventListener('submit', e => {
             e.preventDefault();
             const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+
             submitBtn.disabled = true;
-            submitBtn.innerText = "Generating Query ID...";
+            btnText.innerText = "Processing...";
 
             // Capture Values
             const name = document.getElementById('name').value;
