@@ -37,7 +37,7 @@
             <img src="Donna Stroupe.jpg" alt="Logo" class="h-12 w-12 rounded-full border-2 border-orange-500 shadow-lg">
             <div class="flex flex-col text-left">
                 <span class="font-black text-white uppercase tracking-tighter text-xl leading-none">Udbhav Solar</span>
-                <span class="text-[10px] font-bold text-orange-500 tracking-[0.3em] uppercase">Python AI Analyzer</span>
+                <span class="text-[10px] font-bold text-orange-600 tracking-[0.3em] uppercase">Python AI Analyzer</span>
             </div>
         </div>
         <a href="index.html" class="text-xs font-black text-slate-400 uppercase tracking-widest hover:text-orange-500 transition-all">
@@ -45,7 +45,7 @@
         </a>
     </header>
 
-    <main class="max-w-5xl mx-auto px-6 py-12">
+    <main class="max-w-5xl mx-auto px-6 py-12 text-center lg:text-left">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
 
             <div class="space-y-8">
@@ -65,7 +65,6 @@
             <div class="space-y-8">
                 <div class="form-glass p-8 md:p-10 rounded-[3rem]">
                     <div class="space-y-8">
-                        <!-- Billing Cycle Selection -->
                         <div class="space-y-3">
                             <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Step 1: Select Billing Cycle</label>
                             <div class="grid grid-cols-2 gap-4">
@@ -74,7 +73,6 @@
                             </div>
                         </div>
 
-                        <!-- Bill Upload -->
                         <div class="space-y-3">
                             <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Step 2: Upload Bill (PDF or Photo)</label>
                             <div class="border-2 border-dashed border-white/10 rounded-2xl p-8 text-center hover:border-orange-500 transition-all cursor-pointer bg-white/5 group relative overflow-hidden" onclick="document.getElementById('bill-input').click()">
@@ -87,19 +85,17 @@
                             </div>
                         </div>
 
-                        <!-- Manual Input Fallback -->
                         <div class="space-y-3">
                             <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Step 3: Total Units (Auto-filled by AI)</label>
                             <input type="number" id="manual-units" placeholder="Units will appear here" class="input-style w-full px-6 py-5 rounded-2xl font-black text-2xl text-center">
                         </div>
 
                         <button onclick="runAnalysis()" class="w-full bg-orange-600 hover:bg-orange-500 text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-3">
-                            Analyze & Calculate <i data-lucide="zap" class="w-5 h-5"></i>
+                            Calculate Capacity <i data-lucide="zap" class="w-5 h-5"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Result Card -->
                 <div id="result-card" class="result-card p-10 rounded-[3rem] space-y-8 relative overflow-hidden backdrop-blur-xl">
                     <div class="flex justify-between items-center relative z-10">
                         <h3 class="text-xs font-black text-orange-500 uppercase tracking-[0.4em]">Scan Successful</h3>
@@ -139,7 +135,6 @@
                         <a href="https://wa.me/919660711101" class="bg-white text-blue-950 px-10 py-4 rounded-xl font-black uppercase text-xs tracking-widest hover:bg-orange-500 hover:text-white transition-all shadow-xl">Contact Now</a>
                     </div>
 
-                    <!-- Background Decor -->
                     <div class="absolute -right-20 -top-20 w-64 h-64 bg-orange-500/10 rounded-full blur-[80px]"></div>
                 </div>
             </div>
@@ -150,9 +145,8 @@
         lucide.createIcons();
         let currentCycle = 30;
 
-        // --- UPDATE YOUR HUGGING FACE SPACE ID HERE ---
         const HF_SPACE_ID = "udbhav121/ussgreen";
-        const HF_API_URL = `https://udbhav121-ussgreen.hf.space`;
+        const HF_API_URL = `https://udbhav121-ussgreen.hf.space/analyze`;
 
         function setCycle(days) {
             currentCycle = days;
@@ -175,7 +169,6 @@
             formData.append("file", file);
 
             try {
-                // CALLING YOUR PYTHON AI ON HUGGING FACE
                 const response = await fetch(HF_API_URL, {
                     method: "POST",
                     body: formData
@@ -184,28 +177,34 @@
                 const result = await response.json();
 
                 if(result.error) {
-                    alert("AI Analysis Failed: " + result.error);
-                    window.location.href = "query.html";
+                    alert("AI Error: " + result.error);
                 } else {
-                    // Update the UI with AI results
                     document.getElementById('manual-units').value = result.avg_units;
-                    document.getElementById('res-name').innerText = result.name;
-                    document.getElementById('res-mob').innerText = result.mobile;
+                    document.getElementById('res-name').innerText = result.name || "Customer";
+                    document.getElementById('res-mob').innerText = result.mobile || "Found";
                     document.getElementById('res-cycle').innerText = currentCycle + " Days";
 
-                    runAnalysis(); // Calculate the capacity
+                    // Don't call runAnalysis automatically to avoid the error before state is set
+                    setTimeout(() => runAnalysis(), 100);
                 }
             } catch (err) {
                 console.error("Connection Error:", err);
-                alert("Could not connect to Python AI. Using manual mode.");
-                statusText.innerText = "Connection Failed. Tap to try again.";
+                alert("Could not connect to Python AI. Please check if your Hugging Face Space is 'Public' and running.");
+            } finally {
+                statusText.innerText = "Tap to start Python AI scan";
+                statusText.classList.remove('text-orange-500');
                 scanBar.classList.add('hidden');
             }
         }
 
         function runAnalysis() {
-            const units = parseFloat(document.getElementById('manual-units').value);
-            if(!units || units <= 0) { alert("Please enter valid units."); return; }
+            const unitInput = document.getElementById('manual-units');
+            const units = parseFloat(unitInput.value);
+
+            if(!units || units <= 0) {
+                alert("Please enter or scan valid units first.");
+                return;
+            }
 
             const dailyUsage = units / currentCycle;
             const kwNeeded = dailyUsage / 4;
