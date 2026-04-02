@@ -73,90 +73,22 @@
     </div>
 
 <script>
-    // 1. Initialize icons
-    lucide.createIcons();
+    const params = new URLSearchParams(window.location.search);
+    const authToken = params.get('auth');
+    const nameParam = params.get('name');
 
-    // 2. Theme Toggle Logic
-    function toggleTheme() {
-        const html = document.documentElement;
-        const icon = document.getElementById('theme-icon');
-        if (html.classList.contains('dark')) {
-            html.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
-            icon.setAttribute('data-lucide', 'moon');
-        } else {
-            html.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
-            icon.setAttribute('data-lucide', 'sun');
-        }
-        lucide.createIcons();
+    // If we have the token, set the session IMMEDIATELY
+    if (authToken === "secure_solar_access") {
+        sessionStorage.setItem("isSolarAdmin", "true");
+        if (nameParam) sessionStorage.setItem("adminName", nameParam);
+        
+        // Clean the URL so the loop doesn't restart on refresh
+        window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    // 3. Set initial theme based on preference
-    if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-        const icon = document.getElementById('theme-icon');
-        if(icon) icon.setAttribute('data-lucide', 'sun');
-        lucide.createIcons();
-    }
-
-    // 4. Login Logic - BRIDGE BETWEEN DOMAINS FIXED
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const id = document.getElementById('empId').value;
-        const pass = document.getElementById('password').value;
-
-        try {
-            // Your specific Hugging Face Direct URL
-            const HF_SPACE_URL = "https://udbhav121-lallu.hf.space"; 
-            const api_url = `${HF_SPACE_URL}/verify-login`;
-            
-            const response = await fetch(api_url, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ username: id, password: pass })
-            });
-
-            const contentType = response.headers.get("content-type");
-            if (!contentType || !contentType.includes("application/json")) {
-                alert("Server Configuration Error. Ensure Hugging Face Space is Public.");
-                return;
-            }
-
-            const result = await response.json();
-            
-            if (result.success) {
-                // IMPORTANT: Show the selection dialogue first
-                document.getElementById('login-container').classList.add('hidden');
-                document.getElementById('selection-dialogue').classList.remove('hidden');
-                document.getElementById('display-name').innerText = result.name;
-
-                // 5. Handle the Admin Panel Redirection with a Security Token
-                // This breaks the redirect loop on ussgreen.in.net
-                window.goToVlogAdmin = function() {
-                    const targetUrl = "https://ussgreen.in.net/vlog-admin.html";
-                    const secureToken = "secure_solar_access";
-                    const nameEncoded = encodeURIComponent(result.name);
-                    
-                    // Passing the 'key' in the URL so the other domain can verify it
-                    window.location.href = `${targetUrl}?auth=${secureToken}&name=${nameEncoded}`;
-                };
-
-            } else {
-                alert("Invalid Credentials. Please check your ID and Password.");
-            }
-        } catch (error) {
-            console.error("Login Error:", error);
-            alert("Connection Error. Check if Hugging Face Space is 'Running'.");
-        }
-    });
-
-    // Simple helper for the buttons in your selection dialogue
-    function goToVlogs() {
-        window.location.href = "vlogs.html";
+    // Now check if the session exists. If NOT, redirect.
+    if (sessionStorage.getItem("isSolarAdmin") !== "true") {
+        window.location.href = "lallu.html";
     }
 </script>
 </body>
