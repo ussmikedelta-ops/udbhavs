@@ -10,25 +10,23 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
-    // 1. Get the "Key" and "Name" from the URL (sent by lallu.html)
+    // Security check: Look for the secret handshake token
     const urlParams = new URLSearchParams(window.location.search);
-    const authKey = urlParams.get('auth');
-    const adminName = urlParams.get('name');
+    const securityKey = urlParams.get('auth');
 
-    // 2. If the key is correct, save the session on THIS domain (ussgreen.in.net)
-    if (authKey === "secure_solar_access") {
-        sessionStorage.setItem("isSolarAdmin", "true");
-        if (adminName) sessionStorage.setItem("adminName", adminName);
-        
-        // Clean the URL so the key isn't visible anymore
-        window.history.replaceState({}, document.title, window.location.pathname);
-    }
-
-    // 3. Final Security Check - This is where the loop usually happens
-    // We only redirect if BOTH the session is empty AND there is no valid key
-    if (sessionStorage.getItem("isSolarAdmin") !== "true") {
-        console.log("No authorization found. Redirecting to login...");
-        window.location.href = "lallu.html";
+    // If key is missing or wrong, show "Access Denied" and stop everything
+    if (securityKey !== "USS_OFFICIAL_2026") {
+        document.documentElement.innerHTML = `
+            <body style="background:#0f172a; color:white; font-family:sans-serif; display:flex; align-items:center; justify-center; height:100vh; margin:0; text-align:center;">
+                <div>
+                    <h1 style="color:#f97316; font-size:4rem;">403</h1>
+                    <h2>ACCESS DENIED</h2>
+                    <p>Direct URL entry is blocked. Please login via the official portal.</p>
+                    <button onclick="window.location.href='lallu.html'" style="padding:10px 20px; background:#1e3a8a; border:none; color:white; border-radius:5px; cursor:pointer;">Go to Login</button>
+                </div>
+            </body>
+        `;
+        window.stop(); // Stops the rest of the page from loading
     }
 </script>
     <style>
