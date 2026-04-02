@@ -10,11 +10,26 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
-        // Security Check - Redirect to lallu.html if not authorized
-        if (sessionStorage.getItem("isSolarAdmin") !== "true") {
-            window.location.href = "lallu.html";
-        }
-    </script>
+    // 1. Check if we just arrived from the login page with a secure token
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('auth');
+    const adminName = urlParams.get('name');
+
+    if (token === "secure_solar_access") {
+        // Save the session locally on ussgreen.in.net
+        sessionStorage.setItem("isSolarAdmin", "true");
+        if (adminName) sessionStorage.setItem("adminName", adminName);
+        
+        // Clean the URL so the password isn't visible in the address bar
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // 2. Final Security Check
+    if (sessionStorage.getItem("isSolarAdmin") !== "true") {
+        // If no session and no token, go back to login
+        window.location.href = "lallu.html";
+    }
+</script>
     <style>
         .glass-morphism { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
         .admin-card { background: white; border: 1px solid #e2e8f0; border-radius: 1.5rem; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
