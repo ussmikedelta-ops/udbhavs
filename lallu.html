@@ -75,7 +75,6 @@
     <script>
         lucide.createIcons();
 
-        // Exact Theme Toggle Logic from your code
         function toggleTheme() {
             const html = document.documentElement;
             const icon = document.getElementById('theme-icon');
@@ -97,25 +96,33 @@
             lucide.createIcons();
         }
 
-        // Logic to talk to Hugging Face
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('empId').value;
             const pass = document.getElementById('password').value;
 
-            const response = await fetch('/verify-login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: id, password: pass })
-            });
+            try {
+                // Modified fetch to use current origin for robustness
+                const response = await fetch(`${window.location.origin}/verify-login`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ username: id, password: pass })
+                });
 
-            const result = await response.json();
-            if (result.success) {
-                document.getElementById('login-container').classList.add('hidden');
-                document.getElementById('selection-dialogue').classList.remove('hidden');
-                document.getElementById('display-name').innerText = result.name;
-            } else {
-                alert("Invalid Credentials. Please try again.");
+                const result = await response.json();
+                if (result.success) {
+                    document.getElementById('login-container').classList.add('hidden');
+                    document.getElementById('selection-dialogue').classList.remove('hidden');
+                    document.getElementById('display-name').innerText = result.name;
+                } else {
+                    alert("Invalid Credentials. Please try again.");
+                }
+            } catch (error) {
+                console.error("Login Error:", error);
+                alert("Connection Error. Please check if the portal is running.");
             }
         });
     </script>
