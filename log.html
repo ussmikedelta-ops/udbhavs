@@ -9,23 +9,23 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script>
-    // Security check: Look for the secret handshake token
+    // 1. Check for the security key in the URL
     const urlParams = new URLSearchParams(window.location.search);
     const securityKey = urlParams.get('auth');
 
-    // If key is missing or wrong, show "Access Denied" and stop everything
-    if (securityKey !== "USS_OFFICIAL_2026") {
+    // 2. If the key is missing or wrong, block the page
+    if (securityKey !== "USS_OFFICIAL_AUTH_2026") {
         document.documentElement.innerHTML = `
-            <body style="background:#0f172a; color:white; font-family:sans-serif; display:flex; align-items:center; justify-center; height:100vh; margin:0; text-align:center;">
-                <div>
-                    <h1 style="color:#f97316; font-size:4rem;">403</h1>
-                    <h2>ACCESS DENIED</h2>
-                    <p>Direct URL entry is blocked. Please login via the official portal.</p>
-                    <button onclick="window.location.href='lallu.html'" style="padding:10px 20px; background:#1e3a8a; border:none; color:white; border-radius:5px; cursor:pointer;">Go to Login</button>
+            <body style="background:#020617; color:white; font-family:sans-serif; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; text-align:center;">
+                <div style="border:2px solid #f97316; padding:40px; border-radius:30px; background:#0f172a; box-shadow: 0 0 30px rgba(249,115,22,0.2);">
+                    <h1 style="color:#f97316; font-size:3rem; margin:0;">403</h1>
+                    <h2 style="text-transform:uppercase; letter-spacing:2px;">Access Denied</h2>
+                    <p style="opacity:0.7;">Direct URL entry is blocked for security.</p>
+                    <button onclick="window.location.href='lallu.html'" style="margin-top:20px; padding:12px 25px; background:#1e3a8a; border:none; color:white; border-radius:12px; font-weight:bold; cursor:pointer; transition:0.3s;">Return to Portal</button>
                 </div>
             </body>
         `;
-        window.stop(); // Stops the rest of the page from loading
+        window.stop(); // Stops further execution
     }
 </script>
     <style>
