@@ -201,18 +201,33 @@
 
             const data = await response.json();
             
-            // 1. Display the Text Analysis
-            const content = data.analysis || "No analysis found.";
-            output.innerHTML = content.replace(/\n/g, '<br>');
+            // 1. Clean the Text Analysis (Removes AI formatting stars for better UI)
+            const rawContent = data.analysis || "No analysis found.";
+            const cleanContent = rawContent.replace(/\*\*/g, "").replace(/\*/g, "");
+            output.innerHTML = cleanContent.replace(/\n/g, '<br>');
 
             // 2. Display the Plant Capacity from Python
             if (data.plant_capacity && data.plant_capacity !== "Error") {
                 plantDisplay.innerText = data.plant_capacity;
             } else {
                 // Fallback: Internal calculation if Python didn't return one
-                const unitMatch = content.match(/Units:\s*(\d+)/i);
-                if (unitMatch) {
-                    const kw = ((parseInt(unitMatch[1]) / currentCycle) / 4).toFixed(1);
+                // Looks for numbers in the cleaned text
+                const avgMatch = cleanContent.match(/Monthly Average[:\s]*([\d.]+)/i);
+                const unitMatch = cleanContent.match(/Units Consumed[:\s]*([\d.]+)/i);
+                
+                let val = 0;
+                let usedCycle = currentCycle;
+
+                if (avgMatch) {
+                    val = parseFloat(avgMatch[1]);
+                    usedCycle = 30;
+                } else if (unitMatch) {
+                    val = parseFloat(unitMatch[1]);
+                    usedCycle = currentCycle;
+                }
+
+                if (val > 0) {
+                    const kw = ((val / usedCycle) / 4).toFixed(1);
                     plantDisplay.innerText = kw + " kW";
                 } else {
                     plantDisplay.innerText = "Check Bill";
