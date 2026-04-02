@@ -73,10 +73,10 @@
     </div>
 
 <script>
-    // Initialize icons
+    // 1. Initialize icons
     lucide.createIcons();
 
-    // Theme Toggle Logic
+    // 2. Theme Toggle Logic
     function toggleTheme() {
         const html = document.documentElement;
         const icon = document.getElementById('theme-icon');
@@ -92,7 +92,7 @@
         lucide.createIcons();
     }
 
-    // Set initial theme based on preference
+    // 3. Set initial theme based on preference
     if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark');
         const icon = document.getElementById('theme-icon');
@@ -100,15 +100,14 @@
         lucide.createIcons();
     }
 
-    // Login Logic - CROSS-ORIGIN FIXED
+    // 4. Login Logic - BRIDGE BETWEEN DOMAINS FIXED
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = document.getElementById('empId').value;
         const pass = document.getElementById('password').value;
 
         try {
-            // CRITICAL: Replace 'ussmikedelta-ops-udbhavs' with your actual Space name
-            // Use the "Direct URL" found in your Space Settings or 'Embed' menu
+            // Your specific Hugging Face Direct URL
             const HF_SPACE_URL = "https://udbhav121-lallu.hf.space"; 
             const api_url = `${HF_SPACE_URL}/verify-login`;
             
@@ -121,30 +120,44 @@
                 body: JSON.stringify({ username: id, password: pass })
             });
 
-            // Handle non-JSON responses (prevents the "Unexpected token <" error)
             const contentType = response.headers.get("content-type");
             if (!contentType || !contentType.includes("application/json")) {
-                const text = await response.text();
-                console.error("Server returned non-JSON response:", text);
-                alert("Server Configuration Error. Please verify the Hugging Face Space is public and running.");
+                alert("Server Configuration Error. Ensure Hugging Face Space is Public.");
                 return;
             }
 
             const result = await response.json();
             
             if (result.success) {
-                // Hide login, show selection
+                // IMPORTANT: Show the selection dialogue first
                 document.getElementById('login-container').classList.add('hidden');
                 document.getElementById('selection-dialogue').classList.remove('hidden');
                 document.getElementById('display-name').innerText = result.name;
+
+                // 5. Handle the Admin Panel Redirection with a Security Token
+                // This breaks the redirect loop on ussgreen.in.net
+                window.goToVlogAdmin = function() {
+                    const targetUrl = "https://ussgreen.in.net/vlog-admin.html";
+                    const secureToken = "secure_solar_access";
+                    const nameEncoded = encodeURIComponent(result.name);
+                    
+                    // Passing the 'key' in the URL so the other domain can verify it
+                    window.location.href = `${targetUrl}?auth=${secureToken}&name=${nameEncoded}`;
+                };
+
             } else {
                 alert("Invalid Credentials. Please check your ID and Password.");
             }
         } catch (error) {
             console.error("Login Error:", error);
-            alert("Connection Error. The portal cannot reach the authentication server.");
+            alert("Connection Error. Check if Hugging Face Space is 'Running'.");
         }
     });
+
+    // Simple helper for the buttons in your selection dialogue
+    function goToVlogs() {
+        window.location.href = "vlogs.html";
+    }
 </script>
 </body>
 </html>
