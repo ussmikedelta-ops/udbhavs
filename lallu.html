@@ -41,13 +41,13 @@
 
     <div id="selection-dialogue" class="hidden fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center p-6 z-[100]">
         <div class="glass-panel max-w-sm w-full rounded-[2.5rem] p-10 text-center border-2 border-orange-500 shadow-2xl">
-            <h2 class="text-2xl font-black text-blue-900 dark:text-white mb-2">ACCESS GRANTED</h2>
-            <p id="display-name" class="text-orange-500 font-bold tracking-widest uppercase mb-8">USER</p>
+            <h2 class="text-2xl font-black text-blue-900 dark:text-white mb-2 italic">ACCESS GRANTED</h2>
+            <p id="display-name" class="text-orange-500 font-bold tracking-widest uppercase mb-8 underline decoration-2 underline-offset-4">USER</p>
             <div class="space-y-4">
-                <button onclick="goToSecurePage('https://ussgreen.in.net/admin-vlogs.html')" class="w-full py-4 bg-white dark:bg-slate-800 text-blue-900 dark:text-white font-black uppercase rounded-2xl btn-glow transition-all flex items-center justify-center gap-3">
+                <button onclick="goToSecurePage('admin-vlogs.html')" class="w-full py-4 bg-white dark:bg-slate-800 text-blue-900 dark:text-white font-black uppercase rounded-2xl btn-glow transition-all flex items-center justify-center gap-3">
                     <i data-lucide="video" class="w-5 h-5"></i> Vlog Admin
                 </button>
-                <button onclick="goToSecurePage('https://ussgreen.in.net/aitest.html')" class="w-full py-4 bg-white dark:bg-slate-800 text-blue-900 dark:text-white font-black uppercase rounded-2xl btn-glow transition-all flex items-center justify-center gap-3">
+                <button onclick="goToSecurePage('aitest.html')" class="w-full py-4 bg-white dark:bg-slate-800 text-blue-900 dark:text-white font-black uppercase rounded-2xl btn-glow transition-all flex items-center justify-center gap-3">
                     <i data-lucide="cpu" class="w-5 h-5"></i> AI Test Lab
                 </button>
             </div>
@@ -57,9 +57,9 @@
 <script>
     lucide.createIcons();
 
-    // The Secret Handshake Function
+    // The Secret Handshake Function - Adds a security key to the URL
     window.goToSecurePage = function(page) {
-        const token = "USS_OFFICIAL_2026"; // The key
+        const token = "USS_OFFICIAL_AUTH_2026"; 
         const name = document.getElementById('display-name').innerText;
         window.location.href = `https://ussgreen.in.net/${page}?auth=${token}&user=${encodeURIComponent(name)}`;
     };
