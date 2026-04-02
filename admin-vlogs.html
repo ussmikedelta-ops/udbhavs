@@ -10,23 +10,24 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
-    // 1. Check if we just arrived from the login page with a secure token
+    // 1. Get the "Key" and "Name" from the URL (sent by lallu.html)
     const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('auth');
+    const authKey = urlParams.get('auth');
     const adminName = urlParams.get('name');
 
-    if (token === "secure_solar_access") {
-        // Save the session locally on ussgreen.in.net
+    // 2. If the key is correct, save the session on THIS domain (ussgreen.in.net)
+    if (authKey === "secure_solar_access") {
         sessionStorage.setItem("isSolarAdmin", "true");
         if (adminName) sessionStorage.setItem("adminName", adminName);
         
-        // Clean the URL so the password isn't visible in the address bar
+        // Clean the URL so the key isn't visible anymore
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    // 2. Final Security Check
+    // 3. Final Security Check - This is where the loop usually happens
+    // We only redirect if BOTH the session is empty AND there is no valid key
     if (sessionStorage.getItem("isSolarAdmin") !== "true") {
-        // If no session and no token, go back to login
+        console.log("No authorization found. Redirecting to login...");
         window.location.href = "lallu.html";
     }
 </script>
