@@ -23,16 +23,8 @@
         .cycle-btn.active { background: #f97316; color: white; border-color: #f97316; box-shadow: 0 0 20px rgba(249, 115, 22, 0.3); }
         .loading-pulse { animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-        /* Floating Elements */
-        .ai-disclaimer { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 2000; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 24px; border-radius: 99px; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); white-space: nowrap; }
-        .ai-disclaimer p { margin: 0; color: rgba(255,255,255,0.8); font-size: 11px; font-weight: 600; text-transform: uppercase; }
-        .ai-disclaimer a { color: #f97316; font-weight: 800; }
         
-        .whatsapp-float { position: fixed; bottom: 24px; right: 24px; z-index: 2001; width: 60px; height: 60px; background-color: #25d366; border-radius: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4); animation: pulse-wa 2s infinite; }
-        @keyframes pulse-wa { 0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); } }
-
-        @media (max-width: 768px) { .ai-disclaimer { width: 90%; bottom: 100px; } .ai-disclaimer p { font-size: 9px; } }
+        .whatsapp-float { position: fixed; bottom: 24px; right: 24px; z-index: 2001; width: 60px; height: 60px; background-color: #25d366; border-radius: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4); }
     </style>
 </head>
 
@@ -44,16 +36,13 @@
             <div class="w-16 h-16 bg-orange-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <i data-lucide="shield-check" class="text-orange-500 w-8 h-8"></i>
             </div>
-            <h3 class="text-xl font-black text-white uppercase tracking-tight">Security Access</h3>
-            <p class="text-slate-400 text-xs mt-2 font-medium">Verify identity to enable AI Bill Scanning.</p>
+            <h3 class="text-xl font-black text-white uppercase tracking-tight">Access Secure</h3>
+            <p class="text-slate-400 text-xs mt-2 font-medium">Verify identity for Udbhav Solar AI.</p>
         </div>
         <div class="space-y-4">
-            <div class="bg-white/5 border border-white/10 p-4 rounded-2xl">
-                <p class="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">Human Verification</p>
-                <div class="flex items-center justify-center gap-2">
-                    <input type="checkbox" id="captcha-check" class="w-5 h-5 accent-orange-500 cursor-pointer">
-                    <label for="captcha-check" class="text-sm font-bold text-white cursor-pointer italic">I am not a bot</label>
-                </div>
+            <div class="bg-white/5 border border-white/10 p-4 rounded-2xl text-center">
+                <input type="checkbox" id="captcha-check" class="w-5 h-5 accent-orange-500 cursor-pointer">
+                <label for="captcha-check" class="text-sm font-bold text-white ml-2 cursor-pointer">I am not a bot</label>
             </div>
             <button id="access-btn" disabled class="w-full bg-slate-800 text-slate-500 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all cursor-not-allowed">
                 Enter Scanner
@@ -73,11 +62,8 @@
 <main class="max-w-2xl w-full px-6 py-12 mb-20">
     <div class="form-glass p-8 md:p-10 rounded-[2.5rem] shadow-2xl">
         <div class="text-center mb-8">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 text-orange-500 text-[10px] font-black uppercase tracking-widest mb-4">
-                <span class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span> Intelligent Extraction
-            </div>
             <h2 class="text-3xl font-black text-white uppercase tracking-tighter">Scan Your <span class="text-orange-500">Bill.</span></h2>
-            <p class="text-slate-400 text-sm mt-2">Bring your electricity bill to zero with AI analysis.</p>
+            <p class="text-slate-400 text-sm mt-2">Get your recommended plant size in seconds.</p>
         </div>
 
         <div class="space-y-6">
@@ -91,53 +77,34 @@
 
             <div class="space-y-3">
                 <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Upload Bill Photo</label>
-                <div class="border-2 border-dashed border-white/10 rounded-2xl p-10 text-center hover:border-orange-500 transition-all cursor-pointer bg-white/5 group" onclick="document.getElementById('billInput').click()">
+                <div class="border-2 border-dashed border-white/10 rounded-2xl p-10 text-center hover:border-orange-500 cursor-pointer bg-white/5" onclick="document.getElementById('billInput').click()">
                     <input type="file" id="billInput" class="hidden" accept="image/*">
-                    <div class="flex flex-col items-center gap-3">
-                        <i data-lucide="camera" id="upload-icon" class="w-10 h-10 text-orange-500 group-hover:scale-110 transition-transform"></i>
-                        <p id="status-text" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Take Photo or Upload</p>
-                    </div>
+                    <i data-lucide="camera" class="w-10 h-10 text-orange-500 mx-auto mb-2"></i>
+                    <p id="status-text" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tap to Upload</p>
                 </div>
             </div>
 
-            <button id="scanBtn" class="w-full bg-orange-600 hover:bg-orange-500 text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-3">
+            <button id="scanBtn" class="w-full bg-orange-600 hover:bg-orange-500 text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl transition-all flex items-center justify-center gap-3">
                 Start AI Analysis <i data-lucide="zap" class="w-5 h-5"></i>
             </button>
 
             <div id="loader" class="hidden text-center py-4">
-                <p class="text-orange-500 text-xs font-black uppercase tracking-widest loading-pulse">AI is reading bill details...</p>
-            </div>
-
-            <div id="captcha-box" class="hidden mt-6 p-6 rounded-3xl bg-white/5 border border-white/10 space-y-4">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-[10px] font-black text-orange-500 uppercase tracking-widest">Security Code</h3>
-                    <span id="captcha-display" class="bg-orange-500/20 text-orange-500 px-4 py-1 rounded-lg font-black tracking-[0.3em] select-none">XXXXXX</span>
-                </div>
-                <input type="text" id="captcha-input" placeholder="Type the code" class="w-full bg-slate-900 border border-white/10 rounded-xl py-3 px-4 text-white text-center font-bold uppercase tracking-widest outline-none transition-all">
-                <button id="verify-scan-btn" class="w-full bg-white text-black py-3 rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-orange-500 hover:text-white transition-all">
-                    Confirm & Analyze
-                </button>
+                <p class="text-orange-500 text-xs font-black uppercase tracking-widest loading-pulse italic">AI is reading your bill details...</p>
             </div>
 
             <div id="result" class="hidden mt-8 p-6 rounded-3xl bg-white/5 border border-orange-500/30 space-y-4">
                 <div class="flex justify-between items-center border-b border-white/10 pb-4">
                     <h3 class="text-[10px] font-black text-orange-500 uppercase tracking-widest">Extracted Data</h3>
-                    <i data-lucide="check-circle" class="w-4 h-4 text-green-500"></i>
                 </div>
                 <div id="output" class="text-white text-sm leading-relaxed whitespace-pre-line font-medium"></div>
-                <div class="mt-4 p-4 bg-orange-500 rounded-2xl text-center">
+                <div class="mt-4 p-6 bg-orange-500 rounded-2xl text-center">
                     <p class="text-[9px] font-black text-white/80 uppercase tracking-widest">Recommended Solar Plant</p>
-                    <p id="plant-size" class="text-3xl font-black text-white italic">-- kW</p>
+                    <p id="plant-size" class="text-4xl font-black text-white italic">-- kW</p>
                 </div>
             </div>
         </div>
     </div>
 </main>
-
-<div class="ai-disclaimer">
-    <div class="w-2 h-2 rounded-full bg-orange-500"></div>
-    <p>Precision Surveys: <a href="tel:+919660711101">Call Now</a> or <a href="https://wa.me/919660711101">WhatsApp</a></p>
-</div>
 
 <a href="https://wa.me/919660711101" class="whatsapp-float" target="_blank">
     <svg width="32" height="32" fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.395 0 .01 5.388 0 12.044c0 2.129.54 4.207 1.579 6.075L0 24l6.135-1.61a11.803 11.803 0 005.911 1.586h.005c6.654 0 12.05-5.39 12.056-12.047a11.82 11.82 0 00-3.536-8.509z"/></svg>
@@ -146,29 +113,11 @@
 <script>
     lucide.createIcons();
     
-    // --- CONFIGURE YOUR HUGGING FACE URL HERE ---
+    // --- CONFIGURE ---
     const HF_API_URL = "https://udbhav121-bill.hf.space/analyze";
     let currentCycle = 30;
 
-    // --- 15-MINUTE SESSION GATEKEEPER ---
-    (function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const creationTime = urlParams.get('t');
-        const MAX_AGE = 15 * 60 * 1000;
-
-        if (!creationTime) {
-            document.documentElement.innerHTML = "<body style='background:#020617; color:white; display:flex; align-items:center; justify-content:center; height:100vh; font-family:sans-serif;'><h1>❌ Access Denied.</h1></body>";
-            return;
-        }
-
-        const timeElapsed = Date.now() - (parseInt(creationTime) * 1000);
-        if (timeElapsed > MAX_AGE || timeElapsed < 0) {
-            document.documentElement.innerHTML = "<body style='background:#020617; color:white; display:flex; align-items:center; justify-content:center; height:100vh; font-family:sans-serif;'><h1>🔒 Link Expired.</h1></body>";
-            return;
-        }
-    })();
-
-    // Security Gate Dialog
+    // Security Gate
     const captchaCheck = document.getElementById('captcha-check');
     const accessBtn = document.getElementById('access-btn');
     captchaCheck.onchange = () => {
@@ -185,35 +134,20 @@
         document.getElementById(`cycle-${days}`).classList.add('active');
     }
 
-    function generateCaptcha() {
-        return Math.random().toString(36).substring(2, 8).toUpperCase();
-    }
+    document.getElementById('scanBtn').onclick = async () => {
+        const fileInput = document.getElementById('billInput');
+        if (!fileInput.files[0]) return alert("Please select a bill image first!");
 
-    document.getElementById('scanBtn').onclick = () => {
-        if (!document.getElementById('billInput').files[0]) return alert("Select a bill image!");
-        document.getElementById('captcha-box').classList.remove('hidden');
-        document.getElementById('captcha-display').innerText = generateCaptcha();
-        document.getElementById('captcha-box').scrollIntoView({ behavior: 'smooth' });
-    };
-
-    document.getElementById('verify-scan-btn').onclick = async () => {
-        const userInput = document.getElementById('captcha-input').value.toUpperCase();
-        const actualCode = document.getElementById('captcha-display').innerText;
-        if (userInput !== actualCode) return alert("Incorrect Code!");
-
-        document.getElementById('captcha-box').classList.add('hidden');
         const loader = document.getElementById('loader');
+        const outputBox = document.getElementById('result');
         const btn = document.getElementById('scanBtn');
-        const statusText = document.getElementById('status-text');
 
         loader.classList.remove('hidden');
+        outputBox.classList.add('hidden');
         btn.disabled = true;
 
         try {
-            const file = document.getElementById('billInput').files[0];
-            const base64 = await toBase64(file);
-
-            // CALL HUGGING FACE BACKEND
+            const base64 = await toBase64(fileInput.files[0]);
             const response = await fetch(HF_API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -221,25 +155,42 @@
             });
 
             const data = await response.json();
-            const content = data.analysis;
+            const contentText = data.analysis;
 
-            document.getElementById('output').innerHTML = content.replace(/\n/g, '<br>');
-            
-            // Calc Logic
-            const avgMatch = content.match(/Avg Consumption:\s*(\d+)/i);
-            const unitMatch = content.match(/Units:\s*(\d+)/i);
-            let units = avgMatch ? parseInt(avgMatch[1]) : (unitMatch ? parseInt(unitMatch[1]) : 0);
-            let cycle = avgMatch ? 30 : currentCycle;
+            // Display text
+            document.getElementById('output').innerHTML = contentText.replace(/\n/g, '<br>');
 
+            // --- ROBUST CALCULATION LOGIC ---
+            // 1. Clean the text of symbols that break parsing
+            const cleanText = contentText.replace(/\*/g, '').replace(/units/gi, '');
+
+            // 2. Search for numbers next to our key labels
+            const avgMatch = cleanText.match(/(?:Average|Avg).*?:\s*(\d+)/i);
+            const unitMatch = cleanText.match(/(?:Total|Units).*?:\s*(\d+)/i);
+
+            let units = 0;
+            let isAvg = false;
+
+            if (avgMatch && avgMatch[1]) {
+                units = parseInt(avgMatch[1]);
+                isAvg = true; 
+            } else if (unitMatch && unitMatch[1]) {
+                units = parseInt(unitMatch[1]);
+                isAvg = false; 
+            }
+
+            // 3. Math (Avg assumes 30 days, Reading uses the clicked cycle)
+            let cycle = isAvg ? 30 : currentCycle;
             if (units > 0) {
                 const kw = ((units / cycle) / 4).toFixed(1);
                 document.getElementById('plant-size').innerText = kw + " kW";
+            } else {
+                document.getElementById('plant-size').innerText = "Check Bill";
             }
 
-            document.getElementById('result').classList.remove('hidden');
-            statusText.innerText = "Scan Successful!";
+            outputBox.classList.remove('hidden');
         } catch (err) {
-            alert("Error: " + err.message);
+            alert("Error connecting to AI: " + err.message);
         } finally {
             loader.classList.add('hidden');
             btn.disabled = false;
