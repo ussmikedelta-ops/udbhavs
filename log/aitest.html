@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Bill Scanner | Udbhav Solar Solutions</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; }
+        .bg-mesh {
+            background-color: #020617;
+            background-image:
+                radial-gradient(at 0% 0%, hsla(222,47%,11%,1) 0, transparent 50%),
+                radial-gradient(at 50% 0%, hsla(217,91%,60%,0.15) 0, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(25,95%,53%,0.1) 0, transparent 50%);
+        }
+        .form-glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(40px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .input-style { background: rgba(30, 41, 59, 0.5) !important; border: 1px solid rgba(255, 255, 255, 0.1); color: white !important; }
+        .cycle-btn { transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); }
+        .cycle-btn.active { background: #f97316; color: white; border-color: #f97316; box-shadow: 0 0 20px rgba(249, 115, 22, 0.3); }
+        .loading-pulse { animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    </style>
+<style>
+    /* Floating Disclaimer Bar */
+    .ai-disclaimer {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2000;
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 10px 24px;
+        border-radius: 99px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        white-space: nowrap;
+    }
+
+    .ai-disclaimer p {
+        margin: 0;
+        color: rgba(255,255,255,0.8);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .ai-disclaimer a {
+        color: #f97316;
+        text-decoration: none;
+        font-weight: 800;
+        transition: color 0.3s;
+    }
+
+    .ai-disclaimer a:hover { color: #ffffff; }
+
+    /* Floating WhatsApp Button */
+    .whatsapp-float {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 2001;
+        width: 60px;
+        height: 60px;
+        background-color: #25d366;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+        transition: all 0.3s ease;
+        animation: pulse-wa 2s infinite;
+    }
+
+    .whatsapp-float:hover {
+        transform: scale(1.1);
+        background-color: #128c7e;
+    }
+
+    .whatsapp-icon {
+        width: 32px;
+        height: 32px;
+        fill: white;
+    }
+
+    @keyframes pulse-wa {
+        0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+        70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .ai-disclaimer {
+            width: 90%;
+            padding: 8px 16px;
+            bottom: 100px;
+        }
+        .ai-disclaimer p { font-size: 9px; white-space: normal; text-align: center; }
+    }
+</style>
+</head>
+
+<body class="bg-mesh min-h-screen flex flex-col items-center">
+
+<div id="security-dialog" class="fixed inset-0 z-[3000] flex items-center justify-center bg-slate-950/90 backdrop-blur-xl">
+    <div class="form-glass p-10 rounded-[2.5rem] max-w-sm w-full mx-6 border border-orange-500/30 text-center shadow-2xl">
+        <div class="mb-6">
+            <div class="w-16 h-16 bg-orange-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="shield-check" class="text-orange-500 w-8 h-8"></i>
+            </div>
+            <h3 class="text-xl font-black text-white uppercase tracking-tight">Security Access</h3>
+            <p class="text-slate-400 text-xs mt-2 font-medium">Verify identity to enable AI Bill Scanning.</p>
+        </div>
+
+        <div class="space-y-4">
+            <div class="bg-white/5 border border-white/10 p-4 rounded-2xl">
+                <p class="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">Human Verification</p>
+                <div class="flex items-center justify-center gap-2">
+                    <input type="checkbox" id="captcha-check" class="w-5 h-5 accent-orange-500 cursor-pointer">
+                    <label for="captcha-check" class="text-sm font-bold text-white cursor-pointer italic">I am not a bot</label>
+                </div>
+            </div>
+
+            <button id="access-btn" disabled class="w-full bg-slate-800 text-slate-500 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all cursor-not-allowed">
+                Enter Scanner
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="ai-disclaimer">
+    <div class="w-2 h-2 rounded-full bg-orange-500"></div>
+    <p>
+        AI-Generated Visualization. For Precision Surveys: 
+        <a href="tel:+919660711101">Call Now</a> or 
+        <a href="https://wa.me/919660711101">WhatsApp +91 9660711101</a>
+    </p>
+</div>
+
+<a href="https://wa.me/919660711101" class="whatsapp-float" target="_blank" aria-label="Contact on WhatsApp">
+    <svg class="whatsapp-icon" viewBox="0 0 24 24">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.395 0 .01 5.388 0 12.044c0 2.129.54 4.207 1.579 6.075L0 24l6.135-1.61a11.803 11.803 0 005.911 1.586h.005c6.654 0 12.05-5.39 12.056-12.047a11.82 11.82 0 00-3.536-8.509z"/>
+    </svg>
+</a>
+
+    <header class="w-full py-6 px-8 flex justify-between items-center border-b border-white/5 bg-slate-950/50 backdrop-blur-md sticky top-0 z-50">
+        <div class="flex items-center gap-4">
+            <div class="flex flex-col">
+                <span class="font-black text-white uppercase tracking-tighter text-xl leading-none">Udbhav Solar</span>
+                <span class="text-[10px] font-bold text-orange-500 tracking-[0.3em] uppercase">AI Scanner</span>
+            </div>
+        </div>
+        <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ajmer, Rajasthan</div>
+    </header>
+
+    <main class="max-w-2xl w-full px-6 py-12">
+        <div class="form-glass p-8 md:p-10 rounded-[2.5rem] shadow-2xl">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 text-orange-500 text-[10px] font-black uppercase tracking-widest mb-4">
+                    <span class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span> Intelligent Extraction
+                </div>
+                <h2 class="text-3xl font-black text-white uppercase tracking-tighter">Scan Your <span class="text-orange-500">Bill.</span></h2>
+                <p class="text-slate-400 text-sm mt-2">Bring your electricity bill to zero with AI analysis.</p>
+            </div>
+
+            <div class="space-y-6">
+                <div class="space-y-3">
+                    <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Select Billing Cycle</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button id="cycle-30" onclick="setCycle(30)" class="cycle-btn py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest active">30 Days</button>
+                        <button id="cycle-60" onclick="setCycle(60)" class="cycle-btn py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest">60 Days</button>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Upload Bill Photo</label>
+                    <div class="border-2 border-dashed border-white/10 rounded-2xl p-10 text-center hover:border-orange-500 transition-all cursor-pointer bg-white/5 group" onclick="document.getElementById('billInput').click()">
+                        <input type="file" id="billInput" class="hidden" accept="image/*">
+                        <div class="flex flex-col items-center gap-3">
+                            <i data-lucide="camera" id="upload-icon" class="w-10 h-10 text-orange-500 group-hover:scale-110 transition-transform"></i>
+                            <p id="status-text" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Click to Take Photo or Upload</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="scanBtn" class="w-full bg-orange-600 hover:bg-orange-500 text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-3">
+                    Start AI Analysis <i data-lucide="zap" class="w-5 h-5"></i>
+                </button>
+
+                <div id="loader" class="hidden text-center py-4">
+                    <p class="text-orange-500 text-xs font-black uppercase tracking-widest loading-pulse">AI is reading bill details...</p>
+                </div>
+                 <div id="captcha-box" class="hidden mt-6 p-6 rounded-3xl bg-white/5 border border-white/10 space-y-4">
+    <div class="flex justify-between items-center">
+        <h3 class="text-[10px] font-black text-orange-500 uppercase tracking-widest">Security Verification</h3>
+        <span id="captcha-display" class="bg-orange-500/20 text-orange-500 px-4 py-1 rounded-lg font-black tracking-[0.3em] select-none">XXXXXX</span>
+    </div>
+    <input type="text" id="captcha-input" placeholder="Type the code above" class="w-full bg-slate-900 border border-white/10 rounded-xl py-3 px-4 text-white text-center font-bold tracking-widest focus:border-orange-500 outline-none transition-all">
+    <button id="verify-scan-btn" class="w-full bg-white text-black py-3 rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-orange-500 hover:text-white transition-all">
+        Confirm & Analyze
+    </button>
+</div>
+
+                <div id="result" class="hidden mt-8 p-6 rounded-3xl bg-white/5 border border-orange-500/30 space-y-4">
+                    <div class="flex justify-between items-center border-b border-white/10 pb-4">
+                        <h3 class="text-[10px] font-black text-orange-500 uppercase tracking-widest">Extracted Data</h3>
+                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500"></i>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 gap-4">
+                        <div id="output" class="text-white text-sm leading-relaxed whitespace-pre-line font-medium"></div>
+                    </div>
+
+                    <div id="calc-result" class="mt-4 p-4 bg-orange-500 rounded-2xl text-center">
+                        <p class="text-[9px] font-black text-white/80 uppercase tracking-widest">Recommended Solar Plant</p>
+                        <p id="plant-size" class="text-3xl font-black text-white italic">-- kW</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-12 text-center">
+            <p class="text-[9px] text-slate-600 font-black uppercase tracking-[0.3em]">© 2026 Udbhav Solar Solutions Ajmer</p>
+        </footer>
+    </main>
+
+   <script>
+
+      
+    // --- 15-MINUTE SECURITY GATEKEEPER ---
+    (function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const creationTime = urlParams.get('t'); // Get timestamp from URL
+        const MAX_AGE = 15 * 60 * 1000; // 15 Minutes in Milliseconds
+
+        if (!creationTime) {
+            document.documentElement.innerHTML = "<body style='background:#0f172a; color:white; display:flex; align-items:center; justify-content:center; height:100vh; font-family:sans-serif;'><h1>❌ Invalid Access. Contact Operator.</h1></body>";
+            return;
+        }
+
+        const timeElapsed = Date.now() - (parseInt(creationTime) * 1000);
+
+        if (timeElapsed > MAX_AGE || timeElapsed < 0) {
+            document.documentElement.innerHTML = "<body style='background:#0f172a; color:white; display:flex; align-items:center; justify-content:center; height:100vh; font-family:sans-serif; text-align:center;'><div><h1 style='color:#f97316;'>🔒 Link Expired</h1><p>This session has timed out for security reasons.</p></div></body>";
+            return;
+        }
+
+        // AUTO-EXPIRE SESSION: If they are on the page when the 15 mins hit
+        const remainingTime = MAX_AGE - timeElapsed;
+        setTimeout(() => {
+            alert("Your 15-minute session has expired.");
+            location.reload(); // This will trigger the "Link Expired" screen above
+        }, remainingTime);
+    })();
+
+    // 1. Random Alphanumeric Generator (Numbers + Letters)
+    function generateCaptcha() {
+        const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        let result = "";
+        for (let i = 0; i < 6; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+    }
+
+    lucide.createIcons();
+    
+    // Your OpenRouter Configuration
+    const API_KEY = "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"; 
+    const MODEL = "google/gemini-2.0-flash-001";
+    // Replace the URL below with your actual Google Apps Script Web App URL
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbya1lPlWV8-Nz1owPFCPgWCzDcEjhnBVtPnewYddR5UK2hfnE4T1neryCovnJqOLbY4kQ/exec"; 
+    let currentCycle = 30;
+
+    function setCycle(days) {
+        currentCycle = days;
+        document.querySelectorAll('.cycle-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`cycle-${days}`).classList.add('active');
+    }
+
+    // 2. Updated Scan Button Trigger (Triggers CAPTCHA first)
+    document.getElementById('scanBtn').addEventListener('click', () => {
+        const fileInput = document.getElementById('billInput');
+        if (fileInput.files.length === 0) return alert("Please select a bill image first!");
+
+        const captchaBox = document.getElementById('captcha-box');
+        const captchaDisplay = document.getElementById('captcha-display');
+        const captchaInput = document.getElementById('captcha-input');
+        
+        // Reset and generate new code every time
+        captchaInput.value = ""; 
+        const newCode = generateCaptcha();
+        captchaDisplay.innerText = newCode;
+        
+        // Show Verification UI
+        captchaBox.classList.remove('hidden');
+        document.getElementById('result').classList.add('hidden');
+        captchaBox.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // 3. New Verification Button Logic (Contains your original working AI code + Sheet Sync)
+    document.getElementById('verify-scan-btn').addEventListener('click', async () => {
+        const userInput = document.getElementById('captcha-input').value.toUpperCase();
+        const actualCode = document.getElementById('captcha-display').innerText;
+
+        if (userInput !== actualCode) {
+            alert("Security code incorrect. Please try again.");
+            return;
+        }
+
+        // Hide captcha box and proceed to analysis
+        document.getElementById('captcha-box').classList.add('hidden');
+
+        const fileInput = document.getElementById('billInput');
+        const btn = document.getElementById('scanBtn');
+        const loader = document.getElementById('loader');
+        const resultDiv = document.getElementById('result');
+        const output = document.getElementById('output');
+        const statusText = document.getElementById('status-text');
+
+        btn.disabled = true;
+        loader.classList.remove('hidden');
+        resultDiv.classList.add('hidden');
+        statusText.innerText = "Processing...";
+
+        try {
+            const file = fileInput.files[0];
+            const base64 = await toBase64(file);
+
+            // Your original working Fetch logic
+            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${API_KEY}`,
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": window.location.href,
+                    "X-Title": "Udbhav Solar AI"
+                },
+                body: JSON.stringify({
+                    "model": MODEL,
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": [
+                                { 
+                                    "type": "text", 
+                                    "text": "Extract from this TPADL Ajmer Bill: 1. Consumer Name 2. Mobile 3. Total Current Units 4. Service Address (Premise Address) 5. Average Monthly Consumption (Ausat Masik Upbhok). Important: Ignore Office address. Translate Hindi to English. Format exactly as:\nName: [value]\nMobile: [value]\nUnits: [number]\nAddress: [value]\nAvg Consumption: [number]" 
+                                },
+                                { "type": "image_url", "image_url": { "url": base64 } }
+                            ]
+                        }
+                    ]
+                })
+            });
+
+            const data = await response.json();
+            if (data.error) throw new Error(data.error.message);
+
+            const content = data.choices[0].message.content;
+            
+            output.innerHTML = content.replace(/\n/g, '<br>');
+            
+            // Your original calculation logic
+            const avgMatch = content.match(/Avg Consumption:\s*(\d+)/i);
+            const currentUnitMatch = content.match(/Units:\s*(\d+)/i);
+            
+            let unitsForCalc = 0;
+            let cycleForCalc = 30; 
+
+            if (avgMatch && parseInt(avgMatch[1]) > 0) {
+                unitsForCalc = parseInt(avgMatch[1]);
+                cycleForCalc = 30; 
+                console.log("Using Average Consumption for calculation.");
+            } else if (currentUnitMatch) {
+                unitsForCalc = parseInt(currentUnitMatch[1]);
+                cycleForCalc = currentCycle; 
+                console.log("Using Current Bill Units for calculation.");
+            }
+
+            let finalKw = "Check Bill";
+            if (unitsForCalc > 0) {
+                const dailyUsage = unitsForCalc / cycleForCalc;
+                const kwNeeded = (dailyUsage / 4).toFixed(1); 
+                finalKw = kwNeeded + " kW";
+                document.getElementById('plant-size').innerText = finalKw;
+            } else {
+                document.getElementById('plant-size').innerText = "Check Bill";
+            }
+
+            // --- DATA SYNC TO GOOGLE SHEET ---
+            statusText.innerText = "Saving to Database...";
+            
+            const nameMatch = content.match(/Name:\s*(.*)/i);
+            const phoneMatch = content.match(/Mobile:\s*(.*)/i);
+            const addressMatch = content.match(/Address:\s*(.*)/i);
+
+            const sheetData = {
+                name: nameMatch ? nameMatch[1].trim() : "Unknown",
+                phone: phoneMatch ? phoneMatch[1].trim() : "9660711101",
+                address: addressMatch ? addressMatch[1].trim() : "Not Provided",
+                requirement: `AI GENERATED: ${finalKw} (Based on ${unitsForCalc} units)`
+            };
+
+            await fetch(GOOGLE_SHEET_URL, {
+                method: "POST",
+                mode: "no-cors", 
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(sheetData)
+            });
+
+            resultDiv.classList.remove('hidden');
+            statusText.innerText = "Scan Successful & Logged!";
+            
+            // Critical: Reset file input so user can scan again
+            fileInput.value = "";
+
+        } catch (error) {
+            console.error(error);
+            alert("Scan Error: " + error.message);
+            statusText.innerText = "Error Scanning Bill";
+        } finally {
+            btn.disabled = false;
+            loader.classList.add('hidden');
+        }
+    });
+
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+
+    // Security Dialog Logic (Initial Entry)
+    const captchaCheck = document.getElementById('captcha-check');
+    const accessBtn = document.getElementById('access-btn');
+    const securityDialog = document.getElementById('security-dialog');
+
+    captchaCheck.addEventListener('change', function() {
+        if(this.checked) {
+            accessBtn.disabled = false;
+            accessBtn.classList.remove('bg-slate-800', 'text-slate-500', 'cursor-not-allowed');
+            accessBtn.classList.add('bg-orange-600', 'text-white', 'hover:bg-orange-500', 'shadow-orange-500/20');
+        } else {
+            accessBtn.disabled = true;
+            accessBtn.classList.add('bg-slate-800', 'text-slate-500', 'cursor-not-allowed');
+            accessBtn.classList.remove('bg-orange-600', 'text-white', 'hover:bg-orange-500');
+        }
+    });
+
+    accessBtn.addEventListener('click', () => {
+        securityDialog.style.opacity = '0';
+        setTimeout(() => {
+            securityDialog.style.display = 'none';
+            lucide.createIcons();
+        }, 300);
+    });
+</script>
+</body>
+</html>
