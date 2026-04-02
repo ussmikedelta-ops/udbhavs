@@ -129,41 +129,53 @@
 </div>
 
 <script>
-    // --- 15-MINUTE SECURITY EXPIRY LOGIC ---
+    // --- 1- STAGE: 15-MINUTE URL EXPIRY CHECK ---
+    // This runs immediately before anything else to block unauthorized access.
     (function() {
         const urlParams = new URLSearchParams(window.location.search);
-        const timestamp = urlParams.get('t'); // Get the 't' from the URL
+        const timestamp = urlParams.get('t'); 
         
         if (!timestamp) {
-            // No timestamp? Block access immediately.
-            document.body.innerHTML = `<div style="background:#020617; color:white; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:sans-serif; text-align:center; padding:20px;">
-                <h1 style="color:#f97316; font-size:32px; font-weight:900; text-transform:uppercase;">Access Denied</h1>
-                <p style="color:#94a3b8; max-width:400px; margin-top:10px;">A valid security token is required to use the Udbhav Solar AI Scanner.</p>
-            </div>`;
-            return;
+            document.body.innerHTML = `
+                <div style="background:#020617; color:white; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:sans-serif; text-align:center; padding:20px;">
+                    <h1 style="color:#f97316; font-size:32px; font-weight:900; text-transform:uppercase;">Access Denied</h1>
+                    <p style="color:#94a3b8; max-width:400px; margin-top:10px;">A valid security token is required to use the Udbhav Solar AI Scanner.</p>
+                </div>`;
+            throw new Error("No timestamp provided"); 
         }
 
         const currentTime = Math.floor(Date.now() / 1000);
         const linkTime = parseInt(timestamp);
-        const expiryTime = 15 * 60; // 15 minutes in seconds (900 seconds)
+        const expirySeconds = 15 * 60; // 900 seconds
 
-        if (currentTime - linkTime > expiryTime) {
-            // Link is older than 15 minutes? Block access.
-            document.body.innerHTML = `<div style="background:#020617; color:white; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:sans-serif; text-align:center; padding:20px;">
-                <h1 style="color:#f97316; font-size:32px; font-weight:900; text-transform:uppercase;">Link Expired</h1>
-                <p style="color:#94a3b8; max-width:400px; margin-top:10px;">For security, these links expire after 15 minutes. Please contact Udbhav Solar for a new access link.</p>
-                <a href="https://wa.me/919660711101" style="margin-top:20px; color:#25d366; font-weight:800; text-decoration:none;">GET NEW LINK VIA WHATSAPP</a>
-            </div>`;
-            window.stop(); // Stop loading the rest of the scripts
+        if (currentTime - linkTime > expirySeconds) {
+            document.body.innerHTML = `
+                <div style="background:#020617; color:white; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:sans-serif; text-align:center; padding:20px;">
+                    <h1 style="color:#f97316; font-size:32px; font-weight:900; text-transform:uppercase;">Link Expired</h1>
+                    <p style="color:#94a3b8; max-width:400px; margin-top:10px;">For security, these links expire after 15 minutes. Please contact Udbhav Solar for a new access link.</p>
+                    <a href="https://wa.me/919660711101" style="margin-top:20px; color:#25d366; font-weight:800; text-decoration:none; border:2px solid #25d366; padding:12px 24px; rounded:12px;">GET NEW LINK</a>
+                </div>`;
+            window.stop();
         }
     })();
+
     lucide.createIcons();
     
-    // --- CONFIGURATION ---
+    // --- 2. CONFIGURATION ---
     const HF_API_URL = "https://udbhav121-bill.hf.space/analyze"; 
     let currentCycle = 30;
 
-    // Security Gate logic
+    // --- 3. SESSION TIMEOUT (Auto-Lock while page is open) ---
+    // Even if they are on the page, the screen will lock after 15 minutes of being open
+    setInterval(() => {
+        document.getElementById('security-dialog').style.display = 'flex';
+        document.getElementById('captcha-check').checked = false;
+        document.getElementById('access-btn').disabled = true;
+        document.getElementById('result').classList.add('hidden');
+        alert("Session Expired. Please re-verify.");
+    }, 900000); 
+
+    // --- 4. UI FUNCTIONS ---
     const captchaCheck = document.getElementById('captcha-check');
     const accessBtn = document.getElementById('access-btn');
     
@@ -186,6 +198,7 @@
         return Math.random().toString(36).substring(2, 8).toUpperCase();
     }
 
+    // Trigger Captcha Box
     document.getElementById('scanBtn').onclick = () => {
         if (!document.getElementById('billInput').files[0]) return alert("Please upload a bill image first!");
         document.getElementById('captcha-box').classList.remove('hidden');
@@ -193,11 +206,15 @@
         document.getElementById('captcha-box').scrollIntoView({ behavior: 'smooth' });
     };
 
+    // --- 5. CORE ANALYSIS LOGIC ---
     document.getElementById('verify-scan-btn').onclick = async () => {
         const userInput = document.getElementById('captcha-input').value.toUpperCase();
         const actualCode = document.getElementById('captcha-display').innerText;
         
         if (userInput !== actualCode) return alert("Security code incorrect!");
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const timestampToken = urlParams.get('t') || "";
 
         document.getElementById('captcha-box').classList.add('hidden');
         const loader = document.getElementById('loader');
@@ -214,52 +231,38 @@
             const file = document.getElementById('billInput').files[0];
             const base64Data = await toBase64(file);
 
+            // Send to Python Backend
             const response = await fetch(HF_API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     base64_image: base64Data,
-                    cycle: currentCycle 
+                    cycle: currentCycle,
+                    t: timestampToken // VERIFICATION: Sends the timestamp to Python
                 })
             });
 
-            if (!response.ok) {
-                throw new Error("Server communication failed. Check if Space is Running.");
-            }
+            if (!response.ok) throw new Error("Server Error. Please try again.");
 
             const data = await response.json();
             
-            // 1. Clean the Text Analysis (Removes AI formatting stars for better UI)
+            // Handle Expired response from Python
+            if (data.plant_capacity === "LOCKED") {
+                alert("Security timeout. Refreshing page.");
+                window.location.reload();
+                return;
+            }
+
+            // 1. Clean and Display Analysis Text
             const rawContent = data.analysis || "No analysis found.";
             const cleanContent = rawContent.replace(/\*\*/g, "").replace(/\*/g, "");
             output.innerHTML = cleanContent.replace(/\n/g, '<br>');
 
-            // 2. Display the Plant Capacity from Python
+            // 2. Display Plant Capacity
             if (data.plant_capacity && data.plant_capacity !== "Error") {
                 plantDisplay.innerText = data.plant_capacity;
             } else {
-                // Fallback: Internal calculation if Python didn't return one
-                // Looks for numbers in the cleaned text
-                const avgMatch = cleanContent.match(/Monthly Average[:\s]*([\d.]+)/i);
-                const unitMatch = cleanContent.match(/Units Consumed[:\s]*([\d.]+)/i);
-                
-                let val = 0;
-                let usedCycle = currentCycle;
-
-                if (avgMatch) {
-                    val = parseFloat(avgMatch[1]);
-                    usedCycle = 30;
-                } else if (unitMatch) {
-                    val = parseFloat(unitMatch[1]);
-                    usedCycle = currentCycle;
-                }
-
-                if (val > 0) {
-                    const kw = ((val / usedCycle) / 4).toFixed(1);
-                    plantDisplay.innerText = kw + " kW";
-                } else {
-                    plantDisplay.innerText = "Check Bill";
-                }
+                plantDisplay.innerText = "Check Bill";
             }
 
             resDiv.classList.remove('hidden');
@@ -267,7 +270,7 @@
 
         } catch (err) {
             console.error("Fetch Error:", err);
-            alert("Error: " + err.message);
+            alert("Connection error. Ensure the AI engine is online.");
         } finally {
             loader.classList.add('hidden');
             btn.disabled = false;
