@@ -131,19 +131,21 @@
 <script>
     lucide.createIcons();
     
-    // --- UPDATED URL CONFIGURATION ---
+    // --- CONFIGURATION ---
     const HF_API_URL = "https://udbhav121-bill.hf.space/analyze"; 
     let currentCycle = 30;
 
     // Security Gate logic
     const captchaCheck = document.getElementById('captcha-check');
     const accessBtn = document.getElementById('access-btn');
+    
     captchaCheck.onchange = () => {
         accessBtn.disabled = !captchaCheck.checked;
         accessBtn.className = captchaCheck.checked 
             ? "w-full bg-orange-600 text-white py-4 rounded-2xl font-black uppercase tracking-widest text-[10px]" 
             : "w-full bg-slate-800 text-slate-500 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px]";
     };
+    
     accessBtn.onclick = () => document.getElementById('security-dialog').style.display = 'none';
 
     function setCycle(days) {
@@ -173,6 +175,7 @@
         const loader = document.getElementById('loader');
         const resDiv = document.getElementById('result');
         const output = document.getElementById('output');
+        const plantDisplay = document.getElementById('plant-size');
         const btn = document.getElementById('scanBtn');
 
         loader.classList.remove('hidden');
@@ -192,37 +195,28 @@
                 })
             });
 
-            // ERROR HANDLING: Check if response is actually JSON
-            const contentType = response.headers.get("content-type");
-            if (!response.ok || !contentType || !contentType.includes("application/json")) {
-                const errorText = await response.text();
-                console.error("Server Error Response:", errorText);
-                throw new Error("Server did not return valid JSON. Check if your Hugging Face Space is 'Running'.");
+            if (!response.ok) {
+                throw new Error("Server communication failed. Check if Space is Running.");
             }
 
             const data = await response.json();
-            const content = data.analysis || data.result || "No analysis found.";
-
+            
+            // 1. Display the Text Analysis
+            const content = data.analysis || "No analysis found.";
             output.innerHTML = content.replace(/\n/g, '<br>');
 
-            // CALCULATION LOGIC
-            const avgMatch = content.match(/Avg Consumption:\s*(\d+)/i);
-            const unitMatch = content.match(/Units:\s*(\d+)/i);
-            
-            let val = 0;
-            let cycle = currentCycle;
-
-            if (avgMatch && parseInt(avgMatch[1]) > 0) {
-                val = parseInt(avgMatch[1]);
-                cycle = 30; 
-            } else if (unitMatch) {
-                val = parseInt(unitMatch[1]);
-                cycle = currentCycle; 
-            }
-
-            if (val > 0) {
-                const kw = ((val / cycle) / 4).toFixed(1);
-                document.getElementById('plant-size').innerText = kw + " kW";
+            // 2. Display the Plant Capacity from Python
+            if (data.plant_capacity && data.plant_capacity !== "Error") {
+                plantDisplay.innerText = data.plant_capacity;
+            } else {
+                // Fallback: Internal calculation if Python didn't return one
+                const unitMatch = content.match(/Units:\s*(\d+)/i);
+                if (unitMatch) {
+                    const kw = ((parseInt(unitMatch[1]) / currentCycle) / 4).toFixed(1);
+                    plantDisplay.innerText = kw + " kW";
+                } else {
+                    plantDisplay.innerText = "Check Bill";
+                }
             }
 
             resDiv.classList.remove('hidden');
@@ -230,7 +224,7 @@
 
         } catch (err) {
             console.error("Fetch Error:", err);
-            alert("Error connecting to AI: " + err.message);
+            alert("Error: " + err.message);
         } finally {
             loader.classList.add('hidden');
             btn.disabled = false;
