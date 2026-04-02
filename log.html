@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Access | Udbhav Solar</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; }
+        .bg-mesh {
+            background-color: #020617;
+            background-image:
+                radial-gradient(at 0% 0%, hsla(222,47%,11%,1) 0, transparent 50%),
+                radial-gradient(at 50% 0%, hsla(217,91%,60%,0.15) 0, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(25,95%,53%,0.1) 0, transparent 50%);
+        }
+        .form-glass { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(40px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+        }
+    </style>
+</head>
+
+<body class="bg-mesh min-h-screen flex items-center justify-center p-6">
+
+    <div class="form-glass p-10 rounded-[2.5rem] max-w-md w-full shadow-2xl border border-orange-500/20 text-center">
+        <div class="mb-8">
+            <div class="w-16 h-16 bg-orange-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="key-round" class="text-orange-500 w-8 h-8"></i>
+            </div>
+            <h1 class="text-2xl font-black text-white uppercase tracking-tighter">Admin <span class="text-orange-500">Gateway</span></h1>
+            <p class="text-slate-400 text-[10px] mt-2 font-bold uppercase tracking-widest">Udbhav Solar Solutions</p>
+        </div>
+
+        <div class="space-y-6">
+            <p class="text-xs text-slate-300 leading-relaxed uppercase tracking-wider font-bold">
+                Generate Secure Link for: <br>
+                <span class="text-orange-500">aitest.html</span>
+            </p>
+
+            <button onclick="generateLink()" class="w-full bg-orange-600 hover:bg-orange-500 text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl transition-all active:scale-[0.98] flex items-center justify-center gap-3">
+                Generate Link <i data-lucide="external-link" class="w-5 h-5"></i>
+            </button>
+
+            <div id="result-container" class="hidden space-y-4">
+                <div class="bg-black/40 p-4 rounded-2xl text-left border border-white/5">
+                    <p class="text-[9px] font-black text-orange-500 uppercase tracking-widest mb-2">Timed Access Link:</p>
+                    <div id="linkArea" class="text-[10px] text-slate-300 break-all font-mono leading-relaxed">
+                        </div>
+                </div>
+                
+                <button onclick="copyLink()" class="text-[10px] font-black text-white uppercase tracking-widest flex items-center justify-center gap-2 mx-auto hover:text-orange-500 transition-colors">
+                    <i data-lucide="copy" class="w-3 h-3"></i> Copy to Clipboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        function generateLink() {
+            // Get current Unix timestamp (seconds)
+            const ts = Math.floor(Date.now() / 1000);
+            
+            // Get the current URL and strip any existing parameters
+            let currentUrl = window.location.href;
+            let baseUrl = currentUrl.split('?')[0]; 
+            
+            let finalLink;
+            
+            // Logic to replace login.html with aitest.html or append it
+            if (baseUrl.includes('login.html')) {
+                finalLink = baseUrl.replace('login.html', 'aitest.html') + '?t=' + ts;
+            } else {
+                // Remove trailing slash if it exists and add aitest.html
+                const cleanBase = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+                // If it's a directory (no .html extension), append it
+                if (!cleanBase.includes('.html')) {
+                    finalLink = cleanBase + '/aitest.html?t=' + ts;
+                } else {
+                    // Fallback for other file names
+                    const lastSlash = cleanBase.lastIndexOf('/');
+                    finalLink = cleanBase.substring(0, lastSlash + 1) + 'aitest.html?t=' + ts;
+                }
+            }
+
+            // Update UI
+            document.getElementById('result-container').classList.remove('hidden');
+            const linkArea = document.getElementById('linkArea');
+            linkArea.innerText = finalLink; // Use innerText for easier copying
+            
+            // Create a clickable preview
+            linkArea.style.cursor = "pointer";
+            linkArea.onclick = () => window.open(finalLink, '_blank');
+        }
+
+        function copyLink() {
+            const linkText = document.getElementById('linkArea').innerText;
+            if (!linkText) return;
+
+            navigator.clipboard.writeText(linkText).then(() => {
+                // Provide visual feedback
+                const btn = event.currentTarget;
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i data-lucide="check" class="w-3 h-3"></i> Copied!';
+                btn.classList.add('text-green-500');
+                lucide.createIcons();
+
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.classList.remove('text-green-500');
+                    lucide.createIcons();
+                }, 2000);
+            }).catch(err => {
+                alert("Failed to copy link. Please select and copy manually.");
+            });
+        }
+    </script>
+</body>
+</html>
