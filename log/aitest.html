@@ -129,6 +129,34 @@
 </div>
 
 <script>
+    // --- 15-MINUTE SECURITY EXPIRY LOGIC ---
+    (function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const timestamp = urlParams.get('t'); // Get the 't' from the URL
+        
+        if (!timestamp) {
+            // No timestamp? Block access immediately.
+            document.body.innerHTML = `<div style="background:#020617; color:white; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:sans-serif; text-align:center; padding:20px;">
+                <h1 style="color:#f97316; font-size:32px; font-weight:900; text-transform:uppercase;">Access Denied</h1>
+                <p style="color:#94a3b8; max-width:400px; margin-top:10px;">A valid security token is required to use the Udbhav Solar AI Scanner.</p>
+            </div>`;
+            return;
+        }
+
+        const currentTime = Math.floor(Date.now() / 1000);
+        const linkTime = parseInt(timestamp);
+        const expiryTime = 15 * 60; // 15 minutes in seconds (900 seconds)
+
+        if (currentTime - linkTime > expiryTime) {
+            // Link is older than 15 minutes? Block access.
+            document.body.innerHTML = `<div style="background:#020617; color:white; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:sans-serif; text-align:center; padding:20px;">
+                <h1 style="color:#f97316; font-size:32px; font-weight:900; text-transform:uppercase;">Link Expired</h1>
+                <p style="color:#94a3b8; max-width:400px; margin-top:10px;">For security, these links expire after 15 minutes. Please contact Udbhav Solar for a new access link.</p>
+                <a href="https://wa.me/919660711101" style="margin-top:20px; color:#25d366; font-weight:800; text-decoration:none;">GET NEW LINK VIA WHATSAPP</a>
+            </div>`;
+            window.stop(); // Stop loading the rest of the scripts
+        }
+    })();
     lucide.createIcons();
     
     // --- CONFIGURATION ---
