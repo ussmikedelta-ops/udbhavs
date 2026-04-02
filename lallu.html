@@ -73,23 +73,69 @@
     </div>
 
 <script>
-    const params = new URLSearchParams(window.location.search);
-    const authToken = params.get('auth');
-    const nameParam = params.get('name');
+    // 1. Initialize icons safely
+    try {
+        lucide.createIcons();
+    } catch (e) {
+        console.error("Lucide icons failed to load:", e);
+    }
 
-    // If we have the token, set the session IMMEDIATELY
-    if (authToken === "secure_solar_access") {
-        sessionStorage.setItem("isSolarAdmin", "true");
-        if (nameParam) sessionStorage.setItem("adminName", nameParam);
+    // 2. Global state
+    let currentUser = { name: "", authenticated: false };
+
+    // 3. Navigation - Redirecting to ussgreen.in.net with the Auth Key
+    window.goToVlogAdmin = function() {
+        const name = document.getElementById('display-name').innerText;
+        const targetUrl = "https://ussgreen.in.net/vlog-admin.html";
+        // This 'auth' key is what stops the loop on the admin page
+        window.location.href = `${targetUrl}?auth=secure_solar_access&name=${encodeURIComponent(name)}`;
+    };
+
+    window.goToVlogs = function() {
+        window.location.href = "https://ussgreen.in.net/vlogs.html";
+    };
+
+    // 4. Login Logic
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('empId').value;
+        const pass = document.getElementById('password').value;
+        const submitBtn = e.target.querySelector('button[type="submit"]');
         
-        // Clean the URL so the loop doesn't restart on refresh
-        window.history.replaceState({}, document.title, window.location.pathname);
-    }
+        // Prevent double-clicking
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Verifying...";
 
-    // Now check if the session exists. If NOT, redirect.
-    if (sessionStorage.getItem("isSolarAdmin") !== "true") {
-        window.location.href = "lallu.html";
-    }
+        try {
+            const HF_SPACE_URL = "https://udbhav121-lallu.hf.space"; 
+            const response = await fetch(`${HF_SPACE_URL}/verify-login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: id, password: pass })
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                currentUser.name = result.name;
+                currentUser.authenticated = true;
+
+                // Show the Selection Dialogue
+                document.getElementById('login-container').classList.add('hidden');
+                document.getElementById('selection-dialogue').classList.remove('hidden');
+                document.getElementById('display-name').innerText = result.name;
+            } else {
+                alert("Invalid Credentials.");
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Login to Portal";
+            }
+        } catch (error) {
+            console.error("Login Error:", error);
+            alert("Connection Error. Check if Hugging Face Space is 'Running'.");
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Login to Portal";
+        }
+    });
 </script>
 </body>
 </html>
