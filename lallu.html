@@ -44,11 +44,14 @@
             <h2 class="text-2xl font-black text-blue-900 dark:text-white mb-2 italic">ACCESS GRANTED</h2>
             <p id="display-name" class="text-orange-500 font-bold tracking-widest uppercase mb-8 underline decoration-2 underline-offset-4">USER</p>
             <div class="space-y-4">
-                <button onclick="goToSecurePage('admin-vlogs.html')" class="w-full py-4 bg-white dark:bg-slate-800 text-blue-900 dark:text-white font-black uppercase rounded-2xl btn-glow transition-all flex items-center justify-center gap-3">
+                <button onclick="window.location.href='admin-vlogs.html'" class="w-full py-4 bg-white dark:bg-slate-800 text-blue-900 dark:text-white font-black uppercase rounded-2xl btn-glow transition-all flex items-center justify-center gap-3">
                     <i data-lucide="video" class="w-5 h-5"></i> Vlog Admin
                 </button>
-                <button onclick="goToSecurePage('aitest.html')" class="w-full py-4 bg-white dark:bg-slate-800 text-blue-900 dark:text-white font-black uppercase rounded-2xl btn-glow transition-all flex items-center justify-center gap-3">
+                <button onclick="window.location.href='aitest.html'" class="w-full py-4 bg-white dark:bg-slate-800 text-blue-900 dark:text-white font-black uppercase rounded-2xl btn-glow transition-all flex items-center justify-center gap-3">
                     <i data-lucide="cpu" class="w-5 h-5"></i> AI Test Lab
+                </button>
+                <button onclick="window.location.href='log.html'" class="w-full py-4 bg-white dark:bg-slate-800 text-blue-900 dark:text-white font-black uppercase rounded-2xl btn-glow transition-all flex items-center justify-center gap-3">
+                    <i data-lucide="file-text" class="w-5 h-5"></i> Bill Admin
                 </button>
             </div>
         </div>
@@ -56,13 +59,6 @@
 
 <script>
     lucide.createIcons();
-
-    // The Secret Handshake Function - Adds a security key to the URL
-    window.goToSecurePage = function(page) {
-        const token = "USS_OFFICIAL_AUTH_2026"; 
-        const name = document.getElementById('display-name').innerText;
-        window.location.href = `https://ussgreen.in.net/${page}?auth=${token}&user=${encodeURIComponent(name)}`;
-    };
 
     function toggleTheme() {
         document.documentElement.classList.toggle('dark');
