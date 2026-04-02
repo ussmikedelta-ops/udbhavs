@@ -23,27 +23,28 @@
         .cycle-btn.active { background: #f97316; color: white; border-color: #f97316; box-shadow: 0 0 20px rgba(249, 115, 22, 0.3); }
         .loading-pulse { animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        
         .whatsapp-float { position: fixed; bottom: 24px; right: 24px; z-index: 2001; width: 60px; height: 60px; background-color: #25d366; border-radius: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4); }
     </style>
 </head>
 
 <body class="bg-mesh min-h-screen flex flex-col items-center">
 
-<div id="security-dialog" class="fixed inset-0 z-[3000] flex items-center justify-center bg-slate-950/95 backdrop-blur-xl">
+<div id="security-dialog" class="fixed inset-0 z-[3000] flex items-center justify-center bg-slate-950/90 backdrop-blur-xl">
     <div class="form-glass p-10 rounded-[2.5rem] max-w-sm w-full mx-6 border border-orange-500/30 text-center shadow-2xl">
         <div class="mb-6">
             <div class="w-16 h-16 bg-orange-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <i data-lucide="shield-check" class="text-orange-500 w-8 h-8"></i>
             </div>
-            <h3 class="text-xl font-black text-white uppercase tracking-tight">Security Access</h3>
-            <p class="text-slate-400 text-xs mt-2 font-medium tracking-wide">Udbhav Solar Solutions AI</p>
+            <h3 class="text-xl font-black text-white uppercase tracking-tight">Access Secure</h3>
+            <p class="text-slate-400 text-xs mt-2 font-medium">Verify identity for Udbhav Solar AI.</p>
         </div>
         <div class="space-y-4">
-            <div class="bg-white/5 border border-white/10 p-4 rounded-2xl flex items-center justify-center gap-3">
+            <div class="bg-white/5 border border-white/10 p-4 rounded-2xl text-center">
                 <input type="checkbox" id="captcha-check" class="w-5 h-5 accent-orange-500 cursor-pointer">
-                <label for="captcha-check" class="text-sm font-bold text-white cursor-pointer italic">Verify Human</label>
+                <label for="captcha-check" class="text-sm font-bold text-white ml-2 cursor-pointer">I am not a bot</label>
             </div>
-            <button id="access-btn" disabled class="w-full bg-slate-800 text-slate-500 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">
+            <button id="access-btn" disabled class="w-full bg-slate-800 text-slate-500 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all cursor-not-allowed">
                 Enter Scanner
             </button>
         </div>
@@ -62,24 +63,24 @@
     <div class="form-glass p-8 md:p-10 rounded-[2.5rem] shadow-2xl">
         <div class="text-center mb-8">
             <h2 class="text-3xl font-black text-white uppercase tracking-tighter">Scan Your <span class="text-orange-500">Bill.</span></h2>
-            <p class="text-slate-400 text-sm mt-2">Bring your electricity bill to zero with AI.</p>
+            <p class="text-slate-400 text-sm mt-2">Get your recommended plant size in seconds.</p>
         </div>
 
         <div class="space-y-6">
             <div class="space-y-3">
-                <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Billing Cycle</label>
+                <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Select Billing Cycle</label>
                 <div class="grid grid-cols-2 gap-4">
                     <button id="cycle-30" onclick="setCycle(30)" class="cycle-btn py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest active">30 Days</button>
                     <button id="cycle-60" onclick="setCycle(60)" class="cycle-btn py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest">60 Days</button>
                 </div>
             </div>
 
-            <div class="space-y-3" onclick="document.getElementById('billInput').click()">
+            <div class="space-y-3">
                 <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Upload Bill Photo</label>
-                <div class="border-2 border-dashed border-white/10 rounded-2xl p-10 text-center hover:border-orange-500 transition-all bg-white/5 group cursor-pointer">
+                <div class="border-2 border-dashed border-white/10 rounded-2xl p-10 text-center hover:border-orange-500 cursor-pointer bg-white/5" onclick="document.getElementById('billInput').click()">
                     <input type="file" id="billInput" class="hidden" accept="image/*">
                     <i data-lucide="camera" class="w-10 h-10 text-orange-500 mx-auto mb-2"></i>
-                    <p id="status-text" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tap to Take Photo</p>
+                    <p id="status-text" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tap to Upload</p>
                 </div>
             </div>
 
@@ -88,28 +89,15 @@
             </button>
 
             <div id="loader" class="hidden text-center py-4">
-                <p class="text-orange-500 text-[10px] font-black uppercase tracking-widest loading-pulse italic">AI is reading the bill...</p>
-            </div>
-
-            <div id="captcha-box" class="hidden mt-6 p-6 rounded-3xl bg-white/5 border border-white/10 space-y-4">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-[10px] font-black text-orange-500 uppercase tracking-widest">Security Code</h3>
-                    <span id="captcha-display" class="bg-orange-500/20 text-orange-500 px-4 py-1 rounded-lg font-black tracking-[0.3em]">XXXXXX</span>
-                </div>
-                <input type="text" id="captcha-input" placeholder="Enter the code" class="w-full bg-slate-900 border border-white/10 rounded-xl py-4 px-4 text-white text-center font-bold uppercase tracking-widest outline-none">
-                <button id="verify-scan-btn" class="w-full bg-white text-black py-4 rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-orange-500 hover:text-white transition-all">
-                    Confirm & Analyze
-                </button>
+                <p class="text-orange-500 text-xs font-black uppercase tracking-widest loading-pulse italic">AI is reading your bill details...</p>
             </div>
 
             <div id="result" class="hidden mt-8 p-6 rounded-3xl bg-white/5 border border-orange-500/30 space-y-4">
                 <div class="flex justify-between items-center border-b border-white/10 pb-4">
-                    <h3 class="text-[10px] font-black text-orange-500 uppercase tracking-widest">Bill Details Found</h3>
-                    <i data-lucide="check-circle" class="w-4 h-4 text-green-500"></i>
+                    <h3 class="text-[10px] font-black text-orange-500 uppercase tracking-widest">Extracted Data</h3>
                 </div>
-                <div id="output" class="text-white text-sm leading-relaxed whitespace-pre-line font-medium bg-black/20 p-4 rounded-xl">
-                    </div>
-                <div class="mt-4 p-6 bg-orange-600 rounded-2xl text-center shadow-xl">
+                <div id="output" class="text-white text-sm leading-relaxed whitespace-pre-line font-medium"></div>
+                <div class="mt-4 p-6 bg-orange-500 rounded-2xl text-center">
                     <p class="text-[9px] font-black text-white/80 uppercase tracking-widest">Recommended Solar Plant</p>
                     <p id="plant-size" class="text-4xl font-black text-white italic">-- kW</p>
                 </div>
@@ -125,11 +113,11 @@
 <script>
     lucide.createIcons();
     
-    // --- SETTINGS ---
+    // --- CONFIGURE ---
     const HF_API_URL = "https://udbhav121-bill.hf.space/analyze";
     let currentCycle = 30;
 
-    // First Security logic
+    // Security Gate
     const captchaCheck = document.getElementById('captcha-check');
     const accessBtn = document.getElementById('access-btn');
     captchaCheck.onchange = () => {
@@ -146,37 +134,20 @@
         document.getElementById(`cycle-${days}`).classList.add('active');
     }
 
-    function generateCaptcha() {
-        return Math.random().toString(36).substring(2, 8).toUpperCase();
-    }
+    document.getElementById('scanBtn').onclick = async () => {
+        const fileInput = document.getElementById('billInput');
+        if (!fileInput.files[0]) return alert("Please select a bill image first!");
 
-    // Step 1: Generate Code
-    document.getElementById('scanBtn').onclick = () => {
-        if (!document.getElementById('billInput').files[0]) return alert("Select a bill image first!");
-        document.getElementById('captcha-box').classList.remove('hidden');
-        document.getElementById('captcha-display').innerText = generateCaptcha();
-        document.getElementById('captcha-box').scrollIntoView({ behavior: 'smooth' });
-    };
-
-    // Step 2: Core Analysis & Calculation
-    document.getElementById('verify-scan-btn').onclick = async () => {
-        const userInput = document.getElementById('captcha-input').value.toUpperCase();
-        const actualCode = document.getElementById('captcha-display').innerText;
-        
-        if (userInput !== actualCode) return alert("Incorrect Code!");
-
-        document.getElementById('captcha-box').classList.add('hidden');
         const loader = document.getElementById('loader');
-        const resDiv = document.getElementById('result');
-        const outBox = document.getElementById('output');
+        const outputBox = document.getElementById('result');
+        const btn = document.getElementById('scanBtn');
 
         loader.classList.remove('hidden');
-        resDiv.classList.add('hidden');
+        outputBox.classList.add('hidden');
+        btn.disabled = true;
 
         try {
-            const file = document.getElementById('billInput').files[0];
-            const base64 = await toBase64(file);
-
+            const base64 = await toBase64(fileInput.files[0]);
             const response = await fetch(HF_API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -184,56 +155,53 @@
             });
 
             const data = await response.json();
-            
-            // 1. Get content safely (handles different AI key names)
-            const content = data.analysis || data.result || data.text || "Scanning complete but no text was returned.";
+            const contentText = data.analysis;
 
-            // 2. Display the raw text
-            outBox.innerHTML = content.replace(/\n/g, '<br>');
+            // Display text
+            document.getElementById('output').innerHTML = contentText.replace(/\n/g, '<br>');
 
-            // 3. IMPROVED CALC LOGIC (Cleans up the text first)
-            // Remove ** symbols, commas, and the word "units"
-            const cleaned = content.replace(/\*/g, '').replace(/,/g, '').replace(/units/gi, '');
+            // --- ROBUST CALCULATION LOGIC ---
+            // 1. Clean the text of symbols that break parsing
+            const cleanText = contentText.replace(/\*/g, '').replace(/units/gi, '');
 
-            // Use flexible Regex to find numbers after keywords
-            const avgMatch = cleaned.match(/(?:Avg|Average).*?[:\s-]*(\d+)/i);
-            const unitMatch = cleaned.match(/(?:Total|Units|Consumed).*?[:\s-]*(\d+)/i);
+            // 2. Search for numbers next to our key labels
+            const avgMatch = cleanText.match(/(?:Average|Avg).*?:\s*(\d+)/i);
+            const unitMatch = cleanText.match(/(?:Total|Units).*?:\s*(\d+)/i);
 
-            let val = 0;
-            let cycle = currentCycle;
+            let units = 0;
+            let isAvg = false;
 
             if (avgMatch && avgMatch[1]) {
-                val = parseInt(avgMatch[1]);
-                cycle = 30; // Average is always per month
+                units = parseInt(avgMatch[1]);
+                isAvg = true; 
             } else if (unitMatch && unitMatch[1]) {
-                val = parseInt(unitMatch[1]);
-                cycle = currentCycle; // Consumption depends on button clicked
+                units = parseInt(unitMatch[1]);
+                isAvg = false; 
             }
 
-            // 4. Update the Plant Size
-            if (val > 0) {
-                const kw = ((val / cycle) / 4).toFixed(1);
+            // 3. Math (Avg assumes 30 days, Reading uses the clicked cycle)
+            let cycle = isAvg ? 30 : currentCycle;
+            if (units > 0) {
+                const kw = ((units / cycle) / 4).toFixed(1);
                 document.getElementById('plant-size').innerText = kw + " kW";
             } else {
                 document.getElementById('plant-size').innerText = "Check Bill";
             }
 
-            // Show result
-            resDiv.classList.remove('hidden');
-
+            outputBox.classList.remove('hidden');
         } catch (err) {
-            console.error("Error:", err);
-            alert("Connection error. Check your Hugging Face Space.");
+            alert("Error connecting to AI: " + err.message);
         } finally {
             loader.classList.add('hidden');
+            btn.disabled = false;
         }
     };
 
-    const toBase64 = f => new Promise((res, rej) => {
-        const r = new FileReader();
-        r.readAsDataURL(f);
-        r.onload = () => res(r.result);
-        r.onerror = e => rej(e);
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
     });
 </script>
 </body>
