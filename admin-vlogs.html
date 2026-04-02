@@ -9,26 +9,7 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script>
-    // 1. Check for the security key in the URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const securityKey = urlParams.get('auth');
-
-    // 2. If the key is missing or wrong, block the page
-    if (securityKey !== "USS_OFFICIAL_AUTH_2026") {
-        document.documentElement.innerHTML = `
-            <body style="background:#020617; color:white; font-family:sans-serif; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; text-align:center;">
-                <div style="border:2px solid #f97316; padding:40px; border-radius:30px; background:#0f172a; box-shadow: 0 0 30px rgba(249,115,22,0.2);">
-                    <h1 style="color:#f97316; font-size:3rem; margin:0;">403</h1>
-                    <h2 style="text-transform:uppercase; letter-spacing:2px;">Access Denied</h2>
-                    <p style="opacity:0.7;">Direct URL entry is blocked for security.</p>
-                    <button onclick="window.location.href='lallu.html'" style="margin-top:20px; padding:12px 25px; background:#1e3a8a; border:none; color:white; border-radius:12px; font-weight:bold; cursor:pointer; transition:0.3s;">Return to Portal</button>
-                </div>
-            </body>
-        `;
-        window.stop(); // Stops further execution
-    }
-</script>
+    
     <style>
         .glass-morphism { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
         .admin-card { background: white; border: 1px solid #e2e8f0; border-radius: 1.5rem; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
