@@ -8,7 +8,26 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+    // Security check: Look for the secret handshake token
+    const urlParams = new URLSearchParams(window.location.search);
+    const securityKey = urlParams.get('auth');
 
+    // If key is missing or wrong, show "Access Denied" and stop everything
+    if (securityKey !== "USS_OFFICIAL_2026") {
+        document.documentElement.innerHTML = `
+            <body style="background:#0f172a; color:white; font-family:sans-serif; display:flex; align-items:center; justify-center; height:100vh; margin:0; text-align:center;">
+                <div>
+                    <h1 style="color:#f97316; font-size:4rem;">403</h1>
+                    <h2>ACCESS DENIED</h2>
+                    <p>Direct URL entry is blocked. Please login via the official portal.</p>
+                    <button onclick="window.location.href='lallu.html'" style="padding:10px 20px; background:#1e3a8a; border:none; color:white; border-radius:5px; cursor:pointer;">Go to Login</button>
+                </div>
+            </body>
+        `;
+        window.stop(); // Stops the rest of the page from loading
+    }
+</script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; }
         .bg-mesh {
