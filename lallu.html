@@ -72,9 +72,11 @@
         </div>
     </div>
 
- <script>
+<script>
+    // Initialize icons
     lucide.createIcons();
 
+    // Theme Toggle Logic
     function toggleTheme() {
         const html = document.documentElement;
         const icon = document.getElementById('theme-icon');
@@ -90,15 +92,25 @@
         lucide.createIcons();
     }
 
-    // Login Logic - FIXED
+    // Set initial theme based on preference
+    if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        const icon = document.getElementById('theme-icon');
+        if(icon) icon.setAttribute('data-lucide', 'sun');
+        lucide.createIcons();
+    }
+
+    // Login Logic - CROSS-ORIGIN FIXED
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = document.getElementById('empId').value;
         const pass = document.getElementById('password').value;
 
         try {
-            // Using window.location.origin ensures we hit the Hugging Face API correctly
-            const api_url = `${window.location.origin}/verify-login`;
+            // CRITICAL: Replace 'ussmikedelta-ops-udbhavs' with your actual Space name
+            // Use the "Direct URL" found in your Space Settings or 'Embed' menu
+            const HF_SPACE_URL = "https://ussmikedelta-ops-udbhavs.hf.space"; 
+            const api_url = `${HF_SPACE_URL}/verify-login`;
             
             const response = await fetch(api_url, {
                 method: 'POST',
@@ -109,25 +121,28 @@
                 body: JSON.stringify({ username: id, password: pass })
             });
 
-            // Safety check: Did we get JSON or HTML?
+            // Handle non-JSON responses (prevents the "Unexpected token <" error)
             const contentType = response.headers.get("content-type");
             if (!contentType || !contentType.includes("application/json")) {
-                console.error("Server returned HTML instead of JSON. Check your app.py @app.post route.");
-                alert("Server Configuration Error. Please check logs.");
+                const text = await response.text();
+                console.error("Server returned non-JSON response:", text);
+                alert("Server Configuration Error. Please verify the Hugging Face Space is public and running.");
                 return;
             }
 
             const result = await response.json();
+            
             if (result.success) {
+                // Hide login, show selection
                 document.getElementById('login-container').classList.add('hidden');
                 document.getElementById('selection-dialogue').classList.remove('hidden');
                 document.getElementById('display-name').innerText = result.name;
             } else {
-                alert("Invalid Credentials. Please try again.");
+                alert("Invalid Credentials. Please check your ID and Password.");
             }
         } catch (error) {
             console.error("Login Error:", error);
-            alert("Connection Error. Check if Hugging Face Space is Running.");
+            alert("Connection Error. The portal cannot reach the authentication server.");
         }
     });
 </script>
