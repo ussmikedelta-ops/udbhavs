@@ -72,59 +72,64 @@
         </div>
     </div>
 
-    <script>
+ <script>
+    lucide.createIcons();
+
+    function toggleTheme() {
+        const html = document.documentElement;
+        const icon = document.getElementById('theme-icon');
+        if (html.classList.contains('dark')) {
+            html.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+            icon.setAttribute('data-lucide', 'moon');
+        } else {
+            html.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+            icon.setAttribute('data-lucide', 'sun');
+        }
         lucide.createIcons();
+    }
 
-        function toggleTheme() {
-            const html = document.documentElement;
-            const icon = document.getElementById('theme-icon');
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-                icon.setAttribute('data-lucide', 'moon');
+    // Login Logic - FIXED
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('empId').value;
+        const pass = document.getElementById('password').value;
+
+        try {
+            // Using window.location.origin ensures we hit the Hugging Face API correctly
+            const api_url = `${window.location.origin}/verify-login`;
+            
+            const response = await fetch(api_url, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ username: id, password: pass })
+            });
+
+            // Safety check: Did we get JSON or HTML?
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                console.error("Server returned HTML instead of JSON. Check your app.py @app.post route.");
+                alert("Server Configuration Error. Please check logs.");
+                return;
+            }
+
+            const result = await response.json();
+            if (result.success) {
+                document.getElementById('login-container').classList.add('hidden');
+                document.getElementById('selection-dialogue').classList.remove('hidden');
+                document.getElementById('display-name').innerText = result.name;
             } else {
-                html.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-                icon.setAttribute('data-lucide', 'sun');
+                alert("Invalid Credentials. Please try again.");
             }
-            lucide.createIcons();
+        } catch (error) {
+            console.error("Login Error:", error);
+            alert("Connection Error. Check if Hugging Face Space is Running.");
         }
-
-        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-            document.getElementById('theme-icon').setAttribute('data-lucide', 'sun');
-            lucide.createIcons();
-        }
-
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('empId').value;
-            const pass = document.getElementById('password').value;
-
-            try {
-                // Modified fetch to use current origin for robustness
-                const response = await fetch(`${window.location.origin}/verify-login`, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ username: id, password: pass })
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    document.getElementById('login-container').classList.add('hidden');
-                    document.getElementById('selection-dialogue').classList.remove('hidden');
-                    document.getElementById('display-name').innerText = result.name;
-                } else {
-                    alert("Invalid Credentials. Please try again.");
-                }
-            } catch (error) {
-                console.error("Login Error:", error);
-                alert("Connection Error. Please check if the portal is running.");
-            }
-        });
-    </script>
+    });
+</script>
 </body>
 </html>
