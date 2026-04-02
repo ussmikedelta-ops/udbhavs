@@ -23,8 +23,20 @@
         .cycle-btn.active { background: #f97316; color: white; border-color: #f97316; box-shadow: 0 0 20px rgba(249, 115, 22, 0.3); }
         .loading-pulse { animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-        
-        .whatsapp-float { position: fixed; bottom: 24px; right: 24px; z-index: 2001; width: 60px; height: 60px; background-color: #25d366; border-radius: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4); }
+
+        .ai-disclaimer {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 2000;
+            background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 24px; border-radius: 99px; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); white-space: nowrap;
+        }
+        .ai-disclaimer p { margin: 0; color: rgba(255,255,255,0.8); font-size: 11px; font-weight: 600; text-transform: uppercase; }
+        .ai-disclaimer a { color: #f97316; font-weight: 800; }
+
+        .whatsapp-float {
+            position: fixed; bottom: 24px; right: 24px; z-index: 2001; width: 60px; height: 60px;
+            background-color: #25d366; border-radius: 50px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4); transition: all 0.3s ease;
+        }
     </style>
 </head>
 
@@ -36,15 +48,15 @@
             <div class="w-16 h-16 bg-orange-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <i data-lucide="shield-check" class="text-orange-500 w-8 h-8"></i>
             </div>
-            <h3 class="text-xl font-black text-white uppercase tracking-tight">Access Secure</h3>
-            <p class="text-slate-400 text-xs mt-2 font-medium">Verify identity for Udbhav Solar AI.</p>
+            <h3 class="text-xl font-black text-white uppercase tracking-tight">Security Access</h3>
+            <p class="text-slate-400 text-xs mt-2 font-medium italic">Udbhav Solar Solutions AI</p>
         </div>
         <div class="space-y-4">
-            <div class="bg-white/5 border border-white/10 p-4 rounded-2xl text-center">
+            <div class="bg-white/5 border border-white/10 p-4 rounded-2xl flex items-center justify-center gap-3">
                 <input type="checkbox" id="captcha-check" class="w-5 h-5 accent-orange-500 cursor-pointer">
-                <label for="captcha-check" class="text-sm font-bold text-white ml-2 cursor-pointer">I am not a bot</label>
+                <label for="captcha-check" class="text-sm font-bold text-white cursor-pointer italic">Verify Human</label>
             </div>
-            <button id="access-btn" disabled class="w-full bg-slate-800 text-slate-500 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all cursor-not-allowed">
+            <button id="access-btn" disabled class="w-full bg-slate-800 text-slate-500 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all">
                 Enter Scanner
             </button>
         </div>
@@ -56,48 +68,61 @@
         <span class="font-black text-white uppercase tracking-tighter text-xl leading-none">Udbhav Solar</span>
         <span class="text-[10px] font-bold text-orange-500 tracking-[0.3em] uppercase">AI Scanner</span>
     </div>
-    <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ajmer, Rajasthan</div>
+    <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Ajmer, Rajasthan</div>
 </header>
 
 <main class="max-w-2xl w-full px-6 py-12 mb-20">
     <div class="form-glass p-8 md:p-10 rounded-[2.5rem] shadow-2xl">
         <div class="text-center mb-8">
             <h2 class="text-3xl font-black text-white uppercase tracking-tighter">Scan Your <span class="text-orange-500">Bill.</span></h2>
-            <p class="text-slate-400 text-sm mt-2">Get your recommended plant size in seconds.</p>
+            <p class="text-slate-400 text-sm mt-2">Get an instant solar capacity estimate.</p>
         </div>
 
         <div class="space-y-6">
             <div class="space-y-3">
-                <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Select Billing Cycle</label>
+                <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Billing Cycle</label>
                 <div class="grid grid-cols-2 gap-4">
                     <button id="cycle-30" onclick="setCycle(30)" class="cycle-btn py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest active">30 Days</button>
                     <button id="cycle-60" onclick="setCycle(60)" class="cycle-btn py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest">60 Days</button>
                 </div>
             </div>
 
-            <div class="space-y-3">
-                <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Upload Bill Photo</label>
-                <div class="border-2 border-dashed border-white/10 rounded-2xl p-10 text-center hover:border-orange-500 cursor-pointer bg-white/5" onclick="document.getElementById('billInput').click()">
+            <div class="space-y-3" onclick="document.getElementById('billInput').click()">
+                <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Bill Photo</label>
+                <div class="border-2 border-dashed border-white/10 rounded-2xl p-10 text-center hover:border-orange-500 transition-all bg-white/5 group cursor-pointer">
                     <input type="file" id="billInput" class="hidden" accept="image/*">
                     <i data-lucide="camera" class="w-10 h-10 text-orange-500 mx-auto mb-2"></i>
-                    <p id="status-text" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tap to Upload</p>
+                    <p id="status-text" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Take Photo or Upload</p>
                 </div>
             </div>
 
             <button id="scanBtn" class="w-full bg-orange-600 hover:bg-orange-500 text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl transition-all flex items-center justify-center gap-3">
-                Start AI Analysis <i data-lucide="zap" class="w-5 h-5"></i>
+                Analyze Bill <i data-lucide="zap" class="w-5 h-5"></i>
             </button>
 
+            <div id="captcha-box" class="hidden mt-6 p-6 rounded-3xl bg-white/5 border border-white/10 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-[10px] font-black text-orange-500 uppercase tracking-widest font-bold">Security Code</h3>
+                    <span id="captcha-display" class="bg-orange-500/20 text-orange-500 px-4 py-1 rounded-lg font-black tracking-[0.3em] select-none">XXXXXX</span>
+                </div>
+                <input type="text" id="captcha-input" placeholder="Type the code" class="w-full bg-slate-900 border border-white/10 rounded-xl py-3 px-4 text-white text-center font-bold tracking-widest focus:border-orange-500 outline-none">
+                <button id="verify-scan-btn" class="w-full bg-white text-black py-4 rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-orange-500 hover:text-white transition-all">
+                    Confirm & Analyze
+                </button>
+            </div>
+
             <div id="loader" class="hidden text-center py-4">
-                <p class="text-orange-500 text-xs font-black uppercase tracking-widest loading-pulse italic">AI is reading your bill details...</p>
+                <p class="text-orange-500 text-[10px] font-black uppercase tracking-widest loading-pulse italic">AI is extracting details...</p>
             </div>
 
             <div id="result" class="hidden mt-8 p-6 rounded-3xl bg-white/5 border border-orange-500/30 space-y-4">
                 <div class="flex justify-between items-center border-b border-white/10 pb-4">
-                    <h3 class="text-[10px] font-black text-orange-500 uppercase tracking-widest">Extracted Data</h3>
+                    <h3 class="text-[10px] font-black text-orange-500 uppercase tracking-widest">Extracted Information</h3>
+                    <i data-lucide="check-circle" class="w-4 h-4 text-green-500"></i>
                 </div>
-                <div id="output" class="text-white text-sm leading-relaxed whitespace-pre-line font-medium"></div>
-                <div class="mt-4 p-6 bg-orange-500 rounded-2xl text-center">
+                <div id="output" class="text-white text-sm leading-relaxed whitespace-pre-line font-medium bg-black/20 p-4 rounded-xl border border-white/5"></div>
+                
+                <div class="mt-4 p-6 bg-orange-600 rounded-2xl text-center shadow-xl">
                     <p class="text-[9px] font-black text-white/80 uppercase tracking-widest">Recommended Solar Plant</p>
                     <p id="plant-size" class="text-4xl font-black text-white italic">-- kW</p>
                 </div>
@@ -106,25 +131,26 @@
     </div>
 </main>
 
-<a href="https://wa.me/919660711101" class="whatsapp-float" target="_blank">
-    <svg width="32" height="32" fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.395 0 .01 5.388 0 12.044c0 2.129.54 4.207 1.579 6.075L0 24l6.135-1.61a11.803 11.803 0 005.911 1.586h.005c6.654 0 12.05-5.39 12.056-12.047a11.82 11.82 0 00-3.536-8.509z"/></svg>
-</a>
+<div class="ai-disclaimer">
+    <div class="w-2 h-2 rounded-full bg-orange-500"></div>
+    <p>AI Estimates. For Precision Surveys: <a href="https://wa.me/919660711101">WhatsApp Us</a></p>
+</div>
 
 <script>
     lucide.createIcons();
     
-    // --- CONFIGURE ---
-    const HF_API_URL = "https://udbhav121-bill.hf.space/analyze";
+    // --- CONFIGURE YOUR PYTHON URL HERE ---
+    const PY_SERVER_URL = "https://udbhav121-bill.hf.space/analyze"; 
     let currentCycle = 30;
 
-    // Security Gate
+    // Security Gate Logic
     const captchaCheck = document.getElementById('captcha-check');
     const accessBtn = document.getElementById('access-btn');
     captchaCheck.onchange = () => {
         accessBtn.disabled = !captchaCheck.checked;
-        accessBtn.classList.toggle('bg-slate-800', !captchaCheck.checked);
-        accessBtn.classList.toggle('bg-orange-600', captchaCheck.checked);
-        accessBtn.classList.toggle('text-white', captchaCheck.checked);
+        accessBtn.className = captchaCheck.checked 
+            ? "w-full bg-orange-600 text-white py-4 rounded-2xl font-black uppercase tracking-widest text-[10px]" 
+            : "w-full bg-slate-800 text-slate-500 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px]";
     };
     accessBtn.onclick = () => document.getElementById('security-dialog').style.display = 'none';
 
@@ -134,63 +160,79 @@
         document.getElementById(`cycle-${days}`).classList.add('active');
     }
 
-    document.getElementById('scanBtn').onclick = async () => {
-        const fileInput = document.getElementById('billInput');
-        if (!fileInput.files[0]) return alert("Please select a bill image first!");
+    function generateCaptcha() {
+        return Math.random().toString(36).substring(2, 8).toUpperCase();
+    }
 
+    document.getElementById('scanBtn').onclick = () => {
+        if (!document.getElementById('billInput').files[0]) return alert("Please select a photo!");
+        document.getElementById('captcha-box').classList.remove('hidden');
+        document.getElementById('captcha-display').innerText = generateCaptcha();
+        document.getElementById('captcha-box').scrollIntoView({ behavior: 'smooth' });
+    };
+
+    document.getElementById('verify-scan-btn').onclick = async () => {
+        const userInput = document.getElementById('captcha-input').value.toUpperCase();
+        const actualCode = document.getElementById('captcha-display').innerText;
+        
+        if (userInput !== actualCode) return alert("Security code mismatch!");
+
+        document.getElementById('captcha-box').classList.add('hidden');
         const loader = document.getElementById('loader');
-        const outputBox = document.getElementById('result');
+        const resDiv = document.getElementById('result');
+        const output = document.getElementById('output');
         const btn = document.getElementById('scanBtn');
 
         loader.classList.remove('hidden');
-        outputBox.classList.add('hidden');
+        resDiv.classList.add('hidden');
         btn.disabled = true;
 
         try {
-            const base64 = await toBase64(fileInput.files[0]);
-            const response = await fetch(HF_API_URL, {
+            const file = document.getElementById('billInput').files[0];
+            const base64Data = await toBase64(file);
+
+            // CALLING YOUR PYTHON BACKEND
+            const response = await fetch(PY_SERVER_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ base64_image: base64 })
+                body: JSON.stringify({ 
+                    base64_image: base64Data,
+                    cycle: currentCycle 
+                })
             });
 
             const data = await response.json();
-            const contentText = data.analysis;
+            // Assumes your Python returns JSON: {"analysis": "text here"}
+            const content = data.analysis || data.result || "No data returned from server.";
 
-            // Display text
-            document.getElementById('output').innerHTML = contentText.replace(/\n/g, '<br>');
+            output.innerHTML = content.replace(/\n/g, '<br>');
 
-            // --- ROBUST CALCULATION LOGIC ---
-            // 1. Clean the text of symbols that break parsing
-            const cleanText = contentText.replace(/\*/g, '').replace(/units/gi, '');
+            // CALCULATION LOGIC
+            const avgMatch = content.match(/Avg Consumption:\s*(\d+)/i);
+            const unitMatch = content.match(/Units:\s*(\d+)/i);
+            
+            let val = 0;
+            let cycle = currentCycle;
 
-            // 2. Search for numbers next to our key labels
-            const avgMatch = cleanText.match(/(?:Average|Avg).*?:\s*(\d+)/i);
-            const unitMatch = cleanText.match(/(?:Total|Units).*?:\s*(\d+)/i);
-
-            let units = 0;
-            let isAvg = false;
-
-            if (avgMatch && avgMatch[1]) {
-                units = parseInt(avgMatch[1]);
-                isAvg = true; 
-            } else if (unitMatch && unitMatch[1]) {
-                units = parseInt(unitMatch[1]);
-                isAvg = false; 
+            if (avgMatch && parseInt(avgMatch[1]) > 0) {
+                val = parseInt(avgMatch[1]);
+                cycle = 30; // Avg is monthly
+            } else if (unitMatch) {
+                val = parseInt(unitMatch[1]);
+                cycle = currentCycle; 
             }
 
-            // 3. Math (Avg assumes 30 days, Reading uses the clicked cycle)
-            let cycle = isAvg ? 30 : currentCycle;
-            if (units > 0) {
-                const kw = ((units / cycle) / 4).toFixed(1);
+            if (val > 0) {
+                const kw = ((val / cycle) / 4).toFixed(1);
                 document.getElementById('plant-size').innerText = kw + " kW";
             } else {
                 document.getElementById('plant-size').innerText = "Check Bill";
             }
 
-            outputBox.classList.remove('hidden');
+            resDiv.classList.remove('hidden');
         } catch (err) {
-            alert("Error connecting to AI: " + err.message);
+            console.error(err);
+            alert("Connection to AI Server Failed. Ensure your Python Space is Running.");
         } finally {
             loader.classList.add('hidden');
             btn.disabled = false;
