@@ -3,47 +3,7 @@
 <head>
     <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
-<script>
-    // 1. URL Check (Must come from lallu.html)
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('auth') !== "USS_OFFICIAL_AUTH_2026") {
-        document.documentElement.innerHTML = `<body style="background:#020617;color:white;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;"><h1>403 - Use Official Portal</h1></body>`;
-        window.stop();
-    }
 
-    // 2. Hide existing content until verified
-    document.write('<style>#main-log-wrapper { display: none; }</style>');
-
-    async function verifyLogAccess() {
-        const id = document.getElementById('log-user').value;
-        const pass = document.getElementById('log-pass').value;
-        const btn = document.getElementById('log-btn');
-        
-        btn.disabled = true;
-        btn.innerText = "Checking...";
-
-        try {
-            const response = await fetch("https://udbhav121-lallu.hf.space/verify-login", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: id, password: pass })
-            });
-            const result = await response.json();
-            if (result.success) {
-                document.getElementById('log-auth-overlay').remove();
-                document.getElementById('main-log-wrapper').style.display = 'block';
-                lucide.createIcons();
-            } else {
-                alert("Invalid Admin Credentials");
-                btn.disabled = false;
-                btn.innerText = "Access Logs";
-            }
-        } catch (e) {
-            alert("Connection Error");
-            btn.disabled = false;
-        }
-    }
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Access | Udbhav Solar</title>
