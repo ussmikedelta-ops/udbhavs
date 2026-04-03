@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Udbhav Solar | AI Intelligence Hub</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { background: #020617; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; touch-action: manipulation; }
+        #map { height: 100vh; width: 100vw; z-index: 1; filter: saturate(1.1) contrast(1.1); }
+        
+        .glass { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(24px); border-right: 1px solid rgba(255, 255, 255, 0.1); }
+        .sidebar { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; max-width: 400px; }
+        .sidebar-hidden { transform: translateX(-100%); }
+
+        @media (max-width: 640px) {
+            .sidebar { max-width: 85%; }
+            .mobile-bottom-panel { display: block; }
+        }
+
+        .tab-btn { padding: 10px; font-size: 11px; font-weight: 800; text-transform: uppercase; border-radius: 12px; transition: 0.3s; flex: 1; text-align: center; }
+        .tab-active { background: #f97316; color: white; box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3); }
+
+        input[type="range"] { accent-color: #f97316; }
+        
+        .pulse-orange { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
+        
+        .wa-float { position: fixed; bottom: 90px; right: 20px; z-index: 3000; background: #25d366; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(37,211,102,0.3); transition: transform 0.2s; }
+        .wa-float:hover { transform: scale(1.1); }
+    </style>
+</head>
+<body>
+
+    <aside id="sidebar" class="sidebar glass fixed top-0 left-0 h-full z-[2000] p-5 flex flex-col gap-4 overflow-y-auto shadow-2xl">
+        <div class="flex items-center justify-between mb-2">
+            <div>
+                <h1 class="text-2xl font-black italic tracking-tighter text-white">UDBHAV SOLAR</h1>
+                <p class="text-[9px] text-orange-500 font-bold tracking-[0.3em] uppercase">AI Energy Intelligence</p>
+            </div>
+            <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 p-2 hover:text-white"><i data-lucide="x"></i></button>
+        </div>
+
+        <div class="bg-white/5 rounded-2xl p-4 border border-white/10 space-y-3">
+            <h3 class="text-[10px] font-black text-slate-400 uppercase flex items-center gap-2">
+                <i data-lucide="map-pin" class="w-3 h-3 text-orange-500"></i> Location Hub
+            </h3>
+            
+            <div class="flex gap-2">
+                <input type="text" id="search-input" placeholder="Enter city or address..." class="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-xs text-white focus:border-blue-500 outline-none" onkeypress="if(event.key === 'Enter') searchLocation()">
+                <button onclick="searchLocation()" class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-lg transition-all" title="Search">
+                    <i data-lucide="search" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <button onclick="locateUser()" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/20">
+                <i data-lucide="navigation" class="w-4 h-4"></i> Auto-Detect My Roof
+            </button>
+            <p class="text-[9px] text-slate-500 text-center italic">Or tap anywhere on the map to place panels</p>
+        </div>
+
+        <div class="bg-white/5 rounded-2xl p-4 border border-white/10">
+            <h3 class="text-[10px] font-black text-slate-400 uppercase mb-3 flex items-center gap-2">
+                <i data-lucide="zap" class="w-3 h-3 text-orange-500"></i> Capacity Wizard
+            </h3>
+            <div class="flex gap-2 mb-4 bg-black/30 p-1 rounded-xl">
+                <button id="tab-bill" onclick="switchTab('bill')" class="tab-btn tab-active">Units Based</button>
+                <button id="tab-life" onclick="switchTab('life')" class="tab-btn">Lifestyle</button>
+            </div>
+
+            <div id="view-bill" class="space-y-3">
+                <label class="text-[10px] font-bold text-slate-500 uppercase">Monthly Consumption</label>
+                <div class="relative">
+                    <input type="number" id="manual-units" placeholder="Units (e.g. 300)" class="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-sm text-white focus:border-orange-500 outline-none" oninput="calculateFromBill()">
+                    <span class="absolute right-3 top-3 text-slate-500 text-xs font-bold">kWh</span>
+                </div>
+            </div>
+
+            <div id="view-life" class="hidden space-y-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="space-y-1">
+                        <label class="text-[8px] font-bold text-slate-500 uppercase">Air Conditioners</label>
+                        <input type="number" id="life-ac" value="1" class="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-sm text-white" oninput="calculateFromLife()">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[8px] font-bold text-slate-500 uppercase">EV Charging</label>
+                        <select id="life-ev" class="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-sm text-white" onchange="calculateFromLife()">
+                            <option value="0">None</option>
+                            <option value="200">Daily</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="ai-result-card" class="bg-gradient-to-br from-orange-600/20 to-orange-900/20 border border-orange-500/30 rounded-2xl p-4 text-center shadow-lg">
+            <p class="text-[9px] font-black text-orange-500 uppercase tracking-widest mb-1">Recommended System</p>
+            <h2 id="rec-kw" class="text-4xl font-black text-white italic">0.0 <span class="text-sm">kW</span></h2>
+            
+            <div class="grid grid-cols-2 mt-3 gap-2">
+                <div class="bg-black/40 p-2 rounded-xl border border-white/5">
+                    <p class="text-[7px] font-bold text-slate-500 uppercase">Annual Savings</p>
+                    <p id="yearly-save" class="text-xs font-black text-green-400">₹ 0</p>
+                </div>
+                <div class="bg-black/40 p-2 rounded-xl border border-white/5">
+                    <p class="text-[7px] font-bold text-slate-500 uppercase">Payback</p>
+                    <p id="payback" class="text-xs font-black text-white">--</p>
+                </div>
+            </div>
+
+            <div class="mt-2 pt-2 border-t border-white/10 grid grid-cols-2 gap-2">
+                <div>
+                    <p class="text-[7px] font-bold text-slate-400 uppercase flex justify-center items-center gap-1"><i data-lucide="cloud-off" class="w-2 h-2 text-blue-300"></i> CO₂ Saved/Yr</p>
+                    <p id="eco-co2" class="text-[10px] font-bold text-blue-300 mt-0.5">0 Tons</p>
+                </div>
+                <div>
+                    <p class="text-[7px] font-bold text-slate-400 uppercase flex justify-center items-center gap-1"><i data-lucide="tree-pine" class="w-2 h-2 text-emerald-400"></i> Equivalent</p>
+                    <p id="eco-trees" class="text-[10px] font-bold text-emerald-400 mt-0.5">0 Trees</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-4 bg-white/5 rounded-2xl p-4 border border-white/10">
+            <h3 class="text-[10px] font-black text-slate-400 uppercase">Layout Engine (4' x 8' Panels)</h3>
+            
+            <div class="space-y-1 mb-2">
+                <span class="text-[8px] font-bold text-slate-500 uppercase">Roof Type</span>
+                <select id="roof-type" class="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-xs text-white outline-none focus:border-orange-500">
+                    <option value="flat">Flat RCC Roof</option>
+                    <option value="slant">Pitched / Slanted</option>
+                    <option value="tin">Tin Shed</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="space-y-1">
+                    <span class="text-[8px] font-bold text-slate-500 uppercase">Quantity</span>
+                    <input type="number" id="qty" value="6" class="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-sm text-white focus:border-orange-500 outline-none" oninput="updateMap()">
+                </div>
+                <div class="space-y-1">
+                    <span class="text-[8px] font-bold text-slate-500 uppercase">Rotation (°)</span>
+                    <input type="number" id="rot" value="0" class="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-sm text-white focus:border-orange-500 outline-none" oninput="updateMap()">
+                </div>
+            </div>
+            <div class="space-y-1">
+                <div class="flex justify-between">
+                    <span class="text-[8px] font-bold text-slate-500 uppercase">Row Structure</span>
+                    <span id="row-val" class="text-[8px] font-bold text-orange-500">2 Rows</span>
+                </div>
+                <input type="range" id="rows" min="1" max="10" value="2" class="w-full cursor-pointer" oninput="document.getElementById('row-val').innerText = this.value + ' Rows'; updateMap()">
+            </div>
+        </div>
+
+        <div class="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 mt-auto">
+            <div class="flex items-center gap-2 mb-2">
+                <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+                <p class="text-[9px] font-black text-red-500 uppercase">Delay Penalty</p>
+            </div>
+            <p class="text-[10px] text-slate-400 leading-tight">Monthly cost of waiting:</p>
+            <p id="monthly-loss" class="text-xl font-black text-white mt-1">₹ 0.00</p>
+        </div>
+
+        <button onclick="bookConsultation()" class="w-full bg-white text-black py-4 rounded-xl font-black text-[11px] uppercase tracking-widest hover:bg-orange-500 hover:text-white transition-all shadow-xl pulse-orange">
+            Get Technical Feasibility
+        </button>
+    </aside>
+
+    <div class="fixed top-6 left-6 z-[2001] flex gap-3">
+        <button onclick="toggleSidebar()" class="bg-orange-600 p-4 rounded-full shadow-2xl text-white hover:bg-orange-500 transition-colors">
+            <i data-lucide="menu"></i>
+        </button>
+        <div id="danger-pill" class="hidden bg-red-600 text-white px-6 py-4 rounded-full shadow-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 animate-bounce">
+            <i data-lucide="alert-triangle" class="w-4 h-4"></i> Over Limit
+        </div>
+    </div>
+
+    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[2001] glass px-6 py-3 rounded-full flex items-center gap-4 shadow-2xl border border-white/20 whitespace-nowrap">
+        <div class="w-2 h-2 rounded-full bg-green-500 animate-ping"></div>
+        <p class="text-[10px] font-bold text-white uppercase tracking-tighter">
+            AI Map Active • <a href="tel:+919660711101" class="text-orange-500 hover:text-orange-400">+91 9660711101</a>
+        </p>
+    </div>
+
+    <a href="https://wa.me/919660711101" target="_blank" class="wa-float" title="Chat on WhatsApp">
+        <svg class="w-7 h-7 fill-white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.395 0 .01 5.388 0 12.044c0 2.129.54 4.207 1.579 6.075L0 24l6.135-1.61a11.803 11.803 0 005.911 1.586h.005c6.654 0 12.05-5.39 12.056-12.047a11.82 11.82 0 00-3.536-8.509z"/></svg>
+    </a>
+
+    <div id="map"></div>
+
+    <script>
+        lucide.createIcons();
+        
+        let map;
+        let mainMarker;
+        let solarPolygon;
+        let gridLines = [];
+        
+        const P_W = 1.2; // Panel width meters
+        const P_H = 2.4; // Panel height meters
+
+        function initMap() {
+            // Default center Ajmer
+            map = L.map('map', { zoomControl: false }).setView([26.4499, 74.6399], 19);
+            
+            L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+                maxZoom: 22, subdomains:['mt0','mt1','mt2','mt3'],
+                attribution: 'Map data © Google'
+            }).addTo(map);
+
+            map.on('click', (e) => {
+                placeMarker(e.latlng);
+            });
+        }
+
+        // NEW: Search Location Function utilizing Nominatim API
+        async function searchLocation() {
+            const query = document.getElementById('search-input').value;
+            if(!query) return;
+
+            const searchIcon = document.querySelector('button[title="Search"] i');
+            searchIcon.setAttribute('data-lucide', 'loader');
+            searchIcon.classList.add('animate-spin');
+            lucide.createIcons();
+
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+                const data = await res.json();
+                
+                if(data && data.length > 0) {
+                    const latlng = {lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon)};
+                    map.flyTo(latlng, 19, { duration: 2 });
+                    
+                    // Give map time to fly before placing marker
+                    setTimeout(() => placeMarker(latlng), 2000);
+                } else {
+                    alert("Location not found. Please try a more specific area.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Search failed. Please check your internet connection.");
+            } finally {
+                searchIcon.setAttribute('data-lucide', 'search');
+                searchIcon.classList.remove('animate-spin');
+                lucide.createIcons();
+            }
+        }
+
+        function placeMarker(latlng) {
+            if(!mainMarker) {
+                mainMarker = L.marker(latlng, {draggable: true}).addTo(map);
+                mainMarker.on('drag', updateMap);
+            } else {
+                mainMarker.setLatLng(latlng);
+            }
+            updateMap();
+        }
+
+        function locateUser() {
+            if (!navigator.geolocation) {
+                alert("Geolocation not supported by your browser");
+                return;
+            }
+            navigator.geolocation.getCurrentPosition((pos) => {
+                const latlng = {lat: pos.coords.latitude, lng: pos.coords.longitude};
+                map.flyTo(latlng, 20, {duration: 2});
+                setTimeout(() => placeMarker(latlng), 2000);
+            }, () => {
+                alert("Please enable location permissions in your browser settings.");
+            });
+        }
+
+        function switchTab(type) {
+            document.getElementById('view-bill').classList.toggle('hidden', type !== 'bill');
+            document.getElementById('view-life').classList.toggle('hidden', type !== 'life');
+            document.getElementById('tab-bill').classList.toggle('tab-active', type === 'bill');
+            document.getElementById('tab-life').classList.toggle('tab-active', type === 'life');
+        }
+
+        function calculateFromBill() {
+            const units = parseFloat(document.getElementById('manual-units').value) || 0;
+            const kw = (units / 115).toFixed(1); 
+            updateAIResults(kw);
+        }
+
+        function calculateFromLife() {
+            const ac = parseInt(document.getElementById('life-ac').value) || 0;
+            const ev = parseInt(document.getElementById('life-ev').value) || 0;
+            const kw = ( (ac * 1.6) + (ev > 0 ? 3.5 : 1.2) ).toFixed(1);
+            updateAIResults(kw);
+        }
+
+        function updateAIResults(kw) {
+            document.getElementById('rec-kw').innerHTML = `${kw} <span class="text-sm">kW</span>`;
+            
+            const yearlySaving = Math.round(kw * 1400 * 8.5); // Approx Gen * Rate
+            document.getElementById('yearly-save').innerText = `₹ ${yearlySaving.toLocaleString('en-IN')}`;
+            
+            document.getElementById('payback').innerText = "3.4 Years";
+            
+            const monthlyLoss = Math.round(yearlySaving / 12);
+            document.getElementById('monthly-loss').innerText = `₹ ${monthlyLoss.toLocaleString('en-IN')}`;
+
+            // NEW: Environmental Impact Math
+            const co2Saved = (kw * 1.1).toFixed(1); // roughly 1.1 tons per kW per year
+            const treesPlanted = Math.round(co2Saved * 40); // roughly 40 trees per ton of CO2
+            
+            document.getElementById('eco-co2').innerText = `${co2Saved} Tons`;
+            document.getElementById('eco-trees').innerText = `${treesPlanted} Trees`;
+            
+            // Sync map panel quantity (Assuming 550W panels)
+            document.getElementById('qty').value = Math.ceil((kw * 1000) / 550);
+            updateMap();
+        }
+
+        function rotatePoint(center, point, angle) {
+            const rad = (Math.PI / 180) * angle;
+            const cos = Math.cos(rad), sin = Math.sin(rad);
+            return [
+                (cos * (point.lat - center.lat)) + (sin * (point.lng - center.lng)) + center.lat,
+                (cos * (point.lng - center.lng)) - (sin * (point.lat - center.lat)) + center.lng
+            ];
+        }
+
+        function updateMap() {
+            if(!mainMarker) return;
+            const center = mainMarker.getLatLng();
+            const qty = parseInt(document.getElementById('qty').value) || 1;
+            const rows = parseInt(document.getElementById('rows').value) || 1;
+            const rot = parseFloat(document.getElementById('rot').value) || 0;
+            const cols = Math.ceil(qty / rows);
+
+            const mToLat = 1/111320;
+            const mToLng = 1/(111320 * Math.cos(center.lat * Math.PI/180));
+
+            const totalW = cols * P_W;
+            const totalH = rows * P_H;
+            
+            const corners = [
+                {lat: center.lat + (totalH/2)*mToLat, lng: center.lng - (totalW/2)*mToLng},
+                {lat: center.lat + (totalH/2)*mToLat, lng: center.lng + (totalW/2)*mToLng},
+                {lat: center.lat - (totalH/2)*mToLat, lng: center.lng + (totalW/2)*mToLng},
+                {lat: center.lat - (totalH/2)*mToLat, lng: center.lng - (totalW/2)*mToLng}
+            ];
+
+            const rotated = corners.map(p => rotatePoint(center, p, rot));
+            
+            if(solarPolygon) map.removeLayer(solarPolygon);
+            gridLines.forEach(l => map.removeLayer(l));
+            gridLines = [];
+
+            // Danger check based on typical residential roof size
+            const area = totalW * totalH;
+            const isDanger = area > 120;
+            document.getElementById('danger-pill').classList.toggle('hidden', !isDanger);
+
+            solarPolygon = L.polygon(rotated, {
+                color: isDanger ? '#ef4444' : '#fb923c',
+                fillColor: '#3b82f6',
+                fillOpacity: 0.6, weight: 2
+            }).addTo(map);
+
+            // Draw Internal Grids
+            for(let i=1; i<cols; i++) {
+                const r = i/cols;
+                const p1 = rotatePoint(center, {lat: corners[0].lat, lng: corners[0].lng + (r * totalW * mToLng)}, rot);
+                const p2 = rotatePoint(center, {lat: corners[3].lat, lng: corners[3].lng + (r * totalW * mToLng)}, rot);
+                gridLines.push(L.polyline([p1, p2], {color: 'white', weight: 0.8, opacity: 0.4}).addTo(map));
+            }
+            for(let j=1; j<rows; j++) {
+                const r = j/rows;
+                const p1 = rotatePoint(center, {lat: corners[0].lat - (r * totalH * mToLat), lng: corners[0].lng}, rot);
+                const p2 = rotatePoint(center, {lat: corners[1].lat - (r * totalH * mToLat), lng: corners[1].lng}, rot);
+                gridLines.push(L.polyline([p1, p2], {color: 'white', weight: 0.8, opacity: 0.4}).addTo(map));
+            }
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('sidebar-hidden');
+        }
+
+        // NEW: Smart Book Consultation with pre-filled WhatsApp message
+        function bookConsultation() {
+            const kw = document.getElementById('rec-kw').innerText.replace(' kW', '');
+            const roof = document.getElementById('roof-type').options[document.getElementById('roof-type').selectedIndex].text;
+            
+            let message = `Hi Udbhav Solar! I used your AI Intelligence Hub. \n\nI am looking for a *${kw} kW* system for a *${roof}*. Can we schedule a site survey?`;
+            
+            window.open(`https://wa.me/919660711101?text=${encodeURIComponent(message)}`);
+        }
+
+        window.onload = initMap;
+    </script>
+</body>
+</html>
