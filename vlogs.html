@@ -30,7 +30,6 @@
 </head>
 <body class="bg-slate-50 text-slate-900 selection:bg-orange-100">
 
-    <!-- Lightbox -->
     <div id="lightbox" onclick="closeLightbox()" class="fixed inset-0 bg-slate-900/95 z-[100] hidden items-center justify-center p-4 backdrop-blur-md">
         <button class="absolute top-6 right-6 text-white hover:text-orange-500 transition">
             <i data-lucide="x" class="w-10 h-10"></i>
@@ -39,15 +38,12 @@
         <p id="lightbox-caption" class="absolute bottom-10 text-white font-bold uppercase tracking-widest text-center"></p>
     </div>
 
-    <!-- Side Panel Trigger -->
     <button onclick="toggleSidePanel()" class="fixed right-0 top-1/2 -translate-y-1/2 z-[60] bg-blue-900 text-white p-3 rounded-l-2xl shadow-2xl border-y border-l border-white/20 hover:bg-orange-500 transition-all group" id="sidePanelArrow">
         <i data-lucide="chevron-left" class="w-6 h-6 transition-transform duration-300" id="arrowIcon"></i>
     </button>
 
-    <!-- Side Panel Overlay -->
     <div id="sidePanelOverlay" onclick="toggleSidePanel()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[55] hidden opacity-0 transition-opacity duration-300"></div>
 
-    <!-- Side Panel Content -->
     <aside id="sidePanel" class="fixed top-0 right-0 h-full w-80 bg-white/95 backdrop-blur-xl z-[65] shadow-[-20px_0_50px_rgba(0,0,0,0.15)] transform translate-x-full border-l border-slate-100 overflow-y-auto">
         <div class="p-8 flex flex-col min-h-full">
             <div class="flex items-center justify-between mb-10">
@@ -73,7 +69,6 @@
         </div>
     </aside>
 
-    <!-- Navigation -->
     <nav class="glass-morphism fixed w-full z-40 border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20 items-center">
@@ -89,13 +84,12 @@
                     <a href="vlogs.html" class="text-orange-600">Vlogs & News</a>
                 </div>
                 <a href="tel:+919660711101" class="bg-blue-900 text-white px-5 py-2.5 rounded-lg font-bold text-sm shadow-lg hover:bg-orange-600 transition-all">
-                    TRING TRING US
+                    Contact Us
                 </a>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="pt-32 pb-16 px-6">
         <div class="max-w-7xl mx-auto">
             <header class="text-center mb-16">
@@ -104,7 +98,6 @@
                 <p class="text-slate-500 mt-4 max-w-2xl mx-auto uppercase text-xs font-bold tracking-widest">Catch up with the latest in solar technology, news, and our site installations.</p>
             </header>
 
-            <!-- Featured Video Section -->
             <section class="mb-24">
                 <div class="flex items-center gap-4 mb-8">
                     <div class="h-px bg-slate-200 flex-grow"></div>
@@ -118,24 +111,23 @@
                 </div>
             </section>
 
-            <!-- Vlogs & News Grid -->
             <section class="mb-24">
                 <div class="flex items-center gap-4 mb-12">
                     <h3 class="text-blue-900 font-black uppercase tracking-widest text-sm">Vlogs & Recent News</h3>
                     <div class="h-px bg-slate-200 flex-grow"></div>
                 </div>
-                <!-- Category Filter -->
+                
                 <div id="category-filters" class="flex flex-wrap gap-2 mb-8 justify-center">
                     <button onclick="filterVlogs('All')" class="px-4 py-2 rounded-full border border-slate-200 text-xs font-bold uppercase tracking-widest hover:bg-blue-900 hover:text-white transition bg-blue-900 text-white" id="filter-All">All</button>
                     <button onclick="filterVlogs('Solar News')" class="px-4 py-2 rounded-full border border-slate-200 text-xs font-bold uppercase tracking-widest hover:bg-blue-900 hover:text-white transition" id="filter-Solar-News">News</button>
                     <button onclick="filterVlogs('Site Update')" class="px-4 py-2 rounded-full border border-slate-200 text-xs font-bold uppercase tracking-widest hover:bg-blue-900 hover:text-white transition" id="filter-Site-Update">Installations</button>
                     <button onclick="filterVlogs('Tech Guide')" class="px-4 py-2 rounded-full border border-slate-200 text-xs font-bold uppercase tracking-widest hover:bg-blue-900 hover:text-white transition" id="filter-Tech-Guide">Tech Guide</button>
                 </div>
+                
                 <div id="vlogs-grid" class="grid md:grid-cols-3 gap-8">
                 </div>
             </section>
 
-            <!-- Gallery Section -->
             <section>
                 <div class="flex items-center gap-4 mb-12">
                     <h3 class="text-blue-900 font-black uppercase tracking-widest text-sm">Installation Gallery</h3>
@@ -208,7 +200,6 @@
         }
 
         function filterVlogs(category) {
-            // Update UI
             document.querySelectorAll('#category-filters button').forEach(btn => {
                 btn.classList.remove('bg-blue-900', 'text-white');
             });
@@ -220,29 +211,37 @@
 
         function renderVlogs(data) {
             const vlogsGrid = document.getElementById('vlogs-grid');
-            vlogsGrid.innerHTML = data.length ? data.map(vlog => `
+            vlogsGrid.innerHTML = data.length ? data.map(vlog => {
+                // Support both new schema (thumbnail/link) and old schema (image/url) to prevent breaking old data
+                const thumb = vlog.thumbnail || vlog.image || 'https://via.placeholder.com/600x400?text=No+Image';
+                const contentLink = vlog.link || vlog.url || '#';
+                const cat = vlog.category || 'Solar News';
+
+                return `
                 <div class="vlog-card bg-white rounded-3xl overflow-hidden flex flex-col">
-                    <div class="h-48 overflow-hidden">
-                        <img src="${vlog.image}" alt="${vlog.title}" class="w-full h-full object-cover" loading="lazy">
+                    <div class="h-48 overflow-hidden bg-slate-100">
+                        <img src="${thumb}" alt="${vlog.title}" class="w-full h-full object-cover" loading="lazy">
                     </div>
                     <div class="p-6 flex-grow flex flex-col">
-                        <span class="text-[10px] font-black text-orange-600 uppercase tracking-widest mb-2">${vlog.category || 'Solar News'}</span>
+                        <span class="text-[10px] font-black text-orange-600 uppercase tracking-widest mb-2">${cat}</span>
                         <h4 class="text-xl font-black text-blue-900 mb-3 leading-tight">${vlog.title}</h4>
                         <p class="text-slate-500 text-sm mb-6 flex-grow line-clamp-3">${vlog.description}</p>
-                        <a href="${vlog.link}" class="inline-flex items-center gap-2 text-blue-900 font-bold text-xs uppercase tracking-widest hover:text-orange-600 transition">
+                        <a href="${contentLink}" target="_blank" class="inline-flex items-center gap-2 text-blue-900 font-bold text-xs uppercase tracking-widest hover:text-orange-600 transition">
                             Read More <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </a>
                     </div>
                 </div>
-            `).join('') : '<p class="text-slate-400 italic col-span-full text-center">No vlogs found for this category.</p>';
+                `;
+            }).join('') : '<p class="text-slate-400 italic col-span-full text-center">No posts found for this category.</p>';
             lucide.createIcons();
         }
 
         function loadData() {
             allVlogs = JSON.parse(localStorage.getItem('solar_vlogs') || '[]');
             const photos = JSON.parse(localStorage.getItem('solar_photos') || '[]');
-            const videoId = localStorage.getItem('solar_featured_video') || 'dQw4w9WgXcQ';
+            const videoId = localStorage.getItem('solar_featured_video') || 'dQw4w9WgXcQ'; // Fallback to Rickroll if empty
 
+            // Embed correct YouTube ID
             document.getElementById('featured-video-iframe').src = `https://www.youtube.com/embed/${videoId}`;
 
             renderVlogs(allVlogs);
