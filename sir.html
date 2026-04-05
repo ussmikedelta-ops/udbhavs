@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USS | Site Intel v2.6 (Complete)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,600;0,800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <style>
+        :root { --uss-orange: #FF8C00; --uss-gold: #FFD700; --bg-base: #06080A; }
+        body { font-family: 'Exo 2', sans-serif; background: radial-gradient(circle at center, #111821 0%, #06080A 100%); color: #F0F6FC; margin: 0; padding: 50px 15px; }
+        .container { max-width: 920px; margin: auto; background: var(--bg-base); padding: 60px; border-radius: 10px; border: 1px solid #1F262E; position: relative; box-shadow: 0 0 80px rgba(0,0,0,0.9); }
+        .container::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #06080A, var(--uss-orange), var(--uss-gold), var(--uss-orange), #06080A); box-shadow: 0 0 20px var(--uss-orange); }
+        .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 45px; }
+        .brand-text h1 { margin: 0; font-family: 'Orbitron', sans-serif; font-size: 32px; font-weight: 900; letter-spacing: 3px; color: #FFF; line-height: 1; }
+        .brand-text h1 span { color: var(--uss-orange); }
+        .brand-text p { margin: 5px 0 0 0; font-size: 11px; color: var(--uss-orange); letter-spacing: 6px; font-weight: 800; text-transform: uppercase; }
+        #reportID { font-family: 'JetBrains Mono', monospace; font-size: 15px; color: var(--uss-orange); background: rgba(255, 140, 0, 0.05); padding: 8px 18px; border-radius: 4px; border: 1px solid rgba(255,140,0,0.4); display: block; margin-top: 5px; }
+        h3 { font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--uss-orange); text-transform: uppercase; margin: 50px 0 25px; display: flex; align-items: center; gap: 20px; letter-spacing: 3px; }
+        h3::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(255,140,0,0.3), transparent); }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; }
+        label { display: block; font-size: 11px; font-weight: 800; color: #8B949E; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px; }
+        input, textarea, select { width: 100%; padding: 15px; background: #0D1117; border: 1px solid #21262D; border-radius: 6px; color: #FFF; font-size: 15px; font-family: 'Exo 2', sans-serif; box-sizing: border-box; transition: 0.3s; }
+        input:hover, select:hover { border-color: var(--uss-orange); background: #12171E; }
+        .full-row { grid-column: span 2; }
+        .panel-glass { background: linear-gradient(135deg, rgba(255,140,0,0.05) 0%, rgba(0,0,0,0) 100%); padding: 35px; border-radius: 8px; border: 1px solid rgba(255,140,0,0.15); margin: 30px 0; }
+        textarea { min-height: 150px; border-left: 5px solid var(--uss-orange); }
+        .footer { margin-top: 70px; display: flex; justify-content: space-between; align-items: flex-end; padding-top: 35px; border-top: 1px solid #21262D; }
+        .sig-underline { border-bottom: 2px solid var(--uss-orange); height: 50px; width: 300px; }
+        .sig-underline input { background: transparent; border: none; font-weight: 800; font-size: 18px; color: var(--uss-orange); box-shadow: none; }
+        .no-print { text-align: center; margin-top: 70px; }
+        .btn-uss-prime { background: linear-gradient(90deg, #FF8C00, #FF4500); color: #FFF; padding: 22px 90px; border: none; border-radius: 5px; font-family: 'Orbitron', sans-serif; font-size: 17px; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 4px; box-shadow: 0 0 35px rgba(255, 69, 0, 0.5); }
+    </style>
+</head>
+<body>
+
+<div class="container" id="report-content">
+    <div class="header">
+        <div class="brand-text"><h1>UDBHAV <span>SOLAR</span></h1><p>Advanced Site Intel</p></div>
+        <div class="id-badge"><label>REPORT ENCRYPTION ID</label><span id="reportID">USS/LOADING...</span></div>
+    </div>
+
+    <h3>01. Customer Profile</h3>
+    <div class="grid">
+        <div class="form-group"><label>Customer Name</label><input type="text" id="custName" placeholder="Full Legal Name"></div>
+        <div class="form-group"><label>Mobile Number</label><input type="text" id="mobile" placeholder="+91"></div>
+        <div class="form-group"><label>Contact Person</label><input type="text" id="contact" placeholder="Liaison Name"></div>
+        <div class="form-group"><label>Annual Usage (kWh)</label><input type="text" id="usage" placeholder="Units per Year"></div>
+        <div class="form-group full-row"><label>Site Installation Address</label><input type="text" id="address"></div>
+    </div>
+
+    <div class="panel-glass">
+        <label style="color: var(--uss-orange); font-family: 'Orbitron';">Verification Ledger</label>
+        <div class="grid" style="margin-top:20px;">
+            <div class="form-group"><label>Correction Needed?</label><select id="corrNeeded"><option>No</option><option>Yes</option></select></div>
+            <div class="form-group"><label>Existing Name (On Bill)</label><input type="text" id="oldName"></div>
+            <div class="form-group full-row"><label>Final Corrected Name (For Portal)</label><input type="text" id="newName"></div>
+        </div>
+    </div>
+
+    <h3>02. Utility & Load Matrix</h3>
+    <div class="grid">
+        <div class="form-group"><label>DISCOM Name</label><input type="text" id="discom"></div>
+        <div class="form-group"><label>K No / CA No</label><input type="text" id="kno"></div>
+        <div class="form-group"><label>Sanctioned Load (kW)</label><input type="text" id="sLoad"></div>
+        <div class="form-group"><label>Proposed Capacity (kW)</label><input type="text" id="tLoad"></div>
+    </div>
+
+    <h3>03. Site Geometrics</h3>
+    <div class="grid">
+        <div class="form-group"><label>Net Roof Area (Sq Ft)</label><input type="text" id="area"></div>
+        <div class="form-group"><label>Area Sufficient?</label><select id="aSuff"><option>Yes</option><option>No</option></select></div>
+        <div class="form-group"><label>Front Leg (ft)</label><input type="text" id="fLeg"></div>
+        <div class="form-group"><label>Back Leg (ft)</label><input type="text" id="bLeg"></div>
+        <div class="form-group"><label>Solar Tilt Angle (°)</label><input type="text" id="angle"></div>
+        <div class="form-group"><label>Civil Work Status</label><input type="text" id="civil"></div>
+    </div>
+
+    <h3>04. Engineering Observations</h3>
+    <div class="grid">
+        <div class="form-group"><label>DC Cable Estimate (m)</label><input type="text" id="dcW"></div>
+        <div class="form-group"><label>AC Cable Estimate (m)</label><input type="text" id="acW"></div>
+        <div class="form-group full-row"><label>Earthing & LA Protection Config</label><input type="text" id="earthW"></div>
+        <div class="form-group full-row"><label>Detailed Survey Comments</label><textarea id="comments" placeholder="Shadow paths, structural integrity..."></textarea></div>
+    </div>
+
+    <div class="footer">
+        <div class="sig-block"><label>Authorized Site Engineer</label><div class="sig-underline"><input type="text" id="inspector" placeholder="Type Name to Sign"></div></div>
+        <div style="text-align: right; color: #484F58;"><strong style="color: var(--uss-orange);">UDBHAV SOLAR SOLUTIONS</strong><br>Ajmer, Rajasthan<br><span style="font-size: 10px; font-family: 'JetBrains Mono';">v2.6.SITE-APP-2026</span></div>
+    </div>
+</div>
+
+<div class="no-print"><button class="btn-uss-prime" onclick="saveDataAsPDF()">Move Data to PDF & Save</button></div>
+
+<script>
+    function refreshTracker() {
+        const now = new Date();
+        const dd = String(now.getDate()).padStart(2, '0');
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const yyyy = now.getFullYear();
+        const hh = String(now.getHours()).padStart(2, '0');
+        const min = String(now.getMinutes()).padStart(2, '0');
+        const ss = String(now.getSeconds()).padStart(2, '0');
+        document.getElementById('reportID').innerText = `USS/${dd}/${mm}/${yyyy}/${hh}${min}/${ss}`;
+    }
+    const timer = setInterval(refreshTracker, 1000);
+    refreshTracker();
+
+    function saveDataAsPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        clearInterval(timer);
+
+        // Helper function to get clean data
+        const val = (id) => document.getElementById(id).value || "N/A";
+
+        // PDF STYLING & DRAWING
+        doc.setFillColor(6, 8, 10); doc.rect(0, 0, 210, 297, 'F'); // Full Dark BG
+        doc.setTextColor(255, 140, 0); doc.setFont("helvetica", "bold"); doc.setFontSize(22);
+        doc.text("UDBHAV SOLAR SOLUTIONS", 20, 25);
+        
+        doc.setFontSize(10); doc.text("REPORT ID: " + document.getElementById('reportID').innerText, 20, 35);
+        doc.setDrawColor(255, 140, 0); doc.line(20, 38, 190, 38);
+
+        // 01. Customer Data
+        doc.setTextColor(255, 255, 255); doc.setFontSize(12); doc.text("01. CUSTOMER PROFILE", 20, 50);
+        doc.setTextColor(180, 180, 180); doc.setFontSize(10);
+        doc.text(`Name: ${val('custName')} | Contact Person: ${val('contact')}`, 20, 60);
+        doc.text(`Mobile: ${val('mobile')} | Annual Usage: ${val('usage')} kWh`, 20, 67);
+        doc.text(`Address: ${val('address')}`, 20, 74);
+        doc.text(`Correction Needed: ${val('corrNeeded')} | Final Name: ${val('newName')}`, 20, 81);
+
+        // 02. Utility Data
+        doc.setTextColor(255, 255, 255); doc.setFontSize(12); doc.text("02. UTILITY & LOAD", 20, 95);
+        doc.setTextColor(180, 180, 180); doc.setFontSize(10);
+        doc.text(`DISCOM: ${val('discom')} | K No: ${val('kno')}`, 20, 105);
+        doc.text(`Sanc. Load: ${val('sLoad')} kW | Proposed Plant: ${val('tLoad')} kW`, 20, 112);
+
+        // 03. Geometrics
+        doc.setTextColor(255, 255, 255); doc.setFontSize(12); doc.text("03. SITE GEOMETRICS", 20, 125);
+        doc.setTextColor(180, 180, 180); doc.setFontSize(10);
+        doc.text(`Net Roof Area: ${val('area')} sqft | Sufficiency: ${val('aSuff')}`, 20, 135);
+        doc.text(`Front Leg: ${val('fLeg')}ft | Back Leg: ${val('bLeg')}ft | Tilt: ${val('angle')} deg`, 20, 142);
+        doc.text(`Civil Status: ${val('civil')}`, 20, 149);
+
+        // 04. Observations
+        doc.setTextColor(255, 255, 255); doc.setFontSize(12); doc.text("04. OBSERVATIONS & ELECTRICAL", 20, 165);
+        doc.setTextColor(180, 180, 180); doc.setFontSize(10);
+        doc.text(`DC Cable: ${val('dcW')}m | AC Cable: ${val('acW')}m`, 20, 175);
+        doc.text(`Earthing/LA Config: ${val('earthW')}`, 20, 182);
+        const splitComments = doc.splitTextToSize(val('comments'), 170);
+        doc.text(splitComments, 20, 189);
+
+        // Signature Footer
+        doc.setTextColor(255, 140, 0); doc.setFontSize(11); doc.text("Authorized Signature: " + val('inspector'), 20, 270);
+        doc.setFontSize(8); doc.text("USS SITE-INTEL v2.6 GENERATED DATA", 20, 280);
+
+        doc.save(`USS_${val('custName').replace(/\s+/g, '_')}.pdf`);
+    }
+</script>
+</body>
+</html>
