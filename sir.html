@@ -38,7 +38,7 @@
     <div id="capture-area">
         <header class="max-w-4xl mx-auto flex flex-wrap justify-between items-center mb-8 gap-4 border-b border-white/5 pb-6">
             <div class="flex items-center gap-4">
-                <img src="unnamed.jpg" alt="USS" class="w-12 h-12 rounded-xl bg-white p-1">
+                <img src="unnamd.jpg" alt="USS" class="w-12 h-12 rounded-xl bg-white p-1">
                 <div>
                     <h1 class="text-2xl font-black uppercase tracking-tighter italic">SITE INSPECTION <span class="text-orange-500">REPORT</span></h1>
                     <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em]">Udbhav Solar Solutions</p>
@@ -241,10 +241,12 @@
     </div>
 
     <script>
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx3spQJvP456vpiIdoERR7PqM2HgQkDSB3C9UN17IU7WC1ctpW9HKMQdqC7e12yem5m0A/exec"; // REPLACE with your deployed Web App URL
         const RESULTS_PER_PAGE = 2;
         let searchData = [];
         let currentSearchPage = 0;
         if (typeof lucide !== 'undefined') lucide.createIcons();
+
         window.addEventListener('DOMContentLoaded', () => {
             const d = new Date();
             const mon = String(d.getMonth() + 1).padStart(2, '0');
@@ -257,12 +259,15 @@
                 if (lt) lt.innerText = new Date().toLocaleString();
             }, 1000);
         });
+
         function togglePanel(id, val) {
             document.getElementById(id).style.display = (val === 'YES') ? 'grid' : 'none';
         }
+
         function closeModal() {
             document.getElementById('searchModal').style.display = 'none';
         }
+
         function updateLabel(input) {
             const p = input.parentElement.querySelector('p');
             if (input.files.length) {
@@ -271,6 +276,7 @@
                 p.className = "text-[10px] text-orange-500 font-black mt-2 uppercase";
             }
         }
+
         function handleImageUpload(input, title) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -291,6 +297,7 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
+
         function getLocation() {
             const disp = document.getElementById('locationCoords');
             disp.value = "Fetching GPS...";
@@ -299,6 +306,7 @@
                 () => { alert("Enable GPS Access"); disp.value = "ERROR"; }
             );
         }
+
         function setFormReadOnly(readOnly) {
             const inputs = document.querySelectorAll('#sirForm input, #sirForm select, #sirForm textarea');
             inputs.forEach(inp => {
@@ -312,6 +320,7 @@
             document.getElementById('submitBtn').disabled = readOnly;
             document.getElementById('downloadBtn').disabled = readOnly;
         }
+
         function createNewReport() {
             document.getElementById('sirForm').reset();
             document.getElementById('attachment-container').innerHTML = '';
@@ -334,6 +343,7 @@
             document.getElementById('downloadBtn').innerHTML = '<i data-lucide="download"></i> Save PDF to Device';
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
+
         async function initSearch() {
             const name = document.getElementById('searchInput').value.trim();
             if (!name) return alert("Enter customer name first!");
@@ -341,17 +351,19 @@
             list.innerHTML = '<p class="text-center font-bold text-slate-500 animate-pulse py-10 uppercase">Accessing Udbhav Cloud...</p>';
             document.getElementById('searchModal').style.display = 'flex';
             document.getElementById('pdfLocSection').style.display = 'none';
+
             try {
-                const response = await fetch("/generate-and-upload?action=search&name=" + encodeURIComponent(name));
+                const response = await fetch(WEB_APP_URL + "?action=search&name=" + encodeURIComponent(name));
                 const data = await response.json();
                 if (data.error) throw new Error(data.error);
                 searchData = data.results || data || [];
                 currentSearchPage = 0;
                 renderSearchResults();
             } catch (e) {
-                list.innerHTML = '<p class="text-center py-10 text-red-500 font-bold">Connection error.</p>';
+                list.innerHTML = '<p class="text-center py-10 text-red-500 font-bold">Connection error. Check URL.</p>';
             }
         }
+
         function renderSearchResults() {
             const list = document.getElementById('resultsList');
             list.innerHTML = '';
@@ -366,6 +378,7 @@
             const totalPages = Math.ceil(total / RESULTS_PER_PAGE);
             const start = currentSearchPage * RESULTS_PER_PAGE;
             const pageData = searchData.slice(start, start + RESULTS_PER_PAGE);
+
             pageData.forEach(res => {
                 const btn = document.createElement('button');
                 btn.className = "w-full text-left p-4 bg-white/5 border border-white/10 rounded-2xl hover:border-orange-500 transition-all group";
@@ -373,15 +386,18 @@
                 btn.onclick = () => loadData(res);
                 list.appendChild(btn);
             });
+
             document.getElementById('pageIndicator').textContent = `Page ${currentSearchPage + 1} of ${totalPages}`;
             document.getElementById('prevBtn').disabled = currentSearchPage === 0;
             document.getElementById('nextBtn').disabled = currentSearchPage >= totalPages - 1;
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
+
         function changeSearchPage(dir) {
             currentSearchPage = Math.max(0, Math.min(currentSearchPage + dir, Math.ceil(searchData.length / RESULTS_PER_PAGE) - 1));
             renderSearchResults();
         }
+
         function loadData(record) {
             const r = record;
             document.getElementById('sirId').value = r.sirId || '';
@@ -415,6 +431,7 @@
             document.getElementById('acWire').value = r.acWire || '';
             document.getElementById('laWire').value = r.laWire || '';
             document.getElementById('engComments').value = r.engComments || '';
+
             if (r.pdfLoc) {
                 document.getElementById('pdfLocLink').href = r.pdfLoc;
                 document.getElementById('pdfLocText').textContent = r.pdfLoc.length > 50 ? r.pdfLoc.substring(0, 50) + '...' : r.pdfLoc;
@@ -422,9 +439,11 @@
             } else {
                 document.getElementById('pdfLocSection').style.display = 'none';
             }
+
             setFormReadOnly(true);
             closeModal();
         }
+
         async function buildPDFBlob() {
             const element = document.getElementById('capture-area');
             const canvas = await html2canvas(element, {
@@ -438,6 +457,7 @@
             pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, pdfWidth, pdfHeight);
             return { pdf, base64: pdf.output('datauristring').split(',')[1] };
         }
+
         async function downloadPDFOnly() {
             const btn = document.getElementById('downloadBtn');
             btn.disabled = true;
@@ -454,25 +474,31 @@
             }
             btn.disabled = false;
         }
+
         document.getElementById('sirForm').onsubmit = async function(e) {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
             btn.innerHTML = "GENERATING PDF & UPLOADING...";
+
             try {
                 const { base64 } = await buildPDFBlob();
                 const formData = new FormData(this);
                 const obj = { pdfFile: base64 };
+
                 for (let [k, v] of formData.entries()) {
                     if (!(v instanceof File)) obj[k] = v;
                 }
-                const response = await fetch("/generate-and-upload", {
+
+                const response = await fetch(WEB_APP_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ data: obj })
+                    headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+                    body: JSON.stringify(obj)
                 });
-                
-                const result = await response.json();
+                const text = await response.text();
+                let result;
+                try { result = JSON.parse(text); } catch (_) { result = { status: 'Error', message: text || 'Invalid response' }; }
+
                 if (result.status === "Success") {
                     alert("SIR SAVED!\nPDF Uploaded to Drive. Data saved to Sheets.");
                     location.reload();
@@ -483,7 +509,7 @@
                 }
             } catch (e) {
                 console.error(e);
-                alert("Upload failed: " + (e.message || "Check connection"));
+                alert("Upload failed: " + (e.message || "Check connection") + "\n\nIf PDF is very large, try fewer attachments.");
                 btn.innerHTML = "Submit to Cloud (Sheets + Drive)";
                 btn.disabled = false;
             }
