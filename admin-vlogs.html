@@ -3,36 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control Panel | Udbhav Solar</title>
+    <title>Udbhav Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; }
+        .glass-panel { background: #1e293b; border: 1px solid #334155; }
+        .input-dark { background: #0f172a; border: 1px solid #334155; color: white; width: 100%; padding: 0.75rem; border-radius: 0.5rem; outline: none; }
+        .input-dark:focus { border-color: #f97316; }
+    </style>
 </head>
-<body class="bg-slate-50 p-8">
+<body class="p-8 font-sans">
     <div class="max-w-6xl mx-auto">
-        <div class="flex justify-between items-center mb-10">
-            <h1 class="text-2xl font-black text-blue-900">VLOG MANAGER</h1>
-            <button onclick="openModal()" class="bg-orange-500 text-white px-6 py-2 rounded-xl font-bold text-sm shadow-lg hover:bg-orange-600">ADD NEW POST</button>
-        </div>
+        <header class="flex justify-between items-center mb-10 border-b border-slate-700 pb-6">
+            <div>
+                <h1 class="text-3xl font-black text-white tracking-wider"><span class="text-orange-500">UDBHAV</span> ADMIN</h1>
+                <p class="text-slate-400 text-sm mt-1">Manage Vlogs, Articles, and Gallery</p>
+            </div>
+            <div class="flex gap-4">
+                <button onclick="openModal('photo-modal')" class="bg-[#1e293b] border border-slate-600 text-white px-5 py-2 rounded-lg font-bold hover:border-orange-500 transition flex items-center gap-2"><i data-lucide="image" class="w-4 h-4"></i> Add Photo</button>
+                <button onclick="openModal('vlog-modal')" class="bg-orange-600 text-white px-5 py-2 rounded-lg font-bold hover:bg-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.4)] transition flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Create Post</button>
+            </div>
+        </header>
 
-        <div id="admin-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        <h2 class="text-xl font-bold mb-4 text-orange-500">Published Content</h2>
+        <div id="admin-vlog-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"></div>
+
+        <h2 class="text-xl font-bold mb-4 text-orange-500 border-t border-slate-700 pt-8">Installation Gallery</h2>
+        <div id="admin-photo-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
     </div>
 
-    <div id="vlog-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-[2rem] p-8 w-full max-w-lg">
-            <h2 class="text-xl font-black text-blue-900 mb-6">Create Post</h2>
+    <div id="vlog-modal" class="fixed inset-0 bg-black/80 hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-panel rounded-2xl p-8 w-full max-w-xl shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+            <h2 class="text-xl font-black text-white mb-6">Content Editor</h2>
             <form id="vlog-form" class="space-y-4">
-                <select id="vlog-category" class="w-full p-3 bg-slate-100 rounded-xl text-sm outline-none">
+                <input type="hidden" id="vlog-index" value="-1">
+                <select id="vlog-category" class="input-dark">
                     <option value="News">News</option>
-                    <option value="Project">Project</option>
-                    <option value="Subsidy">Subsidy</option>
+                    <option value="Installation">Installation</option>
+                    <option value="Technical Guide">Technical Guide</option>
+                    <option value="Solar Update">Solar Update</option>
                 </select>
-                <input type="text" id="vlog-title" placeholder="Post Title" class="w-full p-3 bg-slate-100 rounded-xl text-sm outline-none">
-                <input type="text" id="vlog-link" placeholder="YouTube Link (e.g. https://youtu.be/...)" class="w-full p-3 bg-slate-100 rounded-xl text-sm outline-none">
-                <input type="text" id="vlog-image" placeholder="Thumbnail URL" class="w-full p-3 bg-slate-100 rounded-xl text-sm outline-none">
-                <textarea id="vlog-desc" placeholder="Brief Description" class="w-full p-3 bg-slate-100 rounded-xl text-sm h-32 outline-none"></textarea>
-                <div class="flex gap-3">
-                    <button type="button" onclick="saveVlog()" class="flex-1 bg-blue-900 text-white p-3 rounded-xl font-bold">SAVE POST</button>
-                    <button type="button" onclick="closeModal()" class="px-6 bg-slate-200 p-3 rounded-xl font-bold">CANCEL</button>
+                <input type="text" id="vlog-title" placeholder="Post Title" class="input-dark" required>
+                <input type="text" id="vlog-link" placeholder="YouTube Link (Optional)" class="input-dark">
+                <input type="text" id="vlog-image" placeholder="Image URL (Leave empty for udbhav.jpg)" class="input-dark">
+                <textarea id="vlog-desc" placeholder="Write your article or video description here..." class="input-dark h-32" required></textarea>
+                
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="saveVlog()" class="flex-1 bg-orange-600 text-white p-3 rounded-lg font-bold hover:bg-orange-500">SAVE CONTENT</button>
+                    <button type="button" onclick="closeModal('vlog-modal')" class="px-6 bg-slate-700 text-white p-3 rounded-lg font-bold hover:bg-slate-600">CANCEL</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="photo-modal" class="fixed inset-0 bg-black/80 hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-panel rounded-2xl p-8 w-full max-w-sm">
+            <h2 class="text-xl font-black text-white mb-6">Add Installation Photo</h2>
+            <form id="photo-form" class="space-y-4">
+                <input type="text" id="photo-url" placeholder="Image URL (Empty = udbhav.jpg)" class="input-dark">
+                <input type="text" id="photo-caption" placeholder="Caption (e.g. 5kW Plant in Ajmer)" class="input-dark" required>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="savePhoto()" class="flex-1 bg-orange-600 text-white p-3 rounded-lg font-bold hover:bg-orange-500">ADD</button>
+                    <button type="button" onclick="closeModal('photo-modal')" class="px-6 bg-slate-700 text-white p-3 rounded-lg font-bold">CANCEL</button>
                 </div>
             </form>
         </div>
@@ -40,54 +73,100 @@
 
     <script>
         let vlogs = JSON.parse(localStorage.getItem('solar_vlogs') || '[]');
+        let photos = JSON.parse(localStorage.getItem('solar_photos') || '[]');
+        const DEFAULT_IMG = "udbhav.jpg";
 
         function renderAdmin() {
-            const grid = document.getElementById('admin-grid');
-            grid.innerHTML = vlogs.map((v, i) => `
-                <div class="bg-white p-4 rounded-3xl border shadow-sm relative">
-                    <img src="${v.thumbnail || v.image}" class="h-32 w-full object-cover rounded-2xl mb-4">
-                    <h3 class="font-bold text-blue-900 mb-1 truncate">${v.title}</h3>
-                    <div class="flex justify-between items-center mt-4">
-                        <span class="text-[10px] bg-orange-100 text-orange-600 px-3 py-1 rounded-full font-bold">${v.category}</span>
+            // Render Vlogs
+            const vGrid = document.getElementById('admin-vlog-grid');
+            vGrid.innerHTML = vlogs.map((v, i) => `
+                <div class="glass-panel p-4 rounded-xl flex flex-col">
+                    <div class="flex gap-4 mb-3">
+                        <img src="${v.image || v.thumbnail || DEFAULT_IMG}" class="w-20 h-20 object-cover rounded-lg" onerror="this.src='${DEFAULT_IMG}'">
+                        <div>
+                            <span class="text-[10px] text-orange-500 font-bold uppercase tracking-widest">${v.category}</span>
+                            <h3 class="font-bold text-white text-sm line-clamp-2">${v.title}</h3>
+                        </div>
+                    </div>
+                    <div class="mt-auto flex justify-between gap-2 border-t border-slate-700 pt-3">
+                        ${v.link ? `<button onclick="setFeatured(${i})" class="flex-1 text-xs bg-slate-800 text-yellow-500 py-2 rounded font-bold hover:bg-slate-700">FEATURE</button>` : '<div></div>'}
                         <div class="flex gap-2">
-                            <button onclick="setFeatured(${i})" class="p-2 bg-yellow-100 text-yellow-600 rounded-lg" title="Set as Featured"><i data-lucide="star" class="w-4 h-4"></i></button>
-                            <button onclick="deleteVlog(${i})" class="p-2 bg-red-100 text-red-600 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            <button onclick="editVlog(${i})" class="p-2 bg-slate-800 text-blue-400 rounded hover:bg-slate-700"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                            <button onclick="deleteData('vlogs', ${i})" class="p-2 bg-slate-800 text-red-500 rounded hover:bg-slate-700"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>
                     </div>
                 </div>
             `).join('');
+
+            // Render Photos
+            const pGrid = document.getElementById('admin-photo-grid');
+            pGrid.innerHTML = photos.map((p, i) => `
+                <div class="relative group rounded-lg overflow-hidden border border-slate-700 aspect-square">
+                    <img src="${p.url || DEFAULT_IMG}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_IMG}'">
+                    <button onclick="deleteData('photos', ${i})" class="absolute top-2 right-2 bg-red-600 text-white p-1.5 rounded opacity-0 group-hover:opacity-100 transition"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                </div>
+            `).join('');
+            
             lucide.createIcons();
         }
 
+        // CRUD Operations
         function saveVlog() {
-            const newVlog = {
+            const idx = parseInt(document.getElementById('vlog-index').value);
+            const obj = {
                 category: document.getElementById('vlog-category').value,
                 title: document.getElementById('vlog-title').value,
                 link: document.getElementById('vlog-link').value,
                 image: document.getElementById('vlog-image').value,
                 description: document.getElementById('vlog-desc').value
             };
-            vlogs.push(newVlog);
+            if(idx >= 0) vlogs[idx] = obj;
+            else vlogs.push(obj);
+            
             localStorage.setItem('solar_vlogs', JSON.stringify(vlogs));
-            closeModal();
+            closeModal('vlog-modal');
             renderAdmin();
         }
 
-        function setFeatured(index) {
-            localStorage.setItem('featured_vlog_url', vlogs[index].link);
-            alert("This video is now featured at the top of Vlogs!");
+        function editVlog(i) {
+            const v = vlogs[i];
+            document.getElementById('vlog-index').value = i;
+            document.getElementById('vlog-category').value = v.category;
+            document.getElementById('vlog-title').value = v.title;
+            document.getElementById('vlog-link').value = v.link || '';
+            document.getElementById('vlog-image').value = v.image || v.thumbnail || '';
+            document.getElementById('vlog-desc').value = v.description;
+            openModal('vlog-modal');
         }
 
-        function deleteVlog(index) {
-            if(confirm("Delete this post?")) {
-                vlogs.splice(index, 1);
-                localStorage.setItem('solar_vlogs', JSON.stringify(vlogs));
-                renderAdmin();
-            }
+        function savePhoto() {
+            photos.push({
+                url: document.getElementById('photo-url').value,
+                caption: document.getElementById('photo-caption').value
+            });
+            localStorage.setItem('solar_photos', JSON.stringify(photos));
+            closeModal('photo-modal');
+            renderAdmin();
         }
 
-        function openModal() { document.getElementById('vlog-modal').classList.remove('hidden'); }
-        function closeModal() { document.getElementById('vlog-modal').classList.add('hidden'); }
+        function deleteData(type, i) {
+            if(!confirm("Are you sure?")) return;
+            if(type === 'vlogs') { vlogs.splice(i, 1); localStorage.setItem('solar_vlogs', JSON.stringify(vlogs)); }
+            if(type === 'photos') { photos.splice(i, 1); localStorage.setItem('solar_photos', JSON.stringify(photos)); }
+            renderAdmin();
+        }
+
+        function setFeatured(i) {
+            localStorage.setItem('featured_vlog_url', vlogs[i].link);
+            alert("Video featured successfully on main site!");
+        }
+
+        // Modal Controls
+        function openModal(id) { 
+            if(id==='vlog-modal') document.getElementById('vlog-form').reset();
+            document.getElementById(id).classList.remove('hidden'); 
+        }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
         window.onload = renderAdmin;
     </script>
