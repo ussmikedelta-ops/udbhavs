@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- SEO Primary -->
     <title>Get Free Solar Quote | Udbhav Solar Solutions Ajmer</title>
     <meta name="description" content="Official Tata Solar retailer in Ajmer. Start your solar journey today with PM Surya Ghar Yojana subsidies. Get a free site survey.">
-    <link rel="icon" type="image/png" href="unnamed.jpg">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -96,7 +95,6 @@
 </head>
 <body class="bg-mesh min-h-screen">
 
-    <!-- Header -->
     <header class="w-full z-50 py-6 px-8 flex justify-between items-center border-b border-white/5 bg-slate-950/50 backdrop-blur-md">
         <div class="flex items-center gap-4">
             <img src="Donna Stroupe.jpg" alt="Udbhav Solar" class="h-12 w-12 rounded-full border-2 border-orange-500 shadow-lg shadow-orange-500/20">
@@ -111,10 +109,8 @@
     </header>
 
     <main class="max-w-7xl mx-auto px-6 py-8">
-        <!-- Main Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
 
-            <!-- Content Side -->
             <div class="space-y-10 order-2 lg:order-1">
                 <div class="space-y-6">
                     <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border-orange-500/20 text-orange-500 text-[10px] font-black uppercase tracking-widest">
@@ -128,7 +124,6 @@
                         Join 500+ families in Ajmer. Start your solar journey with <span class="text-white font-bold">₹95,000 subsidy</span> support.
                     </p>
 
-                    <!-- Toggle Button (Visible when form is hidden) -->
                     <div class="flex justify-center lg:justify-start">
                         <button id="toggleBtn" onclick="toggleInquiryForm()" class="pulse-btn inline-flex items-center gap-3 bg-orange-600 hover:bg-orange-500 text-white px-8 py-5 rounded-2xl font-black uppercase tracking-widest transition-all active:scale-95 shadow-2xl">
                             <i data-lucide="file-edit" class="w-5 h-5"></i>
@@ -137,7 +132,6 @@
                     </div>
                 </div>
 
-                <!-- Animated Trust Cards -->
                 <div class="grid gap-4">
                     <div class="trust-card p-5 rounded-3xl flex items-center gap-5 group">
                         <div class="h-14 w-14 rounded-2xl bg-orange-500/10 flex items-center justify-center text-orange-500 transition-colors">
@@ -171,7 +165,6 @@
                 </div>
             </div>
 
-            <!-- Form Side (Hidden by default, parallel alignment) -->
             <div id="formWrapper" class="relative order-1 lg:order-2 transition-all duration-500 opacity-0 transform translate-y-10 pointer-events-none hidden">
                 <div class="absolute -top-10 -right-10 w-64 h-64 bg-orange-600/10 rounded-full blur-[80px] -z-10 animate-pulse"></div>
 
@@ -187,6 +180,16 @@
                     </div>
 
                     <form id="queryForm" class="space-y-5">
+                        <div class="space-y-1.5 mb-4">
+                            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4">Your Unique Query ID</label>
+                            <div class="relative">
+                                <i data-lucide="hash" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-orange-500"></i>
+                                <input type="text" id="displayWQNO" name="WQNO" readonly 
+                                    class="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-800/50 border border-slate-700 text-orange-500 font-bold cursor-not-allowed"
+                                    placeholder="USS/JUN/01/1200/01">
+                            </div>
+                        </div>
+
                         <div class="space-y-1.5">
                             <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
                             <input type="text" id="name" name="Full Name" required placeholder="Enter Name"
@@ -231,15 +234,30 @@
         </div>
     </main>
 
-    <!-- Strictly preserved JS logic -->
     <script>
         lucide.createIcons();
+
+        // Function to generate the WQNO: USS/MONTH/DD/HHMM/SS
+        function generateWQNO() {
+            const now = new Date();
+            const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+            const month = months[now.getMonth()];
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const mins = String(now.getMinutes()).padStart(2, '0');
+            const secs = String(now.getSeconds()).padStart(2, '0');
+            return `USS/${month}/${day}/${hours}${mins}/${secs}`;
+        }
 
         function toggleInquiryForm() {
             const wrapper = document.getElementById('formWrapper');
             const toggleBtn = document.getElementById('toggleBtn');
+            const wqnoInput = document.getElementById('displayWQNO');
 
             if (wrapper.classList.contains('hidden')) {
+                // Generate and set the ID when form opens
+                wqnoInput.value = generateWQNO();
+                
                 wrapper.classList.remove('hidden');
                 setTimeout(() => {
                     wrapper.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
@@ -256,8 +274,7 @@
             }
         }
 
-        // 1. YOUR SCRIPT URL (UNCHANGED)
-        const scriptURL = "https://script.google.com/macros/s/AKfycbwOwFXWaAq5j5ylSy19zbi7uz-ii33TkieCntYq23DP4SuTQojeFfJYm00YUL2zykzR7g/exec"; 
+        const scriptURL = "https://script.google.com/macros/s/AKfycbw-qKFZz6XJtgDfbe0XGG1_RLFhdV3nm_tSF44wCjGfmR6COt7reWWTMKyOpoVnCs2Wbg/exec"; 
         const form = document.getElementById('queryForm');
 
         form.addEventListener('submit', e => {
@@ -268,26 +285,26 @@
             submitBtn.disabled = true;
             btnText.innerText = "Processing...";
 
-            // Capture Values
             const name = document.getElementById('name').value;
             const phone = document.getElementById('phone').value;
             const address = document.getElementById('address').value;
             const req = document.getElementById('requirements').value;
+            const wqno = document.getElementById('displayWQNO').value;
 
-            // 1. Submit to Google Sheets first to get the QNO
             fetch(scriptURL, { 
                 method: 'POST', 
                 body: new FormData(form) 
             })
             .then(response => response.json())
             .then(data => {
-                // Get the QNO returned from the Apps Script
                 const qno = data.qno || "NEW";
+                // We use our generated wqno as a backup/reference
+                const finalID = wqno;
 
-                // Format WhatsApp Message (Encoded for URLs) including the QNO
-                const text = `*NEW SOLAR QUERY* [${qno}]%0A` +
+                const text = `*NEW SOLAR QUERY* [${finalID}]%0A` +
                              `--------------------------%0A` +
-                             `*Query No:* ${qno}%0A` +
+                             `*Query ID:* ${finalID}%0A` +
+                             `*System QNO:* ${qno}%0A` +
                              `*Name:* ${encodeURIComponent(name)}%0A` +
                              `*Phone:* ${encodeURIComponent(phone)}%0A` +
                              `*Address:* ${encodeURIComponent(address)}%0A` +
@@ -295,16 +312,12 @@
                              `--------------------------%0A` +
                              `_Submitted via Website Portal_`;
 
-                // Official WhatsApp API link for +919660711101
                 const whatsappURL = `https://api.whatsapp.com/send?phone=919660711101&text=${text}`;
-
-                // 2. Redirect to WhatsApp immediately on success
                 window.location.href = whatsappURL;
             })
             .catch(error => {
                 console.error('Spreadsheet Error!', error.message);
-                // Fallback: Still open WhatsApp even if the sheet fails
-                const fallbackText = `*NEW SOLAR QUERY*%0A*Name:* ${encodeURIComponent(name)}%0A_Note: System busy, QID pending_`;
+                const fallbackText = `*NEW SOLAR QUERY*%0A*ID:* ${wqno}%0A*Name:* ${encodeURIComponent(name)}%0A_Note: Sheet sync pending_`;
                 window.location.href = `https://api.whatsapp.com/send?phone=919660711101&text=${fallbackText}`;
             });
         });
