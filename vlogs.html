@@ -11,6 +11,10 @@
         .glow-orange { border-color: #f97316; box-shadow: 0 0 20px rgba(249, 115, 22, 0.3); }
         .vlog-card:hover { transform: translateY(-5px); border-color: #f97316; box-shadow: 0 0 25px rgba(249, 115, 22, 0.2); }
         .modal-bg { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px); }
+        /* Custom Scrollbar for better UX */
+        #modal-content-area::-webkit-scrollbar { width: 6px; }
+        #modal-content-area::-webkit-scrollbar-track { background: #1e293b; }
+        #modal-content-area::-webkit-scrollbar-thumb { background: #f97316; border-radius: 10px; }
     </style>
 </head>
 <body class="font-sans antialiased">
@@ -45,18 +49,29 @@
     </main>
 
     <div id="detail-modal" class="fixed inset-0 z-[60] modal-bg hidden flex items-center justify-center p-4">
-        <div class="bg-[#1e293b] border border-slate-700 w-full max-w-4xl rounded-3xl overflow-hidden max-h-[90vh] flex flex-col relative">
-            <button onclick="closeModal()" class="absolute top-4 right-4 bg-black/50 p-2 rounded-full text-white z-10"><i data-lucide="x"></i></button>
-            <div id="modal-video-wrap" class="aspect-video bg-black hidden">
+        <div class="bg-[#1e293b] border border-slate-700 w-full max-w-4xl rounded-3xl overflow-hidden h-[90vh] flex flex-col relative shadow-2xl">
+            <button onclick="closeModal()" class="absolute top-4 right-4 bg-black/50 p-2 rounded-full text-white z-[70] hover:bg-orange-600 transition"><i data-lucide="x"></i></button>
+            
+            <div id="modal-video-wrap" class="shrink-0 aspect-video bg-black hidden">
                 <iframe id="modal-player" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
             </div>
-            <div class="p-8 overflow-y-auto">
-                <img id="modal-img" src="" class="w-full h-64 object-cover rounded-2xl mb-6 hidden">
-                <span id="modal-cat" class="text-orange-500 text-[10px] font-black uppercase tracking-widest"></span>
-                <h2 id="modal-title" class="text-2xl font-black mt-2 mb-4"></h2>
-                <p id="modal-desc" class="text-slate-400 leading-relaxed whitespace-pre-wrap"></p>
+
+            <div id="modal-content-area" class="p-8 overflow-y-auto flex-1 bg-gradient-to-b from-[#1e293b] to-[#0f172a]">
+                <img id="modal-img" src="" onclick="zoomPhoto(this.src)" class="w-full h-auto max-h-[500px] object-contain rounded-2xl mb-6 hidden cursor-zoom-in border border-slate-700 shadow-lg">
+                
+                <span id="modal-cat" class="text-orange-500 text-[10px] font-black uppercase tracking-widest px-2 py-1 bg-orange-500/10 rounded-md"></span>
+                <h2 id="modal-title" class="text-3xl font-black mt-4 mb-6 text-white"></h2>
+                
+                <div class="w-12 h-1 bg-orange-500 mb-6 rounded-full"></div>
+                
+                <p id="modal-desc" class="text-slate-300 text-lg leading-relaxed whitespace-pre-wrap pb-10"></p>
             </div>
         </div>
+    </div>
+
+    <div id="zoom-modal" class="fixed inset-0 z-[100] bg-black/95 hidden flex items-center justify-center p-4 cursor-zoom-out" onclick="this.classList.add('hidden')">
+        <button class="absolute top-8 right-8 text-white p-2 bg-white/10 rounded-full hover:bg-red-600 transition"><i data-lucide="x"></i></button>
+        <img id="zoomed-image" src="" class="max-w-full max-h-full rounded-lg shadow-2xl object-contain animate-in zoom-in duration-300">
     </div>
 
     <script>
@@ -65,7 +80,7 @@
 
         function getYouTubeID(url) {
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-            const match = url.match(regExp);
+            const match = (url || "").match(regExp);
             return (match && match[2].length === 11) ? match[2] : null;
         }
 
@@ -73,11 +88,13 @@
             vlogs = JSON.parse(localStorage.getItem('solar_vlogs') || '[]');
             photos = JSON.parse(localStorage.getItem('solar_photos') || '[]');
             
-            // Handle Dedicated Player
             const featUrl = localStorage.getItem('featured_video');
             if(featUrl) {
-                document.getElementById('main-player').src = `https://www.youtube.com/embed/${getYouTubeID(featUrl)}`;
-                document.getElementById('featured-box').classList.remove('hidden');
+                const vid = getYouTubeID(featUrl);
+                if(vid) {
+                    document.getElementById('main-player').src = `https://www.youtube.com/embed/${vid}`;
+                    document.getElementById('featured-box').classList.remove('hidden');
+                }
             }
 
             renderVlogs(vlogs);
@@ -101,10 +118,17 @@
 
         function renderPhotos() {
             document.getElementById('photo-grid').innerHTML = photos.map(p => `
-                <div class="aspect-square rounded-2xl overflow-hidden border border-slate-800 hover:border-orange-500 transition cursor-zoom-in">
-                    <img src="${p.url}" class="w-full h-full object-cover">
+                <div class="aspect-square rounded-2xl overflow-hidden border border-slate-800 hover:border-orange-500 transition cursor-zoom-in group" onclick="zoomPhoto('${p.url}')">
+                    <img src="${p.url}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
                 </div>
             `).join('');
+            lucide.createIcons();
+        }
+
+        function zoomPhoto(src) {
+            const zModal = document.getElementById('zoom-modal');
+            document.getElementById('zoomed-image').src = src;
+            zModal.classList.remove('hidden');
         }
 
         function openDetails(idx) {
@@ -116,6 +140,9 @@
             document.getElementById('modal-title').innerText = v.title;
             document.getElementById('modal-desc').innerText = v.description;
             
+            // Scroll content back to top when opening new vlog
+            document.getElementById('modal-content-area').scrollTop = 0;
+
             if(videoId) {
                 document.getElementById('modal-player').src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
                 document.getElementById('modal-video-wrap').classList.remove('hidden');
@@ -128,14 +155,24 @@
             }
             
             modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
         }
 
         function closeModal() {
             document.getElementById('detail-modal').classList.add('hidden');
             document.getElementById('modal-player').src = '';
+            document.body.style.overflow = 'auto'; // Re-enable background scrolling
         }
 
         function filter(cat) {
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => {
+                if(btn.innerText.toLowerCase() === cat.toLowerCase() || (cat === 'all' && btn.innerText.toLowerCase() === 'all')) {
+                    btn.classList.add('border-orange-500', 'text-orange-500');
+                } else {
+                    btn.classList.remove('border-orange-500', 'text-orange-500');
+                }
+            });
             renderVlogs(cat === 'all' ? vlogs : vlogs.filter(v => v.category === cat));
         }
 
