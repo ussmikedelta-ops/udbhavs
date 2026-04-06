@@ -3,502 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control Panel | Udbhav Solar Solutions</title>
-
-    <link rel="icon" type="image/jpeg" href="Donna Stroupe.jpg">
-
+    <title>Control Panel | Udbhav Solar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <script>
-        (function() {
-            function verifyAccess() {
-                const isAuthenticated = sessionStorage.getItem("isSolarAdmin") === "true";
-                const adminName = sessionStorage.getItem("adminName");
-
-                if (!isAuthenticated || !adminName) {
-                    sessionStorage.clear();
-                    window.location.replace("lallu.html");
-                    return false;
-                }
-                return true;
-            }
-
-            if (verifyAccess()) {
-                setInterval(verifyAccess, 5000);
-            }
-        })();
-    </script>
-
-    <style>
-        .glass-morphism { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        .admin-card { background: white; border: 1px solid #e2e8f0; border-radius: 1.5rem; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        input[type="text"], input[type="url"], input[type="password"], textarea, select {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.75rem;
-            margin-top: 0.5rem;
-            font-size: 0.875rem;
-            background: #f8fafc;
-        }
-        input:focus, textarea:focus, select:focus { outline: none; border-color: #f97316; box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2); }
-        label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; }
-        
-        .modal-enter { animation: fadeIn 0.2s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-    </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen">
-
-    <nav class="glass-morphism fixed w-full z-40 border-b border-gray-200 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-20 items-center">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white shadow-lg">
-                        <i data-lucide="sun" class="w-6 h-6"></i>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="font-black text-blue-900 uppercase tracking-tight text-md leading-none">Admin Panel</span>
-                        <span class="text-[10px] font-bold text-orange-600 tracking-widest uppercase">Udbhav Solar</span>
-                    </div>
-                </div>
-                <div class="flex space-x-6 font-bold text-xs uppercase tracking-wider items-center">
-                    <button onclick="openGithubModal()" class="text-slate-500 hover:text-slate-800 transition flex items-center gap-2" title="GitHub Setup">
-                        <i data-lucide="settings" class="w-5 h-5"></i> Setup
-                    </button>
-                    <button onclick="exportData()" class="text-blue-600 hover:text-blue-800 transition flex items-center gap-2">
-                        <i data-lucide="download" class="w-4 h-4"></i> Backup
-                    </button>
-                    <button onclick="logout()" class="text-red-600 hover:text-red-800 transition flex items-center gap-2">
-                        <i data-lucide="log-out" class="w-4 h-4"></i> Logout
-                    </button>
-                    <a href="sir.html" class="text-red-600 hover:text-red-800 transition flex items-center gap-2">
-    <i data-lucide="log-out" class="w-4 h-4"></i> SIR
-</a>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <main class="pt-32 pb-16 px-6 max-w-5xl mx-auto">
-        <div class="mb-10 flex items-center justify-between bg-blue-900 p-8 rounded-3xl text-white shadow-xl">
-            <div>
-                <h1 class="text-2xl font-black uppercase tracking-tight">Welcome, <span id="admin-display-name" class="text-orange-500">Admin</span></h1>
-                <p class="text-xs font-bold text-blue-200 uppercase tracking-widest mt-2">Content Management System Active</p>
-            </div>
-            <i data-lucide="shield-check" class="w-16 h-16 text-orange-500 opacity-80"></i>
+<body class="bg-slate-50 p-8">
+    <div class="max-w-6xl mx-auto">
+        <div class="flex justify-between items-center mb-10">
+            <h1 class="text-2xl font-black text-blue-900">VLOG MANAGER</h1>
+            <button onclick="openModal()" class="bg-orange-500 text-white px-6 py-2 rounded-xl font-bold text-sm shadow-lg hover:bg-orange-600">ADD NEW POST</button>
         </div>
 
-        <section class="mb-12">
-            <div class="flex items-center gap-4 mb-6">
-                <div class="p-2 bg-red-100 rounded-lg"><i data-lucide="youtube" class="text-red-600 w-5 h-5"></i></div>
-                <h2 class="text-xl font-black text-blue-900 uppercase tracking-tight">Featured Video</h2>
-            </div>
-            <div class="admin-card">
-                <div class="flex flex-col md:flex-row gap-4 items-end">
-                    <div class="flex-grow">
-                        <label>YouTube Link or Video ID</label>
-                        <input type="text" id="yt-id" placeholder="Paste full YouTube link or ID here">
-                        <p class="text-[10px] text-slate-400 mt-2 font-medium">System will automatically extract the ID for display.</p>
-                    </div>
-                    <button onclick="saveVideoId()" class="bg-blue-900 text-white px-8 py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-orange-600 transition shadow-lg w-full md:w-auto">
-                        Save Video
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <section class="mb-12">
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center gap-4">
-                    <div class="p-2 bg-orange-100 rounded-lg"><i data-lucide="layout-list" class="text-orange-600 w-5 h-5"></i></div>
-                    <h2 class="text-xl font-black text-blue-900 uppercase tracking-tight">Manage Vlogs & News</h2>
-                </div>
-                <button onclick="openVlogModal()" class="bg-orange-500 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase flex items-center gap-2 hover:bg-orange-600 transition shadow-lg shadow-orange-500/30">
-                    <i data-lucide="plus" class="w-4 h-4"></i> Add Post
-                </button>
-            </div>
-            <div id="vlogs-list" class="space-y-4"></div>
-        </section>
-
-        <section>
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center gap-4">
-                    <div class="p-2 bg-blue-100 rounded-lg"><i data-lucide="image" class="text-blue-600 w-5 h-5"></i></div>
-                    <h2 class="text-xl font-black text-blue-900 uppercase tracking-tight">Installation Gallery</h2>
-                </div>
-                <button onclick="openPhotoModal()" class="bg-blue-900 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase flex items-center gap-2 hover:bg-blue-800 transition shadow-lg shadow-blue-900/30">
-                    <i data-lucide="plus" class="w-4 h-4"></i> Add Photo
-                </button>
-            </div>
-            <div id="photos-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
-        </section>
-    </main>
-
-    <div id="github-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-        <div class="bg-white rounded-[2rem] w-full max-w-md p-8 modal-enter shadow-2xl border border-slate-100">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-black text-blue-900 uppercase tracking-tight">GitHub Storage Setup</h3>
-                <button onclick="closeModals()" class="text-slate-400 hover:text-red-500 transition"><i data-lucide="x" class="w-6 h-6"></i></button>
-            </div>
-            <p class="text-xs text-slate-500 mb-4 font-medium leading-relaxed">Configure your repository to enable direct image uploads. Images will be saved in the <span class="font-bold text-orange-500">/pic</span> folder.</p>
-            <form onsubmit="saveGithubConfig(event)" class="space-y-4">
-                <div>
-                    <label>GitHub Username</label>
-                    <input type="text" id="gh-owner" required placeholder="e.g. udbhavsolar">
-                </div>
-                <div>
-                    <label>Repository Name</label>
-                    <input type="text" id="gh-repo" required placeholder="e.g. website-assets">
-                </div>
-                <div>
-                    <label>Personal Access Token</label>
-                    <input type="password" id="gh-token" required placeholder="ghp_xxxxxxxxxxxxxxxxx">
-                </div>
-                <button type="submit" class="w-full bg-slate-800 text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-black transition shadow-lg mt-4">
-                    Save Configuration
-                </button>
-            </form>
-        </div>
+        <div id="admin-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </div>
 
-    <div id="vlog-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-[2rem] w-full max-w-lg p-8 modal-enter shadow-2xl overflow-y-auto max-h-[90vh]">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-black text-blue-900 uppercase tracking-tight">Vlog / News Details</h3>
-                <button onclick="closeModals()" class="text-slate-400 hover:text-red-500 transition"><i data-lucide="x" class="w-6 h-6"></i></button>
-            </div>
-            <form id="vlog-form" onsubmit="handleVlogSave(event)" class="space-y-4">
-                <input type="hidden" id="vlog-id">
-                
-                <div>
-                    <label>Category</label>
-                    <select id="vlog-category" required>
-                        <option value="Solar News">Solar News</option>
-                        <option value="Site Update">Installations (Site Update)</option>
-                        <option value="Tech Guide">Tech Guide</option>
-                    </select>
+    <div id="vlog-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-[2rem] p-8 w-full max-w-lg">
+            <h2 class="text-xl font-black text-blue-900 mb-6">Create Post</h2>
+            <form id="vlog-form" class="space-y-4">
+                <select id="vlog-category" class="w-full p-3 bg-slate-100 rounded-xl text-sm outline-none">
+                    <option value="News">News</option>
+                    <option value="Project">Project</option>
+                    <option value="Subsidy">Subsidy</option>
+                </select>
+                <input type="text" id="vlog-title" placeholder="Post Title" class="w-full p-3 bg-slate-100 rounded-xl text-sm outline-none">
+                <input type="text" id="vlog-link" placeholder="YouTube Link (e.g. https://youtu.be/...)" class="w-full p-3 bg-slate-100 rounded-xl text-sm outline-none">
+                <input type="text" id="vlog-image" placeholder="Thumbnail URL" class="w-full p-3 bg-slate-100 rounded-xl text-sm outline-none">
+                <textarea id="vlog-desc" placeholder="Brief Description" class="w-full p-3 bg-slate-100 rounded-xl text-sm h-32 outline-none"></textarea>
+                <div class="flex gap-3">
+                    <button type="button" onclick="saveVlog()" class="flex-1 bg-blue-900 text-white p-3 rounded-xl font-bold">SAVE POST</button>
+                    <button type="button" onclick="closeModal()" class="px-6 bg-slate-200 p-3 rounded-xl font-bold">CANCEL</button>
                 </div>
-
-                <div>
-    <label>Target Content Link (Optional)</label>
-    <input type="url" id="vlog-link" placeholder="Paste link here if applicable (optional)">
-</div>
-
-                <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
-                    <label class="text-blue-900">Thumbnail Image</label>
-                    <input type="file" id="vlog-file" accept="image/*" class="block w-full text-xs text-slate-500 mt-2 mb-2 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:font-bold file:bg-orange-100 file:text-orange-600 hover:file:bg-orange-200 cursor-pointer">
-                    <p class="text-[10px] text-slate-400 font-bold uppercase text-center my-1">OR</p>
-                    <input type="url" id="vlog-thumbnail-url" placeholder="Paste Image URL here">
-                </div>
-
-                <div>
-                    <label>Target Content Link (YouTube or Web Page)</label>
-                    <input type="url" id="vlog-link" required placeholder="https://youtube.com/...">
-                </div>
-
-                <div>
-                    <label>Description</label>
-                    <textarea id="vlog-desc" rows="3" required placeholder="Brief description of the post..."></textarea>
-                </div>
-                
-                <button type="submit" id="vlog-submit-btn" class="w-full bg-orange-500 text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-orange-600 transition shadow-lg mt-4 flex items-center justify-center gap-2">
-                    Save Post
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <div id="photo-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-[2rem] w-full max-w-md p-8 modal-enter shadow-2xl">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-black text-blue-900 uppercase tracking-tight">Add Gallery Photo</h3>
-                <button onclick="closeModals()" class="text-slate-400 hover:text-red-500 transition"><i data-lucide="x" class="w-6 h-6"></i></button>
-            </div>
-            <form id="photo-form" onsubmit="handlePhotoSave(event)" class="space-y-4">
-                <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
-                    <label class="text-blue-900">Upload to GitHub Repository</label>
-                    <input type="file" id="photo-file" accept="image/*" class="block w-full text-xs text-slate-500 mt-2 mb-2 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:font-bold file:bg-blue-100 file:text-blue-900 hover:file:bg-blue-200 cursor-pointer">
-                    <p class="text-[10px] text-slate-400 font-bold uppercase text-center my-1">OR</p>
-                    <input type="url" id="photo-url" placeholder="Paste Direct Image URL">
-                </div>
-                <div>
-                    <label>Location / Caption</label>
-                    <input type="text" id="photo-caption" required placeholder="e.g., 5kW Plant in Ajmer">
-                </div>
-                <button type="submit" id="photo-submit-btn" class="w-full bg-blue-900 text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-blue-800 transition shadow-lg mt-4 flex items-center justify-center gap-2">
-                    Add to Gallery
-                </button>
             </form>
         </div>
     </div>
 
     <script>
-        lucide.createIcons();
-        document.getElementById('admin-display-name').innerText = sessionStorage.getItem("adminName") || "Admin";
-
         let vlogs = JSON.parse(localStorage.getItem('solar_vlogs') || '[]');
-        let photos = JSON.parse(localStorage.getItem('solar_photos') || '[]');
-        let videoId = localStorage.getItem('solar_featured_video') || '';
 
-        document.getElementById('yt-id').value = videoId;
-
-        // --- GITHUB API UPLOAD LOGIC ---
-        function openGithubModal() {
-            const conf = JSON.parse(localStorage.getItem('github_config') || '{}');
-            document.getElementById('gh-owner').value = conf.owner || '';
-            document.getElementById('gh-repo').value = conf.repo || '';
-            document.getElementById('gh-token').value = conf.token || '';
-            document.getElementById('github-modal').classList.remove('hidden');
-        }
-
-        function saveGithubConfig(e) {
-            e.preventDefault();
-            const config = {
-                owner: document.getElementById('gh-owner').value.trim(),
-                repo: document.getElementById('gh-repo').value.trim(),
-                token: document.getElementById('gh-token').value.trim()
-            };
-            localStorage.setItem('github_config', JSON.stringify(config));
-            alert("GitHub Configuration Saved!");
-            closeModals();
-        }
-
-        async function uploadToGitHub(file) {
-            const config = JSON.parse(localStorage.getItem('github_config'));
-            if(!config || !config.token || !config.repo || !config.owner) {
-                throw new Error("GitHub Config missing. Click the Setup gear icon first.");
-            }
-
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = async function(event) {
-                    try {
-                        const base64Data = event.target.result.split(',')[1];
-                        const date = new Date();
-                        const pad = (n) => String(n).padStart(2, '0');
-                        const filename = `${pad(date.getDate())}${pad(date.getMonth() + 1)}${date.getFullYear()}${pad(date.getHours())}${pad(date.getMinutes())}${pad(date.getSeconds())}`;
-                        const extension = file.name.split('.').pop() || 'jpg';
-                        const fullPath = `pic/${filename}.${extension}`;
-
-                        const response = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/${fullPath}`, {
-                            method: 'PUT',
-                            headers: {
-                                'Authorization': `Bearer ${config.token}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                message: `Upload image via Portal: ${filename}`,
-                                content: base64Data
-                            })
-                        });
-
-                        if (!response.ok) throw new Error("Upload Failed. Check Token permissions and Repo name.");
-                        const data = await response.json();
-                        // Return the raw display URL
-                        resolve(data.content.download_url);
-                    } catch (err) {
-                        reject(err);
-                    }
-                };
-                reader.onerror = () => reject(new Error("File reading failed"));
-                reader.readAsDataURL(file);
-            });
-        }
-
-        // --- RENDER LOGIC ---
-        function renderVlogs() {
-            const list = document.getElementById('vlogs-list');
-            if (vlogs.length === 0) {
-                list.innerHTML = `<div class="text-center py-8 text-slate-400 font-bold text-xs uppercase tracking-widest bg-white rounded-2xl border border-slate-100">No vlogs added yet.</div>`;
-                return;
-            }
-
-            list.innerHTML = vlogs.map((vlog, index) => `
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 flex flex-col md:flex-row gap-5 items-center justify-between hover:shadow-md transition">
-                    <img src="${vlog.thumbnail}" class="w-24 h-16 object-cover rounded-lg border border-slate-200">
-                    <div class="flex-grow w-full">
-                        <span class="text-[10px] font-black text-orange-500 uppercase tracking-widest">${vlog.category}</span>
-                        <h4 class="font-black text-blue-900 mt-1">${vlog.title}</h4>
-                        <a href="${vlog.link}" target="_blank" class="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-1 inline-block hover:underline truncate max-w-xs">Content Link</a>
+        function renderAdmin() {
+            const grid = document.getElementById('admin-grid');
+            grid.innerHTML = vlogs.map((v, i) => `
+                <div class="bg-white p-4 rounded-3xl border shadow-sm relative">
+                    <img src="${v.thumbnail || v.image}" class="h-32 w-full object-cover rounded-2xl mb-4">
+                    <h3 class="font-bold text-blue-900 mb-1 truncate">${v.title}</h3>
+                    <div class="flex justify-between items-center mt-4">
+                        <span class="text-[10px] bg-orange-100 text-orange-600 px-3 py-1 rounded-full font-bold">${v.category}</span>
+                        <div class="flex gap-2">
+                            <button onclick="setFeatured(${i})" class="p-2 bg-yellow-100 text-yellow-600 rounded-lg" title="Set as Featured"><i data-lucide="star" class="w-4 h-4"></i></button>
+                            <button onclick="deleteVlog(${i})" class="p-2 bg-red-100 text-red-600 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </div>
                     </div>
-                    <div class="flex gap-2 w-full md:w-auto">
-                        <button onclick="editVlog(${index})" class="flex-1 md:flex-none bg-slate-100 text-slate-600 px-4 py-2 rounded-lg font-bold text-xs uppercase hover:bg-blue-50 hover:text-blue-600 transition">Edit</button>
-                        <button onclick="deleteVlog(${index})" class="flex-1 md:flex-none bg-red-50 text-red-600 px-4 py-2 rounded-lg font-bold text-xs uppercase hover:bg-red-500 hover:text-white transition">Delete</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderPhotos() {
-            const grid = document.getElementById('photos-grid');
-            if (photos.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-8 text-slate-400 font-bold text-xs uppercase tracking-widest bg-white rounded-2xl border border-slate-100">No photos in gallery.</div>`;
-                return;
-            }
-
-            grid.innerHTML = photos.map((photo, index) => `
-                <div class="group relative bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-lg transition">
-                    <div class="aspect-[4/3] w-full overflow-hidden bg-slate-100">
-                        <img src="${photo.url}" class="w-full h-full object-cover transition duration-500" onerror="this.src='https://via.placeholder.com/400x300?text=Error'">
-                    </div>
-                    <div class="p-4 bg-white relative z-10">
-                        <p class="text-xs font-bold text-blue-900 uppercase tracking-wide truncate">${photo.caption}</p>
-                    </div>
-                    <button onclick="deletePhoto(${index})" class="absolute top-3 right-3 bg-red-500 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-600 transition shadow-lg z-20">
-                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                    </button>
                 </div>
             `).join('');
             lucide.createIcons();
         }
 
-        // --- YOUTUBE ID EXTRACTION ---
-        function saveVideoId() {
-            const input = document.getElementById('yt-id').value.trim();
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-            const match = input.match(regExp);
-            const extractedID = (match && match[2].length === 11) ? match[2] : input;
-            
-            localStorage.setItem('solar_featured_video', extractedID);
-            document.getElementById('yt-id').value = extractedID;
-            alert("Featured Video updated successfully!");
+        function saveVlog() {
+            const newVlog = {
+                category: document.getElementById('vlog-category').value,
+                title: document.getElementById('vlog-title').value,
+                link: document.getElementById('vlog-link').value,
+                image: document.getElementById('vlog-image').value,
+                description: document.getElementById('vlog-desc').value
+            };
+            vlogs.push(newVlog);
+            localStorage.setItem('solar_vlogs', JSON.stringify(vlogs));
+            closeModal();
+            renderAdmin();
         }
 
-        // --- VLOG SAVE WITH GITHUB UPLOAD ---
-        async function handleVlogSave(e) {
-            e.preventDefault();
-            const btn = document.getElementById('vlog-submit-btn');
-            const fileInput = document.getElementById('vlog-file');
-            let thumbnailUrl = document.getElementById('vlog-thumbnail-url').value;
-
-            try {
-                btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Uploading...';
-                lucide.createIcons();
-
-                if (fileInput.files && fileInput.files[0]) {
-                    thumbnailUrl = await uploadToGitHub(fileInput.files[0]);
-                } else if (!thumbnailUrl) {
-                    throw new Error("Please provide an Image URL or Upload a file for the thumbnail.");
-                }
-
-                const id = document.getElementById('vlog-id').value;
-                const vlog = {
-                    category: document.getElementById('vlog-category').value,
-                    title: document.getElementById('vlog-title').value,
-                    thumbnail: thumbnailUrl,
-                    link: document.getElementById('vlog-link').value,
-                    description: document.getElementById('vlog-desc').value,
-                    date: new Date().toISOString()
-                };
-
-                if (id === "") vlogs.unshift(vlog);
-                else vlogs[parseInt(id)] = vlog;
-
-                localStorage.setItem('solar_vlogs', JSON.stringify(vlogs));
-                renderVlogs();
-                closeModals();
-            } catch (err) {
-                alert(err.message);
-            } finally {
-                btn.innerHTML = 'Save Post';
-            }
-        }
-
-        // --- PHOTO SAVE WITH GITHUB UPLOAD ---
-        async function handlePhotoSave(e) {
-            e.preventDefault();
-            const btn = document.getElementById('photo-submit-btn');
-            const fileInput = document.getElementById('photo-file');
-            let photoUrl = document.getElementById('photo-url').value;
-            const caption = document.getElementById('photo-caption').value;
-
-            try {
-                btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Uploading...';
-                lucide.createIcons();
-
-                if (fileInput.files && fileInput.files[0]) {
-                    photoUrl = await uploadToGitHub(fileInput.files[0]);
-                } else if (!photoUrl) {
-                    throw new Error("Please provide an Image URL or Upload a file.");
-                }
-
-                photos.unshift({ url: photoUrl, caption: caption });
-                localStorage.setItem('solar_photos', JSON.stringify(photos));
-                renderPhotos();
-                closeModals();
-            } catch (err) {
-                alert(err.message);
-            } finally {
-                btn.innerHTML = 'Add to Gallery';
-            }
+        function setFeatured(index) {
+            localStorage.setItem('featured_vlog_url', vlogs[index].link);
+            alert("This video is now featured at the top of Vlogs!");
         }
 
         function deleteVlog(index) {
-            if (confirm("Delete this post?")) {
+            if(confirm("Delete this post?")) {
                 vlogs.splice(index, 1);
                 localStorage.setItem('solar_vlogs', JSON.stringify(vlogs));
-                renderVlogs();
+                renderAdmin();
             }
         }
 
-        function deletePhoto(index) {
-            if (confirm("Delete this photo?")) {
-                photos.splice(index, 1);
-                localStorage.setItem('solar_photos', JSON.stringify(photos));
-                renderPhotos();
-            }
-        }
+        function openModal() { document.getElementById('vlog-modal').classList.remove('hidden'); }
+        function closeModal() { document.getElementById('vlog-modal').classList.add('hidden'); }
 
-        function exportData() {
-            const data = { vlogs, photos, featuredVideo: document.getElementById('yt-id').value };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `Udbhav_Solar_Backup_${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        function logout() {
-            sessionStorage.clear();
-            window.location.replace("lallu.html");
-        }
-
-        function openVlogModal() {
-            document.getElementById('vlog-form').reset();
-            document.getElementById('vlog-id').value = "";
-            document.getElementById('vlog-modal').classList.remove('hidden');
-        }
-
-        function editVlog(index) {
-            const vlog = vlogs[index];
-            document.getElementById('vlog-id').value = index;
-            document.getElementById('vlog-category').value = vlog.category;
-            document.getElementById('vlog-title').value = vlog.title;
-            document.getElementById('vlog-thumbnail-url').value = vlog.thumbnail || vlog.image; // fallback for old data
-            document.getElementById('vlog-link').value = vlog.link || vlog.url; // fallback for old data
-            document.getElementById('vlog-desc').value = vlog.description;
-            document.getElementById('vlog-modal').classList.remove('hidden');
-        }
-
-        function openPhotoModal() {
-            document.getElementById('photo-form').reset();
-            document.getElementById('photo-modal').classList.remove('hidden');
-        }
-
-        function closeModals() {
-            document.getElementById('vlog-modal').classList.add('hidden');
-            document.getElementById('photo-modal').classList.add('hidden');
-            document.getElementById('github-modal').classList.add('hidden');
-        }
-
-        renderVlogs();
-        renderPhotos();
+        window.onload = renderAdmin;
     </script>
 </body>
 </html>
