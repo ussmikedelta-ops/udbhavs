@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Udbhav Solar | Vlogs & Updates</title>
-    <link rel="icon" type="image/png" href="unnamed.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -12,7 +11,7 @@
         .glow-orange { border-color: #f97316; box-shadow: 0 0 20px rgba(249, 115, 22, 0.3); }
         .vlog-card:hover { transform: translateY(-5px); border-color: #f97316; box-shadow: 0 0 25px rgba(249, 115, 22, 0.2); }
         .modal-bg { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px); }
-        /* Custom Scrollbar for better UX */
+        /* Custom Scrollbar for the detail modal */
         #modal-content-area::-webkit-scrollbar { width: 6px; }
         #modal-content-area::-webkit-scrollbar-track { background: #1e293b; }
         #modal-content-area::-webkit-scrollbar-thumb { background: #f97316; border-radius: 10px; }
@@ -65,6 +64,13 @@
                 
                 <div class="w-12 h-1 bg-orange-500 mb-6 rounded-full"></div>
                 
+                <div id="modal-link-wrapper" class="mb-6 hidden">
+                    <a id="modal-external-link" href="#" target="_blank" class="inline-flex items-center gap-2 text-orange-500 hover:text-orange-400 font-bold text-sm bg-orange-500/10 px-4 py-2 rounded-lg transition">
+                        <i data-lucide="external-link" class="w-4 h-4"></i>
+                        WATCH ON YOUTUBE
+                    </a>
+                </div>
+
                 <p id="modal-desc" class="text-slate-300 text-lg leading-relaxed whitespace-pre-wrap pb-10"></p>
             </div>
         </div>
@@ -136,12 +142,22 @@
             const v = vlogs[idx];
             const modal = document.getElementById('detail-modal');
             const videoId = getYouTubeID(v.link);
+            const linkWrapper = document.getElementById('modal-link-wrapper');
+            const externalLink = document.getElementById('modal-external-link');
             
             document.getElementById('modal-cat').innerText = v.category;
             document.getElementById('modal-title').innerText = v.title;
             document.getElementById('modal-desc').innerText = v.description;
             
-            // Scroll content back to top when opening new vlog
+            // Check for valid YouTube link for external button
+            if(v.link && (v.link.includes('youtube.com') || v.link.includes('youtu.be'))) {
+                externalLink.href = v.link;
+                linkWrapper.classList.remove('hidden');
+            } else {
+                linkWrapper.classList.add('hidden');
+            }
+
+            // Reset scroll position to top
             document.getElementById('modal-content-area').scrollTop = 0;
 
             if(videoId) {
@@ -156,13 +172,14 @@
             }
             
             modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            document.body.style.overflow = 'hidden'; // Lock background scroll
+            lucide.createIcons();
         }
 
         function closeModal() {
             document.getElementById('detail-modal').classList.add('hidden');
             document.getElementById('modal-player').src = '';
-            document.body.style.overflow = 'auto'; // Re-enable background scrolling
+            document.body.style.overflow = 'auto'; // Unlock background scroll
         }
 
         function filter(cat) {
