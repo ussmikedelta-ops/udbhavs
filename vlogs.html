@@ -3,93 +3,245 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solar Vlogs & News | Udbhav Solar</title>
+    <title>Solar Vlogs & Updates | Udbhav Solar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        .filter-btn.active { background: #f97316; color: white; border-color: #f97316; }
-        .vlog-card { transition: transform 0.3s ease; border: 1px solid #f1f5f9; }
-        .vlog-card:hover { transform: translateY(-5px); border-color: #f97316; }
+        /* Dark Theme & Glowing Effects */
+        body { background-color: #0f172a; color: #f8fafc; scroll-behavior: smooth; }
+        .nav-glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid #1e293b; }
+        
+        .glow-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            transition: all 0.3s ease;
+        }
+        .glow-card:hover {
+            transform: translateY(-5px);
+            border-color: #f97316;
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.4), 0 0 30px rgba(249, 115, 22, 0.2);
+        }
+        
+        .filter-btn { border: 1px solid #334155; color: #cbd5e1; transition: all 0.3s; }
+        .filter-btn:hover { border-color: #f97316; color: #f97316; box-shadow: 0 0 10px rgba(249, 115, 22, 0.3); }
+        .filter-btn.active { background: #f97316; color: white; border-color: #f97316; box-shadow: 0 0 15px rgba(249, 115, 22, 0.5); }
+        
+        .text-glow { text-shadow: 0 0 10px rgba(249, 115, 22, 0.5); }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #f97316; border-radius: 4px; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
-    <nav class="fixed w-full z-50 bg-white/90 backdrop-blur-md border-b h-20 flex items-center px-6 justify-between">
+<body class="antialiased font-sans">
+
+    <nav class="nav-glass fixed w-full z-40 h-20 flex items-center px-6 justify-between">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white"><i data-lucide="sun"></i></div>
-            <span class="font-black text-blue-900 uppercase">Udbhav Solar</span>
+            <div class="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white shadow-[0_0_15px_rgba(249,115,22,0.6)]">
+                <i data-lucide="sun"></i>
+            </div>
+            <span class="font-black text-white uppercase tracking-wider">Udbhav Solar</span>
         </div>
-        <a href="index.html" class="text-xs font-bold text-slate-500 hover:text-orange-500 transition">BACK TO HOME</a>
+        <a href="index.html" class="text-xs font-bold text-slate-400 hover:text-orange-500 transition">BACK TO HOME</a>
     </nav>
 
-    <main class="pt-32 pb-20 max-w-7xl mx-auto px-6">
+    <main class="pt-28 pb-20 max-w-7xl mx-auto px-6">
+        
         <div id="featured-section" class="hidden mb-16">
-            <h2 class="text-center text-[10px] font-black text-orange-600 uppercase tracking-widest mb-6">Featured Vlog</h2>
-            <div class="aspect-video max-w-4xl mx-auto rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-black">
-                <iframe id="featured-iframe" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <h2 class="text-center text-xs font-black text-orange-500 uppercase tracking-[0.3em] mb-6 text-glow">Featured Broadcast</h2>
+            <div class="aspect-video max-w-5xl mx-auto rounded-3xl overflow-hidden shadow-[0_0_30px_rgba(249,115,22,0.3)] border-2 border-orange-500/30 bg-black relative group">
+                <iframe id="featured-iframe" class="w-full h-full" frameborder="0" allow="autoplay; encrypted-media; fullscreen"></iframe>
             </div>
         </div>
 
-        <div class="flex flex-wrap justify-center gap-3 mb-12">
-            <button onclick="filterContent('all')" class="filter-btn active px-6 py-2 rounded-full border-2 text-xs font-bold uppercase transition">All</button>
-            <button onclick="filterContent('News')" class="filter-btn px-6 py-2 rounded-full border-2 text-xs font-bold uppercase transition">News</button>
-            <button onclick="filterContent('Project')" class="filter-btn px-6 py-2 rounded-full border-2 text-xs font-bold uppercase transition">Projects</button>
-            <button onclick="filterContent('Subsidy')" class="filter-btn px-6 py-2 rounded-full border-2 text-xs font-bold uppercase transition">Subsidy</button>
+        <div class="mb-8">
+            <h2 class="text-2xl font-black text-white uppercase mb-6 border-l-4 border-orange-500 pl-4">Knowledge Base</h2>
+            
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+                <div class="flex flex-wrap gap-3">
+                    <button onclick="filterContent('all')" class="filter-btn active px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest">All</button>
+                    <button onclick="filterContent('News')" class="filter-btn px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest">News</button>
+                    <button onclick="filterContent('Installation')" class="filter-btn px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest">Installation</button>
+                    <button onclick="filterContent('Technical Guide')" class="filter-btn px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest">Technical Guide</button>
+                    <button onclick="filterContent('Solar Update')" class="filter-btn px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest">Solar Update</button>
+                </div>
+                <div class="relative w-full md:w-64">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                    <input type="text" id="search-bar" onkeyup="searchContent()" placeholder="Search blogs..." class="w-full bg-[#1e293b] border border-slate-700 text-white rounded-full py-2 pl-10 pr-4 focus:outline-none focus:border-orange-500 transition">
+                </div>
+            </div>
+
+            <div id="vlog-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
         </div>
 
-        <div id="vlog-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+        <div class="mt-20">
+            <h2 class="text-2xl font-black text-white uppercase mb-8 border-l-4 border-orange-500 pl-4">Installation Gallery</h2>
+            <div id="gallery-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+        </div>
     </main>
 
-    <script>
-        let allVlogs = [];
+    <div id="content-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-[#0f172a] border border-orange-500/30 rounded-2xl w-full max-w-4xl overflow-hidden shadow-[0_0_50px_rgba(249,115,22,0.2)] relative flex flex-col max-h-[90vh]">
+            <button onclick="closeModal('content-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-black/50 p-2 rounded-full z-10"><i data-lucide="x"></i></button>
+            
+            <div id="modal-video-container" class="aspect-video w-full bg-black hidden">
+                <iframe id="modal-iframe" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+            </div>
+            
+            <div class="p-8 overflow-y-auto">
+                <span id="modal-category" class="text-orange-500 text-xs font-bold uppercase tracking-widest mb-2 block"></span>
+                <h2 id="modal-title" class="text-2xl font-black text-white mb-4"></h2>
+                <p id="modal-desc" class="text-slate-300 leading-relaxed whitespace-pre-wrap"></p>
+            </div>
+        </div>
+    </div>
 
+    <div id="image-modal" class="fixed inset-0 bg-black/95 hidden z-50 flex flex-col items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <button onclick="closeModal('image-modal')" class="absolute top-6 right-6 text-white hover:text-orange-500 transition"><i data-lucide="x" class="w-8 h-8"></i></button>
+        <img id="zoomed-image" src="" class="max-w-full max-h-[80vh] object-contain rounded-lg shadow-[0_0_30px_rgba(249,115,22,0.3)]">
+        <p id="zoomed-caption" class="text-orange-500 font-bold mt-6 text-lg text-center tracking-wide"></p>
+    </div>
+
+    <script>
+        let allData = [];
+        let photos = [];
+        const DEFAULT_IMG = "udbhav.jpg"; // Fallback image
+
+        // Utility: Extract YouTube ID
         function getYoutubeEmbedUrl(url) {
+            if(!url) return null;
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
             const match = url.match(regExp);
-            const id = (match && match[2].length === 11) ? match[2] : null;
-            return id ? `https://www.youtube.com/embed/${id}` : null;
+            return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}?autoplay=1` : null;
         }
 
-        function loadPage() {
-            allVlogs = JSON.parse(localStorage.getItem('solar_vlogs') || '[]');
+        function init() {
+            allData = JSON.parse(localStorage.getItem('solar_vlogs') || '[]');
+            photos = JSON.parse(localStorage.getItem('solar_photos') || '[]');
             const featUrl = localStorage.getItem('featured_vlog_url');
 
+            // Setup Featured Video
             if (featUrl) {
                 const embedUrl = getYoutubeEmbedUrl(featUrl);
                 if (embedUrl) {
-                    document.getElementById('featured-iframe').src = embedUrl;
+                    // Remove autoplay for the main page header so it doesn't blast sound immediately
+                    document.getElementById('featured-iframe').src = embedUrl.replace('?autoplay=1', '');
                     document.getElementById('featured-section').classList.remove('hidden');
                 }
             }
-            render(allVlogs);
+            
+            renderVlogs(allData);
+            renderGallery();
         }
 
-        function render(data) {
+        // Render Cards
+        function renderVlogs(items) {
             const grid = document.getElementById('vlog-grid');
-            grid.innerHTML = data.map(v => `
-                <div class="vlog-card bg-white rounded-[2.5rem] overflow-hidden flex flex-col shadow-sm">
-                    <img src="${v.thumbnail || v.image}" class="h-48 w-full object-cover">
+            if(items.length === 0) {
+                grid.innerHTML = `<p class="text-slate-500 italic col-span-full">No articles found.</p>`;
+                return;
+            }
+            grid.innerHTML = items.map((v, i) => {
+                const hasVideo = !!getYoutubeEmbedUrl(v.link);
+                const icon = hasVideo ? 'play-circle' : 'file-text';
+                const actionText = hasVideo ? 'Watch Video' : 'Read Article';
+                
+                return `
+                <div class="glow-card rounded-2xl overflow-hidden flex flex-col cursor-pointer" onclick="openContent(${i})">
+                    <div class="h-48 relative overflow-hidden group">
+                        <img src="${v.image || v.thumbnail || DEFAULT_IMG}" class="w-full h-full object-cover transition duration-500 group-hover:scale-110" onerror="this.src='${DEFAULT_IMG}'">
+                        ${hasVideo ? '<div class="absolute inset-0 bg-black/40 flex items-center justify-center"><i data-lucide="play" class="w-12 h-12 text-white/80 group-hover:text-orange-500 transition"></i></div>' : ''}
+                    </div>
                     <div class="p-6 flex flex-col flex-grow">
-                        <span class="text-[9px] font-black text-orange-500 uppercase mb-2">${v.category || 'Update'}</span>
-                        <h3 class="text-lg font-black text-blue-900 mb-2 leading-tight">${v.title}</h3>
-                        <p class="text-slate-500 text-xs line-clamp-3 mb-6">${v.description}</p>
-                        <a href="${v.link || v.url}" target="_blank" class="mt-auto text-[10px] font-bold text-blue-900 hover:text-orange-600 uppercase flex items-center gap-2">
-                            Watch/Read Full <i data-lucide="external-link" class="w-3 h-3"></i>
-                        </a>
+                        <span class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-2">${v.category}</span>
+                        <h3 class="text-lg font-black text-white mb-2 line-clamp-2">${v.title}</h3>
+                        <p class="text-slate-400 text-sm line-clamp-2 mb-4">${v.description}</p>
+                        <div class="mt-auto flex items-center gap-2 text-xs font-bold text-orange-500 uppercase tracking-widest">
+                            <i data-lucide="${icon}" class="w-4 h-4"></i> ${actionText}
+                        </div>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
             lucide.createIcons();
         }
 
-        function filterContent(cat) {
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                const isMatch = btn.innerText.toLowerCase() === cat.toLowerCase() || (cat === 'all' && btn.innerText === 'All');
-                btn.classList.toggle('active', isMatch);
-            });
-            render(cat === 'all' ? allVlogs : allVlogs.filter(v => v.category === cat));
+        // Render Photos
+        function renderGallery() {
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = photos.map((p, i) => `
+                <div class="aspect-square rounded-xl overflow-hidden cursor-pointer group relative border border-slate-700 hover:border-orange-500 transition" onclick="zoomImage(${i})">
+                    <img src="${p.url || DEFAULT_IMG}" class="w-full h-full object-cover transition duration-500 group-hover:scale-110" onerror="this.src='${DEFAULT_IMG}'">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition flex items-end p-4">
+                        <p class="text-white text-xs font-bold truncate">${p.caption}</p>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        window.onload = loadPage;
+        // Filtering & Search
+        function filterContent(cat) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase() === cat.toLowerCase() || (cat === 'all' && b.innerText === 'All')));
+            document.getElementById('search-bar').value = ''; // clear search
+            renderVlogs(cat === 'all' ? allData : allData.filter(v => v.category === cat));
+        }
+
+        function searchContent() {
+            const query = document.getElementById('search-bar').value.toLowerCase();
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            const filtered = allData.filter(v => v.title.toLowerCase().includes(query) || v.description.toLowerCase().includes(query));
+            renderVlogs(filtered);
+        }
+
+        // Modals Logic
+        function openContent(index) {
+            // Find the item from the currently displayed items (handles search/filter state)
+            const titleElement = document.querySelectorAll('#vlog-grid h3')[index].innerText;
+            const item = allData.find(v => v.title === titleElement);
+            if(!item) return;
+
+            const modal = document.getElementById('content-modal');
+            const iframe = document.getElementById('modal-iframe');
+            const videoContainer = document.getElementById('modal-video-container');
+            
+            document.getElementById('modal-category').innerText = item.category;
+            document.getElementById('modal-title').innerText = item.title;
+            document.getElementById('modal-desc').innerText = item.description;
+
+            const embedUrl = getYoutubeEmbedUrl(item.link);
+            if(embedUrl) {
+                iframe.src = embedUrl;
+                videoContainer.classList.remove('hidden');
+            } else {
+                videoContainer.classList.add('hidden');
+            }
+
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function zoomImage(index) {
+            const modal = document.getElementById('image-modal');
+            document.getElementById('zoomed-image').src = photos[index].url || DEFAULT_IMG;
+            document.getElementById('zoomed-caption').innerText = photos[index].caption;
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.add('opacity-0');
+            
+            // Stop video playing
+            if(modalId === 'content-modal') {
+                document.getElementById('modal-iframe').src = '';
+            }
+            
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        window.onload = init;
     </script>
 </body>
 </html>
