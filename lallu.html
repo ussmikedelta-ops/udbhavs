@@ -28,12 +28,11 @@
             background-size: cover;
             background-position: center;
         }
-        /* Custom Animation for the Selection Box */
         .modal-animate {
-            animation: modalShow 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: modalShow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         @keyframes modalShow {
-            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            from { opacity: 0; transform: scale(0.9) translateY(30px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
     </style>
@@ -89,20 +88,33 @@
         </div>
     </div>
 
-    <div id="selection-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden">
-        <div class="glass-panel w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl modal-animate text-center">
-            <h2 class="text-2xl font-black text-blue-900 dark:text-white uppercase tracking-tight mb-2">Access Granted</h2>
-            <p class="text-[10px] font-bold text-orange-500 uppercase tracking-[0.2em] mb-8">Select Destination</p>
+    <div id="selection-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden">
+        <div class="glass-panel w-full max-w-sm rounded-[3rem] p-10 shadow-2xl modal-animate text-center border-2 border-orange-500/20">
+            <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="shield-check" class="text-green-500 w-8 h-8"></i>
+            </div>
+            <h2 class="text-2xl font-black text-blue-900 dark:text-white uppercase tracking-tight">Access Granted</h2>
+            <p class="text-[10px] font-bold text-orange-500 uppercase tracking-[0.2em] mb-8">Choose your destination</p>
             
             <div class="grid gap-4">
-                <button onclick="goTo('admin-vlogs.html')" class="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 rounded-3xl flex flex-col items-center hover:border-orange-500 transition-all shadow-sm">
-                    <i data-lucide="layout-dashboard" class="w-8 h-8 text-blue-900 dark:text-white mb-3 group-hover:text-orange-500"></i>
-                    <span class="text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">Admin Panel</span>
+                <button onclick="goTo('admin-vlogs.html')" class="group w-full bg-slate-50 dark:bg-slate-800/50 border-2 border-transparent hover:border-orange-500 p-5 rounded-3xl flex items-center gap-4 transition-all duration-300">
+                    <div class="w-12 h-12 bg-blue-900 rounded-2xl flex items-center justify-center group-hover:bg-orange-500 transition-colors">
+                        <i data-lucide="layout-dashboard" class="text-white w-6 h-6"></i>
+                    </div>
+                    <div class="text-left">
+                        <span class="block text-xs font-black uppercase tracking-widest text-blue-900 dark:text-white">Admin Panel</span>
+                        <span class="block text-[9px] font-bold text-slate-400 uppercase">Manage Vlogs & Gallery</span>
+                    </div>
                 </button>
 
-                <button onclick="goTo('sir.html')" class="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 rounded-3xl flex flex-col items-center hover:border-orange-500 transition-all shadow-sm">
-                    <i data-lucide="file-text" class="w-8 h-8 text-blue-900 dark:text-white mb-3 group-hover:text-orange-500"></i>
-                    <span class="text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">SIR System</span>
+                <button onclick="goTo('sir.html')" class="group w-full bg-slate-50 dark:bg-slate-800/50 border-2 border-transparent hover:border-orange-500 p-5 rounded-3xl flex items-center gap-4 transition-all duration-300">
+                    <div class="w-12 h-12 bg-blue-900 rounded-2xl flex items-center justify-center group-hover:bg-orange-500 transition-colors">
+                        <i data-lucide="file-text" class="text-white w-6 h-6"></i>
+                    </div>
+                    <div class="text-left">
+                        <span class="block text-xs font-black uppercase tracking-widest text-blue-900 dark:text-white">SIR System</span>
+                        <span class="block text-[9px] font-bold text-slate-400 uppercase">Site Inspection Reports</span>
+                    </div>
                 </button>
             </div>
         </div>
@@ -111,7 +123,7 @@
     <script>
         lucide.createIcons();
 
-        // Theme Management
+        // Theme Toggle Logic
         const themeToggle = document.getElementById('theme-toggle');
         themeToggle.addEventListener('click', () => {
             document.documentElement.classList.toggle('dark');
@@ -121,14 +133,13 @@
             lucide.createIcons();
         });
 
-        // Initialize Theme
         if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
             document.getElementById('theme-icon').setAttribute('data-lucide', 'sun');
             lucide.createIcons();
         }
 
-        // Database
+        // User Credentials
         const users = {
             "admin": { pass: "udbhav123", name: "Administrator", role: "admin" },
             "uss-solar": { pass: "solar2026", name: "Solar Admin", role: "admin" },
@@ -139,31 +150,37 @@
 
         const loginForm = document.getElementById('loginForm');
 
+        // RE-WRITTEN LOGIN HANDLER
         loginForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+            e.preventDefault(); // This stops the page from refreshing
+            
             const id = document.getElementById('empId').value;
             const pass = document.getElementById('password').value;
 
             if (users[id] && users[id].pass === pass) {
-                const user = users[id];
-                
-                // Set the required flags
+                // 1. Set Auth Data
                 sessionStorage.setItem("isSolarAdmin", "true");
-                sessionStorage.setItem("adminName", user.name);
-                sessionStorage.setItem("userRole", user.role);
+                sessionStorage.setItem("adminName", users[id].name);
+                sessionStorage.setItem("userRole", users[id].role);
 
-                // Hide login and show choice modal
-                document.getElementById('login-container').classList.add('hidden');
-                document.getElementById('selection-modal').classList.remove('hidden');
+                // 2. Hide Login Card
+                document.getElementById('login-container').style.display = 'none';
+                
+                // 3. Show Selection Modal
+                const modal = document.getElementById('selection-modal');
+                modal.classList.remove('hidden');
+                
+                // Refresh icons inside the newly shown modal
                 lucide.createIcons(); 
             } else {
-                alert("Invalid Credentials. Please try again.");
+                alert("Access Denied: Incorrect ID or Password.");
                 loginForm.reset();
             }
         });
 
+        // Redirect Function
         function goTo(page) {
-            window.location.replace(page);
+            window.location.href = page;
         }
     </script>
 </body>
