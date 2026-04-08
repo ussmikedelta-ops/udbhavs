@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Udbhav 3D Immersive | Solar Visualizer</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+    /* Floating Disclaimer Bar */
+    .ai-disclaimer {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2000;
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 10px 24px;
+        border-radius: 99px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        white-space: nowrap;
+    }
+
+    .ai-disclaimer p {
+        margin: 0;
+        color: rgba(255,255,255,0.8);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .ai-disclaimer a {
+        color: #f97316;
+        text-decoration: none;
+        font-weight: 800;
+        transition: color 0.3s;
+    }
+
+    .ai-disclaimer a:hover { color: #ffffff; }
+
+    /* Floating WhatsApp Button */
+    .whatsapp-float {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 2001;
+        width: 60px;
+        height: 60px;
+        background-color: #25d366;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+        transition: all 0.3s ease;
+        animation: pulse-wa 2s infinite;
+    }
+
+    .whatsapp-float:hover {
+        transform: scale(1.1);
+        background-color: #128c7e;
+    }
+
+    .whatsapp-icon {
+        width: 32px;
+        height: 32px;
+        fill: white;
+    }
+
+    @keyframes pulse-wa {
+        0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+        70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .ai-disclaimer {
+            width: 90%;
+            padding: 8px 16px;
+            bottom: 100px;
+        }
+        .ai-disclaimer p { font-size: 9px; white-space: normal; text-align: center; }
+    }
+</style>
+
+<div class="ai-disclaimer">
+    <div class="w-2 h-2 rounded-full bg-orange-500"></div>
+    <p>
+        AI-Generated Visualization. For Precision Surveys: 
+        <a href="tel:+919660711101">Call Now</a> or 
+        <a href="https://wa.me/919660711101">WhatsApp +91 9660711101</a>
+    </p>
+</div>
+
+<a href="https://wa.me/919660711101" class="whatsapp-float" target="_blank" aria-label="Contact on WhatsApp">
+    <svg class="whatsapp-icon" viewBox="0 0 24 24">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.395 0 .01 5.388 0 12.044c0 2.129.54 4.207 1.579 6.075L0 24l6.135-1.61a11.803 11.803 0 005.911 1.586h.005c6.654 0 12.05-5.39 12.056-12.047a11.82 11.82 0 00-3.536-8.509z"/>
+    </svg>
+</a>
+    <style>
+        body { 
+            background: #020617; 
+            color: #f8fafc; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            margin: 0; 
+            padding: 0;
+            overflow: hidden; 
+            height: 100vh;
+            width: 100vw;
+        }
+        
+        /* Floating Glass Controls */
+        .glass-dock {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(25px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 20px 0 50px rgba(0,0,0,0.5);
+        }
+        .dock-hidden { transform: translateX(-100%); opacity: 0; pointer-events: none; }
+
+        /* 3D Engine CSS */
+        .visualizer-viewport { 
+            width: 100vw; 
+            height: 100vh; 
+            position: relative; 
+            overflow: hidden; 
+            background: #0f172a;
+        }
+
+        #solar-structure { 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            z-index: 10; 
+            cursor: ew-resize; 
+            transform-style: preserve-3d;
+        }
+
+        .scene-3d { transform-style: preserve-3d; }
+        
+        .turntable { 
+            position: absolute; 
+            transform-style: preserve-3d; 
+            transition: transform 0.1s ease-out;
+        }
+
+        /* -------------------------------------
+           NEW: TRUE 3D IRON RODS
+           ------------------------------------- */
+        .iron-rod {
+            position: absolute;
+            width: 8px; /* 8px thick square rod */
+            transform-style: preserve-3d;
+            transform-origin: bottom center;
+            transform: rotateX(-90deg); /* Stand straight up off the roof plane */
+            margin-left: -4px; /* Center it exactly on its coordinate */
+        }
+
+        /* Base drill hole for realism */
+        .iron-rod::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: -4px;
+            width: 16px;
+            height: 16px;
+            background: rgba(0,0,0,0.9);
+            border-radius: 50%;
+            transform: rotateX(90deg) translateZ(-1px);
+            box-shadow: 0 0 10px rgba(0,0,0,1);
+        }
+
+        /* 4 Faces of the Iron Prism */
+        .rod-face {
+            position: absolute;
+            inset: 0;
+            border: 0.5px solid rgba(0,0,0,0.6);
+        }
+        /* Metal texturing for each side */
+        .face-front { transform: translateZ(4px); background: #64748b; }
+        .face-back  { transform: translateZ(-4px) rotateY(180deg); background: #1e293b; }
+        .face-left  { transform: translateX(-4px) rotateY(-90deg); background: #334155; }
+        .face-right { transform: translateX(4px) rotateY(90deg); background: #475569; }
+
+        /* -------------------------------------
+           PANEL AND GRID SYSTEM
+           ------------------------------------- */
+        .panel-mount { 
+            position: absolute; 
+            transform-origin: bottom center; 
+            transform-style: preserve-3d; 
+        }
+
+        .panel-grid {
+            display: grid; 
+            gap: 2px; 
+            padding: 4px;
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid #475569;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.8);
+            transform-style: preserve-3d;
+        }
+
+        /* Mount Frame Underside (To cover rod tips) */
+        .panel-grid::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: #0f172a;
+            transform: translateZ(-2px);
+        }
+
+        .solar-panel {
+            background: linear-gradient(145deg, #1e3a8a, #172554, #0f172a);
+            border: 0.2px solid rgba(255,255,255,0.15);
+            position: relative;
+            overflow: hidden;
+            transform: translateZ(1px); /* Sit slightly above frame */
+        }
+
+        .solar-panel::after {
+            content: ''; 
+            position: absolute; 
+            inset: 0;
+            background: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 8px 8px;
+        }
+
+        /* Glossy overlay */
+        .solar-panel::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05), transparent);
+            transform: rotate(45deg);
+        }
+
+        /* Custom Sliders */
+        input[type="range"] { 
+            accent-color: #f97316; 
+            height: 5px; 
+            width: 100%; 
+            cursor: pointer; 
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            background: #f97316;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .val-badge {
+            font-size: 9px;
+            font-weight: 800;
+            background: rgba(249, 115, 22, 0.2);
+            color: #fb923c;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <button onclick="toggleDock()" class="fixed top-6 left-6 z-50 bg-orange-600 text-white p-4 rounded-full shadow-[0_0_30px_rgba(234,88,12,0.4)] hover:scale-110 active:scale-95 transition-all">
+        <i id="toggle-icon" data-lucide="settings"></i>
+    </button>
+
+    <aside id="main-dock" class="glass-dock fixed top-0 left-0 h-full w-80 z-40 p-8 flex flex-col gap-6">
+        <div class="mb-2">
+            <h1 class="text-white font-black uppercase text-2xl tracking-tighter leading-none">Udbhav Solar</h1>
+            <p class="text-[9px] text-orange-500 font-bold uppercase tracking-[0.3em] mt-1">3D Professional Operator</p>
+        </div>
+
+        <div class="overflow-y-auto pr-2 space-y-6 custom-scrollbar">
+            
+            <section class="space-y-4">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                    <i data-lucide="grid-3x3" class="w-3 h-3"></i> Matrix Configuration
+                </label>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="space-y-1">
+                        <span class="text-[8px] font-bold text-slate-500 uppercase ml-1">Total Panels</span>
+                        <input type="number" id="total-p" value="6" min="1" oninput="draw()" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white font-black text-center outline-none focus:border-orange-500">
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[8px] font-bold text-slate-500 uppercase ml-1">Per Row</span>
+                        <input type="number" id="row-p" value="3" min="1" oninput="draw()" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white font-black text-center outline-none focus:border-orange-500">
+                    </div>
+                </div>
+            </section>
+
+            <section class="space-y-5 py-6 border-y border-white/5">
+                <label class="text-[10px] font-black text-orange-500 uppercase tracking-widest flex items-center gap-2">
+                    <i data-lucide="layers" class="w-3 h-3"></i> Structural Heights
+                </label>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[9px] font-bold uppercase text-slate-300">Front Leg</span>
+                        <span id="v-front" class="val-badge">40px</span>
+                    </div>
+                    <input type="range" id="f-leg" min="5" max="250" value="40" oninput="draw()">
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[9px] font-bold uppercase text-slate-300">Back Leg</span>
+                        <span id="v-back" class="val-badge">140px</span>
+                    </div>
+                    <input type="range" id="b-leg" min="5" max="400" value="140" oninput="draw()">
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[9px] font-bold uppercase text-slate-300">Mounting Points</span>
+                        <span id="v-count" class="val-badge">3 Pairs</span>
+                    </div>
+                    <input type="range" id="l-count" min="2" max="10" value="3" oninput="draw()">
+                </div>
+            </section>
+
+            <section class="space-y-5">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                    <i data-lucide="move-3d" class="w-3 h-3"></i> Global Placement
+                </label>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[9px] font-bold uppercase text-slate-300">Axis Rotation</span>
+                        <span id="v-rot" class="val-badge">0°</span>
+                    </div>
+                    <input type="range" id="rot" min="0" max="360" value="0" oninput="draw()">
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[9px] font-bold uppercase text-slate-300">Roof Pitch</span>
+                        <span id="v-tilt" class="val-badge">60°</span>
+                    </div>
+                    <input type="range" id="tilt" min="0" max="88" value="60" oninput="draw()">
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[9px] font-bold uppercase text-slate-300">Overall Scale</span>
+                        <span id="v-scale" class="val-badge">100%</span>
+                    </div>
+                    <input type="range" id="scale" min="20" max="350" value="100" oninput="draw()">
+                </div>
+            </section>
+        </div>
+
+        <div class="mt-auto space-y-3 pt-4">
+            <button onclick="document.getElementById('upload').click()" class="w-full bg-white text-black py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-orange-500 hover:text-white transition-all shadow-xl">
+                Upload Roof Image
+            </button>
+            <input type="file" id="upload" class="hidden" accept="image/*" onchange="loadPhoto(event)">
+            
+            <p class="text-[7px] text-center text-slate-500 uppercase font-bold tracking-widest">Property of Udbhav Solar Ajmer</p>
+        </div>
+    </aside>
+
+    <main class="visualizer-viewport">
+        <img id="bg-photo" class="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-40 transition-opacity duration-700" src="">
+        
+        <div id="solar-structure">
+            <div id="scene" class="scene-3d">
+                <div id="turntable" class="turntable">
+                    </div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/40 backdrop-blur-md px-6 py-2 rounded-full border border-white/10 flex items-center gap-4 pointer-events-none">
+            <div class="flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]"></div>
+                <span class="text-[9px] font-bold uppercase tracking-widest text-white/70">Engine Physics Locked</span>
+            </div>
+            <div class="w-px h-3 bg-white/20"></div>
+            <span class="text-[9px] font-bold uppercase tracking-widest text-orange-500">Slide Horizontal to Move</span>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        let isHidden = false;
+        function toggleDock() {
+            isHidden = !isHidden;
+            const dock = document.getElementById('main-dock');
+            const icon = document.getElementById('toggle-icon');
+            
+            dock.classList.toggle('dock-hidden');
+            icon.setAttribute('data-lucide', isHidden ? 'eye' : 'settings');
+            lucide.createIcons();
+        }
+
+        function loadPhoto(e) {
+            const file = e.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const img = document.getElementById('bg-photo');
+                    img.src = ev.target.result;
+                    img.style.opacity = "1";
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Factory function for True 3D Iron Rods
+        function create3DLeg(x, yDist, height) {
+            const rod = document.createElement('div');
+            rod.className = 'iron-rod';
+            rod.style.height = height + 'px';
+            rod.style.left = x + 'px';
+            rod.style.bottom = yDist + 'px';
+            
+            // Build the 4 rectangular faces
+            ['front', 'back', 'left', 'right'].forEach(side => {
+                const face = document.createElement('div');
+                face.className = `rod-face face-${side}`;
+                rod.appendChild(face);
+            });
+            return rod;
+        }
+
+        function draw() {
+            // 1. Gather Inputs
+            const total = parseInt(document.getElementById('total-p').value) || 1;
+            const perRow = parseInt(document.getElementById('row-p').value) || 1;
+            const scale = document.getElementById('scale').value / 100;
+            
+            const fH = parseInt(document.getElementById('f-leg').value) * scale;
+            let bH = parseInt(document.getElementById('b-leg').value) * scale;
+            
+            // Enforce realistic boundaries: Back leg must be taller than front leg.
+            if (bH < fH + 2) bH = fH + 2;
+
+            const lQty = parseInt(document.getElementById('l-count').value);
+            const rot = document.getElementById('rot').value;
+            const tilt = document.getElementById('tilt').value;
+
+            // 2. Mathematical Calculations for True Contact
+            const pW = 50 * scale; 
+            const pH = 80 * scale; // This is the hypotenuse height (panel length)
+            const cols = Math.min(perRow, total);
+            const rows = Math.ceil(total / cols);
+            const gW = cols * pW; 
+            const gH = rows * pH; 
+
+            // Prevent math breaking if difference is taller than the actual panels
+            let diff = bH - fH;
+            if (diff >= gH) {
+                diff = gH * 0.99; // Cap the maximum possible angle
+                bH = fH + diff;
+            }
+
+            // TRIGONOMETRY: Calculate exact inclination angle and horizontal footprint
+            const angleRad = Math.asin(diff / gH);
+            const pTilt = angleRad * (180 / Math.PI);
+            const footprintY = gH * Math.cos(angleRad); // Exact horizontal distance between legs
+
+            // 3. Update UI Badges (Unscaled for display)
+            document.getElementById('v-front').innerText = Math.round(fH/scale) + 'px';
+            document.getElementById('v-back').innerText = Math.round(bH/scale) + 'px';
+            document.getElementById('v-count').innerText = lQty + ' Pairs';
+            document.getElementById('v-rot').innerText = rot + '°';
+            document.getElementById('v-tilt').innerText = tilt + '°';
+            document.getElementById('v-scale').innerText = Math.round(scale * 100) + '%';
+
+            // 4. Transform Scene Perspective
+            const scene = document.getElementById('scene');
+            scene.style.transform = `perspective(1500px) rotateX(${tilt}deg)`;
+
+            // 5. Setup Turntable (The Base footprint on the roof)
+            const tt = document.getElementById('turntable');
+            tt.style.width = gW + 'px'; 
+            tt.style.height = footprintY + 'px';
+            tt.style.left = (-gW/2) + 'px'; 
+            tt.style.top = (-footprintY/2) + 'px';
+            tt.style.transform = `rotateZ(${rot}deg)`;
+            tt.innerHTML = ''; // Clear for redraw
+
+            // 6. Generate 3D Iron Rod Legs
+            for(let i=0; i<lQty; i++) {
+                let x = (lQty > 1) ? (i / (lQty-1)) * gW : (gW/2);
+                
+                // Front Leg (Attached to Bottom edge: 0)
+                tt.appendChild(create3DLeg(x, 0, fH));
+
+                // Back Leg (Attached exactly at the calculated footprint depth)
+                tt.appendChild(create3DLeg(x, footprintY, bH));
+            }
+
+            // 7. Create Panel Mount (The sloping frame resting exactly on the rods)
+            const mount = document.createElement('div');
+            mount.className = 'panel-mount';
+            mount.style.width = gW + 'px'; 
+            mount.style.height = gH + 'px'; 
+            mount.style.bottom = '0'; // Base anchored at the front leg
+            mount.style.left = '0';
+            
+            // Raise it to front leg height, then pivot backwards around bottom axis
+            // Added +2px to translateZ so panels rest ON the rods instead of slicing through them
+            mount.style.transform = `translateZ(${fH + 2}px) rotateX(${-pTilt}deg)`;
+
+            // 8. Generate Grid
+            const grid = document.createElement('div');
+            grid.className = 'panel-grid';
+            grid.style.width = '100%';
+            grid.style.height = '100%';
+            grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+
+            for(let i=0; i<total; i++) {
+                const p = document.createElement('div');
+                p.className = 'solar-panel';
+                grid.appendChild(p);
+            }
+
+            mount.appendChild(grid);
+            tt.appendChild(mount);
+        }
+
+        // --- Dragging Logic (Horizontal Only) ---
+        let isDrag = false; 
+        let startX, initialLeft;
+        const struct = document.getElementById('solar-structure');
+
+        struct.addEventListener('mousedown', (e) => {
+            isDrag = true;
+            startX = e.clientX;
+            initialLeft = struct.offsetLeft;
+            struct.style.cursor = 'grabbing';
+            e.preventDefault();
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDrag) return;
+            const dx = e.clientX - startX;
+            struct.style.left = (initialLeft + dx) + 'px';
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDrag = false;
+            struct.style.cursor = 'ew-resize';
+        });
+
+        // Initialize first draw
+        draw();
+    </script>
+</body>
+</html>
