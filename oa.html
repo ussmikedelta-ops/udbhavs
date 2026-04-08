@@ -3,225 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Udbhav OA | Optimization Analytics</title>
+    <title>Udbhav OA | Interactive Control</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script type="module">
+        import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
+        window.GradioClient = Client;
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&display=swap');
-        
-        body { 
-            background: radial-gradient(circle at top right, #0f172a, #020617); 
-            color: #f8fafc; 
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-        }
-
-        .glass {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(249, 115, 22, 0.1);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .glass:hover {
-            border-color: rgba(249, 115, 22, 0.5);
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
-
-        .logo-glow {
-            transition: all 0.6s ease;
-            filter: grayscale(0.4);
-        }
-
-        .logo-glow:hover {
-            filter: grayscale(0) drop-shadow(0 0 15px rgba(249, 115, 22, 0.8));
-            transform: scale(1.05) rotate(2deg);
-        }
-
-        .zoom-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(2, 6, 23, 0.95);
-            z-index: 100;
-            padding: 40px;
-            cursor: zoom-out;
-        }
-
-        #panel-canvas { width: 100%; height: 300px; border-radius: 1.5rem; }
-
-        @keyframes pulse-orange {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        .status-dot { animation: pulse-orange 2s infinite; }
+        body { background: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(249, 115, 22, 0.1); }
+        .input-field { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; width: 100%; color: white; outline: none; transition: 0.3s; }
+        .input-field:focus { border-color: #f97316; box-shadow: 0 0 10px rgba(249, 115, 22, 0.2); }
+        #panel-canvas { width: 100%; height: 250px; border-radius: 1rem; }
+        .loader { border: 3px solid #1e293b; border-top: 3px solid #f97316; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: none; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="p-6 lg:p-12">
+<body class="p-6">
 
-    <nav class="flex justify-between items-center mb-16">
+    <nav class="flex justify-between items-center mb-10 max-w-7xl mx-auto">
         <div class="flex items-center gap-4">
-            <img src="Donna Stroupe.jpg" alt="Udbhav Logo" class="w-16 h-16 rounded-2xl logo-glow object-cover border-2 border-orange-500/20">
-            <div>
-                <h1 class="text-2xl font-black tracking-tighter uppercase text-white">Udbhav <span class="text-orange-500">OA</span></h1>
-                <p class="text-[10px] font-bold text-slate-500 tracking-[0.3em] uppercase">Optimization Analytics</p>
-            </div>
+            <img src="Donna Stroupe.jpg" class="w-12 h-12 rounded-xl border border-orange-500/30 object-cover">
+            <h1 class="text-xl font-black uppercase">Udbhav <span class="text-orange-500">OA</span></h1>
         </div>
-        <div class="hidden md:flex gap-8 text-[11px] font-bold uppercase tracking-widest text-slate-400">
-            <span class="text-orange-500 flex items-center gap-2"><i data-lucide="shield-check" class="w-4"></i> Secure Node</span>
-            <span>Site ID: USS-7464</span>
+        <div id="sync-status" class="text-[10px] font-bold text-slate-500 flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_green]"></div> ENGINE ONLINE
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        <div class="lg:col-span-2 space-y-8">
-            <div class="glass p-8 rounded-[2.5rem] relative overflow-hidden group" onclick="zoomElement(this)">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-bold flex items-center gap-2">
-                        <i data-lucide="box" class="text-orange-500"></i> Virtual Array Layout
-                    </h3>
-                    <span class="text-[10px] bg-orange-500/10 text-orange-400 px-3 py-1 rounded-full border border-orange-500/20">REAL-TIME RENDER</span>
-                </div>
-                <div id="panel-canvas"></div>
-                <p class="mt-4 text-xs text-slate-500 italic">Interacting with 550W Monocrystalline PERC Simulation</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="glass p-8 rounded-[2.5rem] cursor-zoom-in" onclick="zoomElement(this)">
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="p-3 bg-orange-500/10 rounded-2xl text-orange-500">
-                            <i data-lucide="cloud-sun"></i>
+        <div class="lg:col-span-4 space-y-6">
+            <div class="glass p-6 rounded-[2rem]">
+                <h3 class="text-sm font-black uppercase tracking-widest text-orange-500 mb-6">Site Parameters</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-[10px] uppercase font-bold text-slate-500 ml-2">Coordinates (Lat / Lon)</label>
+                        <div class="flex gap-2 mt-1">
+                            <input id="lat" type="number" value="26.45" class="input-field" placeholder="Lat">
+                            <input id="lon" type="number" value="74.64" class="input-field" placeholder="Lon">
                         </div>
-                        <h4 class="font-bold">Loss Analysis</h4>
                     </div>
-                    <div id="loss-display" class="space-y-4">
-                        <div class="text-5xl font-black text-white" id="max-loss">0.0%</div>
-                        <p class="text-xs text-slate-400 leading-relaxed uppercase tracking-widest font-semibold">Maximum Shadow Obstruction Predicted</p>
-                    </div>
-                </div>
 
-                <div class="glass p-8 rounded-[2.5rem] cursor-zoom-in" onclick="zoomElement(this)">
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="p-3 bg-green-500/10 rounded-2xl text-green-500">
-                            <i data-lucide="indian-rupee"></i>
+                    <div>
+                        <label class="text-[10px] uppercase font-bold text-slate-500 ml-2">Plant Design (Rows / Panels)</label>
+                        <div class="flex gap-2 mt-1">
+                            <input id="rows" type="number" value="2" class="input-field">
+                            <input id="panels" type="number" value="4" class="input-field">
                         </div>
-                        <h4 class="font-bold">Subsidy Credit</h4>
                     </div>
-                    <div class="space-y-4">
-                        <div class="text-5xl font-black text-white" id="subsidy-val">₹0</div>
-                        <p class="text-xs text-slate-400 uppercase tracking-widest font-semibold">Approved Govt. Incentive</p>
+
+                    <div>
+                        <label class="text-[10px] uppercase font-bold text-slate-500 ml-2">Monthly Bill (₹)</label>
+                        <input id="bill" type="number" value="2500" class="input-field mt-1">
                     </div>
+
+                    <button onclick="triggerPythonAnalysis()" id="btn-text" class="w-full py-4 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-3 mt-4">
+                        <i data-lucide="zap" class="w-4"></i> 
+                        <span>RUN ANALYSIS</span>
+                        <div id="loader" class="loader"></div>
+                    </button>
                 </div>
             </div>
         </div>
 
-        <div class="space-y-8">
-            <div class="glass p-8 rounded-[2.5rem]">
-                <h3 class="text-xl font-black mb-8 border-b border-white/5 pb-4 uppercase tracking-tighter">Site Summary</h3>
-                <div id="summary-text" class="text-sm text-slate-300 leading-loose space-y-6">
-                    Fetching latest sync from GitHub...
+        <div class="lg:col-span-8 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass p-6 rounded-[2rem]">
+                    <div id="panel-canvas"></div>
+                    <p class="text-center text-[10px] text-slate-500 mt-2 font-bold uppercase tracking-widest">3D Array Geometry</p>
                 </div>
-                <button onclick="window.location.reload()" class="w-full mt-8 py-4 bg-orange-600 hover:bg-orange-500 text-white rounded-2xl font-bold transition-all flex items-center justify-center gap-2">
-                    <i data-lucide="refresh-cw" class="w-4"></i> REFRESH DATA
-                </button>
+
+                <div class="space-y-6">
+                    <div class="glass p-8 rounded-[2rem]">
+                        <p class="text-[10px] font-bold text-slate-500 uppercase mb-2">Estimated Capacity</p>
+                        <div id="cap-val" class="text-5xl font-black text-white">-- kW</div>
+                    </div>
+                    <div class="glass p-8 rounded-[2rem]">
+                        <p class="text-[10px] font-bold text-slate-500 uppercase mb-2">Govt. Subsidy</p>
+                        <div id="sub-val" class="text-5xl font-black text-orange-500">₹--</div>
+                    </div>
+                </div>
             </div>
 
-            <div class="bg-gradient-to-br from-orange-600 to-orange-800 p-8 rounded-[2.5rem] shadow-xl shadow-orange-900/20">
-                <i data-lucide="zap" class="text-white mb-4 w-10 h-10"></i>
-                <h4 class="text-2xl font-black text-white leading-tight uppercase">Ready for<br>Installation?</h4>
-                <p class="text-orange-100 text-xs mt-4 font-medium uppercase tracking-widest">USS Project Team Standing By</p>
+            <div class="glass p-8 rounded-[2.5rem]">
+                <h4 class="font-black uppercase tracking-tighter mb-4">Engine Logic Output</h4>
+                <div id="summary-text" class="text-sm text-slate-400 leading-relaxed italic">
+                    Enter site parameters and click "Run Analysis" to initiate calculations.
+                </div>
             </div>
         </div>
     </main>
 
-    <div id="zoomOverlay" class="zoom-modal flex items-center justify-center" onclick="closeZoom()">
-        <div id="zoomContent" class="w-full max-w-5xl transform scale-150 transition-transform duration-500"></div>
-    </div>
-
     <script>
         lucide.createIcons();
 
-        // 1. DATA SYNC FROM GITHUB (data1.json)
-        async function fetchData() {
+        // RUNNING THE PYTHON ANALYSIS
+        async function triggerPythonAnalysis() {
+            const btnText = document.querySelector('#btn-text span');
+            const loader = document.getElementById('loader');
+            
+            // UI State
+            btnText.innerText = "PROCESSING...";
+            loader.style.display = "block";
+
             try {
-                const response = await fetch('data1.json');
-                const data = await response.json();
+                // Connect to your Hugging Face Space (Replace with your actual Space Name)
+                const app = await window.GradioClient.connect("YOUR_HF_USERNAME/YOUR_SPACE_NAME");
                 
-                document.getElementById('max-loss').innerText = Math.max(...data.monthly_losses.map(m => m["Loss %"])) + "%";
-                document.getElementById('subsidy-val').innerText = "₹" + data.subsidy_amount.toLocaleString();
-                document.getElementById('summary-text').innerHTML = `
-                    <div class="flex justify-between border-b border-white/5 py-2"><span>Capacity:</span> <span class="text-orange-500 font-bold">${data.plant_capacity}kW</span></div>
-                    <div class="flex justify-between border-b border-white/5 py-2"><span>Last Sync:</span> <span class="text-slate-500">${data.last_updated}</span></div>
-                    <p class="mt-4 text-xs italic text-slate-400">"${data.summary}"</p>
-                `;
-            } catch (e) {
-                console.log("Waiting for data1.json sync...");
+                const result = await app.predict("/process_survey", [
+                    parseFloat(document.getElementById('lat').value),
+                    parseFloat(document.getElementById('lon').value),
+                    6, // Default Month
+                    [[20, 30, 180, 10]], // Default Obstruction
+                    parseFloat(document.getElementById('bill').value),
+                    parseInt(document.getElementById('rows').value),
+                    parseInt(document.getElementById('panels').value)
+                ]);
+
+                // The Python code automatically saves to data1.json and pushes to GitHub
+                // We update the UI here immediately for speed
+                updateUI();
+                
+            } catch (error) {
+                console.error(error);
+                alert("Connection Error: Ensure your HF Space is running.");
+            } finally {
+                btnText.innerText = "RUN ANALYSIS";
+                loader.style.display = "none";
             }
         }
 
-        // 2. 3D SOLAR PANEL VISUALIZATION
+        async function updateUI() {
+            try {
+                const response = await fetch('data1.json');
+                const data = await response.json();
+                document.getElementById('cap-val').innerText = data.plant_capacity + " kW";
+                document.getElementById('sub-val').innerText = "₹" + data.subsidy_amount.toLocaleString();
+                document.getElementById('summary-text').innerText = data.summary;
+            } catch (e) { console.log("JSON not ready yet..."); }
+        }
+
+        // Initialize 3D Visualizer (Simplified for the panel)
         function init3D() {
             const container = document.getElementById('panel-canvas');
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
             const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            
             renderer.setSize(container.clientWidth, container.clientHeight);
             container.appendChild(renderer.domElement);
 
-            // Create Solar Panel Geometry
-            const geometry = new THREE.BoxGeometry(4, 0.1, 2);
-            const material = new THREE.MeshPhongMaterial({ 
-                color: 0x1e293b, 
-                specular: 0x3b82f6, 
-                shininess: 100 
-            });
+            const geometry = new THREE.BoxGeometry(3.5, 0.05, 2);
+            const material = new THREE.MeshPhongMaterial({ color: 0x1e293b, specular: 0x3b82f6 });
             const panel = new THREE.Mesh(geometry, material);
-            
-            // Add "Grid Lines" to look like solar cells
-            const wireframe = new THREE.WireframeGeometry(geometry);
-            const line = new THREE.LineSegments(wireframe);
-            line.material.color.setHex(0x475569);
-            panel.add(line);
-
             scene.add(panel);
+
             const light = new THREE.DirectionalLight(0xffffff, 1);
             light.position.set(5, 5, 5);
             scene.add(light);
-            scene.add(new THREE.AmbientLight(0x404040));
-
-            camera.position.z = 5;
+            camera.position.z = 4;
             panel.rotation.x = 0.5;
 
             function animate() {
                 requestAnimationFrame(animate);
-                panel.rotation.y += 0.005;
+                panel.rotation.y += 0.01;
                 renderer.render(scene, camera);
             }
             animate();
         }
 
-        // 3. ZOOM LOGIC
-        function zoomElement(el) {
-            const overlay = document.getElementById('zoomOverlay');
-            const content = document.getElementById('zoomContent');
-            overlay.style.display = 'flex';
-            content.innerHTML = el.innerHTML;
-            // Re-render lucide icons in the zoom view
-            lucide.createIcons();
-        }
-
-        function closeZoom() {
-            document.getElementById('zoomOverlay').style.display = 'none';
-        }
-
         window.onload = () => {
-            fetchData();
             init3D();
-            setInterval(fetchData, 10000);
+            updateUI();
         };
     </script>
 </body>
