@@ -1,0 +1,11 @@
+{
+    "last_updated": "2026-04-08 10:20:00",
+    "summary": "Peak shading risk: 12.5%. Based on 3 obstructions.",
+    "plant_capacity": 4.5,
+    "subsidy_amount": 95000.0,
+    "monthly_losses": [
+        {"Month": "Jan", "Loss %": 5.2},
+        {"Month": "Feb", "Loss %": 4.1},
+        {"Month": "Mar", "Loss %": 2.0}
+    ]
+}
