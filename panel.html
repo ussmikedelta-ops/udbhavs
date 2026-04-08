@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Udbhav Panel Access | Site Survey Portal</title>
+    <link rel="icon" type="image/jpeg" href="Donna Stroupe.jpg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass-panel {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .solar-bg {
+            background: linear-gradient(rgba(30, 58, 138, 0.8), rgba(30, 58, 138, 0.9)),
+                        url('1.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="solar-bg min-h-screen flex items-center justify-center p-4 transition-colors duration-300">
+    
+    <button id="theme-toggle" class="fixed top-6 right-6 p-3 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md transition-all">
+        <i id="theme-icon" data-lucide="moon" class="text-white w-6 h-6"></i>
+    </button>
+
+    <div class="glass-panel w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+        
+        <div class="text-center mb-8 relative">
+            <div class="w-20 h-20 bg-orange-500 rounded-3xl mx-auto mb-4 flex items-center justify-center shadow-lg shadow-orange-500/30 rotate-3">
+                <i data-lucide="sun" class="text-white w-10 h-10 animate-spin-slow"></i>
+            </div>
+            <h1 class="text-3xl font-black text-blue-900 dark:text-white uppercase tracking-tighter">Udbhav <span class="text-orange-500">Panel</span></h1>
+            <p class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-[0.3em] mt-1">Survey Control Access</p>
+        </div>
+
+        <form id="loginForm" class="space-y-5">
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4">Authorized ID</label>
+                <div class="relative group">
+                    <i data-lucide="user" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-orange-500 transition-colors"></i>
+                    <input type="text" id="empId" required 
+                        class="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none focus:ring-2 focus:ring-orange-500 transition-all text-slate-900 dark:text-white font-medium"
+                        placeholder="Enter ID">
+                </div>
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4">Secure Password</label>
+                <div class="relative group">
+                    <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-orange-500 transition-colors"></i>
+                    <input type="password" id="password" required 
+                        class="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none focus:ring-2 focus:ring-orange-500 transition-all text-slate-900 dark:text-white font-medium"
+                        placeholder="••••••••">
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-blue-900/20 transition-all active:scale-95 flex items-center justify-center gap-3">
+                Access Control <i data-lucide="arrow-right" class="w-5 h-5"></i>
+            </button>
+        </form>
+
+        <div class="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700 text-center">
+            <p class="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest leading-relaxed">
+                © 2026 Udbhav Solar Solutions Ajmer<br>
+                Integrated Survey Management
+            </p>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Theme Management
+        const themeToggle = document.getElementById('theme-toggle');
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.getElementById('theme-icon').setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+            lucide.createIcons();
+        });
+
+        // Initialize Theme
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            document.getElementById('theme-icon').setAttribute('data-lucide', 'sun');
+            lucide.createIcons();
+        }
+
+        // Database - Exact same as lallu.html
+        const users = {
+            "admin": { pass: "udbhav123", name: "Administrator", role: "admin" },
+            "uss-solar": { pass: "solar2026", name: "Solar Admin", role: "admin" },
+            "USS-EMP-001": { pass: "solar2026", name: "EKLAVYA", role: "staff" },
+            "USS-EMP-002": { pass: "ajmer99", name: "RAJ KUMAR", role: "staff" },
+            "1": { pass: "1", name: "Test User", role: "staff" }
+        };
+
+        const loginForm = document.getElementById('loginForm');
+
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const id = document.getElementById('empId').value;
+            const pass = document.getElementById('password').value;
+
+            if (users[id] && users[id].pass === pass) {
+                const user = users[id];
+                
+                // Set the session flags
+                sessionStorage.setItem("isSolarAdmin", "true");
+                sessionStorage.setItem("adminName", user.name);
+                sessionStorage.setItem("userRole", user.role);
+
+                // Redirect to the new control.html
+                window.location.replace("control.html");
+            } else {
+                alert("Invalid Credentials. Access Denied.");
+                loginForm.reset();
+            }
+        });
+    </script>
+</body>
+</html>
