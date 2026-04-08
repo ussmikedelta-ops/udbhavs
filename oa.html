@@ -13,47 +13,63 @@
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&display=swap');
-        body { background: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; }
+        body { background: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(249, 115, 22, 0.1); }
-        .input-field { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; width: 100%; color: white; outline: none; transition: 0.3s; }
+        .input-field { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; width: 100%; color: white; outline: none; transition: 0.3s; font-size: 14px; }
         .input-field:focus { border-color: #f97316; box-shadow: 0 0 10px rgba(249, 115, 22, 0.2); }
-        #panel-canvas { width: 100%; height: 250px; border-radius: 1rem; }
+        #panel-canvas { width: 100%; height: 250px; border-radius: 1rem; cursor: move; }
         .loader { border: 3px solid #1e293b; border-top: 3px solid #f97316; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: none; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .stat-card { transition: transform 0.3s ease; }
+        .stat-card:hover { transform: translateY(-5px); }
     </style>
 </head>
-<body class="p-6">
+<body class="p-4 md:p-8">
 
     <nav class="flex justify-between items-center mb-10 max-w-7xl mx-auto">
         <div class="flex items-center gap-4">
-            <img src="Donna Stroupe.jpg" class="w-12 h-12 rounded-xl border border-orange-500/30 object-cover">
-            <h1 class="text-xl font-black uppercase">Udbhav <span class="text-orange-500">OA</span></h1>
+            <div class="w-12 h-12 rounded-xl border border-orange-500/30 overflow-hidden bg-slate-800">
+                <img src="Donna Stroupe.jpg" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150'">
+            </div>
+            <div>
+                <h1 class="text-xl font-black uppercase tracking-tighter">Udbhav <span class="text-orange-500">OA</span></h1>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Operations Portal</p>
+            </div>
         </div>
-        <div id="sync-status" class="text-[10px] font-bold text-slate-500 flex items-center gap-2">
-            <div class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_green]"></div> ENGINE ONLINE
+        <div id="sync-status" class="px-4 py-2 rounded-full bg-slate-900/50 border border-white/5 text-[10px] font-bold text-slate-400 flex items-center gap-2">
+            <div id="status-dot" class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_green]"></div> 
+            <span id="status-text">ENGINE ONLINE</span>
         </div>
     </nav>
 
     <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         <div class="lg:col-span-4 space-y-6">
-            <div class="glass p-6 rounded-[2rem]">
-                <h3 class="text-sm font-black uppercase tracking-widest text-orange-500 mb-6">Site Parameters</h3>
+            <div class="glass p-6 rounded-[2rem] shadow-2xl">
+                <h3 class="text-sm font-black uppercase tracking-widest text-orange-500 mb-6 flex items-center gap-2">
+                    <i data-lucide="settings-2" class="w-4"></i> Site Parameters
+                </h3>
                 
                 <div class="space-y-4">
                     <div>
                         <label class="text-[10px] uppercase font-bold text-slate-500 ml-2">Coordinates (Lat / Lon)</label>
                         <div class="flex gap-2 mt-1">
-                            <input id="lat" type="number" value="26.45" class="input-field" placeholder="Lat">
-                            <input id="lon" type="number" value="74.64" class="input-field" placeholder="Lon">
+                            <input id="lat" type="number" step="0.01" value="26.45" class="input-field" placeholder="Lat">
+                            <input id="lon" type="number" step="0.01" value="74.64" class="input-field" placeholder="Lon">
                         </div>
                     </div>
 
                     <div>
                         <label class="text-[10px] uppercase font-bold text-slate-500 ml-2">Plant Design (Rows / Panels)</label>
                         <div class="flex gap-2 mt-1">
-                            <input id="rows" type="number" value="2" class="input-field">
-                            <input id="panels" type="number" value="4" class="input-field">
+                            <div class="flex-1">
+                                <input id="rows" type="number" value="2" class="input-field">
+                                <p class="text-[8px] text-center mt-1 text-slate-600">ROWS</p>
+                            </div>
+                            <div class="flex-1">
+                                <input id="panels" type="number" value="4" class="input-field">
+                                <p class="text-[8px] text-center mt-1 text-slate-600">PANELS / ROW</p>
+                            </div>
                         </div>
                     </div>
 
@@ -62,9 +78,9 @@
                         <input id="bill" type="number" value="2500" class="input-field mt-1">
                     </div>
 
-                    <button onclick="triggerPythonAnalysis()" id="btn-text" class="w-full py-4 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-3 mt-4">
+                    <button onclick="triggerPythonAnalysis()" id="submit-btn" class="w-full py-4 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-3 mt-4 shadow-lg shadow-orange-900/20">
                         <i data-lucide="zap" class="w-4"></i> 
-                        <span>RUN ANALYSIS</span>
+                        <span id="btn-text">RUN ANALYSIS</span>
                         <div id="loader" class="loader"></div>
                     </button>
                 </div>
@@ -73,27 +89,35 @@
 
         <div class="lg:col-span-8 space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass p-6 rounded-[2rem]">
+                <div class="glass p-6 rounded-[2rem] flex flex-col items-center justify-center">
                     <div id="panel-canvas"></div>
-                    <p class="text-center text-[10px] text-slate-500 mt-2 font-bold uppercase tracking-widest">3D Array Geometry</p>
+                    <div class="flex items-center gap-4 mt-2">
+                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">3D Array Geometry</p>
+                        <span class="px-2 py-0.5 rounded bg-orange-500/10 text-orange-500 text-[8px] font-bold">LIVE VIZ</span>
+                    </div>
                 </div>
 
-                <div class="space-y-6">
-                    <div class="glass p-8 rounded-[2rem]">
-                        <p class="text-[10px] font-bold text-slate-500 uppercase mb-2">Estimated Capacity</p>
-                        <div id="cap-val" class="text-5xl font-black text-white">-- kW</div>
+                <div class="grid grid-rows-2 gap-6">
+                    <div class="glass p-8 rounded-[2rem] stat-card border-l-4 border-l-blue-500">
+                        <p class="text-[10px] font-bold text-slate-500 uppercase mb-2 tracking-widest">Estimated Capacity</p>
+                        <div id="cap-val" class="text-5xl font-black text-white">-- <span class="text-lg text-slate-600">kW</span></div>
                     </div>
-                    <div class="glass p-8 rounded-[2rem]">
-                        <p class="text-[10px] font-bold text-slate-500 uppercase mb-2">Govt. Subsidy</p>
+                    <div class="glass p-8 rounded-[2rem] stat-card border-l-4 border-l-orange-500">
+                        <p class="text-[10px] font-bold text-slate-500 uppercase mb-2 tracking-widest">Govt. Subsidy</p>
                         <div id="sub-val" class="text-5xl font-black text-orange-500">₹--</div>
                     </div>
                 </div>
             </div>
 
-            <div class="glass p-8 rounded-[2.5rem]">
-                <h4 class="font-black uppercase tracking-tighter mb-4">Engine Logic Output</h4>
-                <div id="summary-text" class="text-sm text-slate-400 leading-relaxed italic">
-                    Enter site parameters and click "Run Analysis" to initiate calculations.
+            <div class="glass p-8 rounded-[2.5rem] relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-6 opacity-5">
+                    <i data-lucide="file-text" class="w-24 h-24 text-white"></i>
+                </div>
+                <h4 class="font-black uppercase tracking-tighter mb-4 flex items-center gap-2">
+                    <i data-lucide="cpu" class="w-4 text-orange-500"></i> Engine Logic Output
+                </h4>
+                <div id="summary-text" class="text-sm text-slate-400 leading-relaxed italic border-l-2 border-orange-500/30 pl-4">
+                    Enter site parameters and click "Run Analysis" to initiate calculations via the Hugging Face engine.
                 </div>
             </div>
         </div>
@@ -102,83 +126,126 @@
     <script>
         lucide.createIcons();
 
-        // RUNNING THE PYTHON ANALYSIS
+        // 1. ENGINE CONNECTION
         async function triggerPythonAnalysis() {
-            const btnText = document.querySelector('#btn-text span');
+            const btnText = document.getElementById('btn-text');
             const loader = document.getElementById('loader');
+            const statusDot = document.getElementById('status-dot');
             
-            // UI State
             btnText.innerText = "PROCESSING...";
             loader.style.display = "block";
+            statusDot.classList.replace('bg-green-500', 'bg-yellow-500');
 
             try {
-                // Connect to your Hugging Face Space (Replace with your actual Space Name)
-                const app = await window.GradioClient.connect("udbhav121/aii ");
+                // Connect to your Hugging Face Space
+                const app = await window.GradioClient.connect("ussmikedelta-ops/udbhavs");
                 
+                // Format Data for Gradio Dataframe
+                const obstructionData = [[20, 30, 180, 10]]; 
+
                 const result = await app.predict("/process_survey", [
                     parseFloat(document.getElementById('lat').value),
                     parseFloat(document.getElementById('lon').value),
-                    6, // Default Month
-                    [[20, 30, 180, 10]], // Default Obstruction
+                    6, // June Default
+                    obstructionData,
                     parseFloat(document.getElementById('bill').value),
                     parseInt(document.getElementById('rows').value),
                     parseInt(document.getElementById('panels').value)
                 ]);
 
-                // The Python code automatically saves to data1.json and pushes to GitHub
-                // We update the UI here immediately for speed
-                updateUI();
+                console.log("Analysis Success:", result);
+                
+                // Small delay to allow GitHub to receive the file before we fetch it
+                setTimeout(updateUI, 3000);
                 
             } catch (error) {
-                console.error(error);
-                alert("Connection Error: Ensure your HF Space is running.");
+                console.error("Engine Error:", error);
+                alert("Connection Error: Ensure your HF Space is 'Running' and check console.");
+                statusDot.classList.replace('bg-yellow-500', 'bg-red-500');
             } finally {
                 btnText.innerText = "RUN ANALYSIS";
                 loader.style.display = "none";
+                statusDot.classList.replace('bg-yellow-500', 'bg-green-500');
             }
         }
 
+        // 2. DATA FETCH & UI SYNC
         async function updateUI() {
             try {
-                const response = await fetch('data1.json');
+                // Add timestamp to URL to prevent browser caching of the JSON file
+                const response = await fetch('data1.json?t=' + new Date().getTime());
+                if (!response.ok) throw new Error("JSON not found");
+                
                 const data = await response.json();
-                document.getElementById('cap-val').innerText = data.plant_capacity + " kW";
+                
+                document.getElementById('cap-val').innerHTML = data.plant_capacity + ` <span class="text-lg text-slate-600">kW</span>`;
                 document.getElementById('sub-val').innerText = "₹" + data.subsidy_amount.toLocaleString();
                 document.getElementById('summary-text').innerText = data.summary;
-            } catch (e) { console.log("JSON not ready yet..."); }
+                
+                console.log("UI Updated with latest data");
+            } catch (e) { 
+                console.log("Waiting for data sync..."); 
+            }
         }
 
-        // Initialize 3D Visualizer (Simplified for the panel)
+        // 3. 3D VISUALIZER (Three.js)
         function init3D() {
             const container = document.getElementById('panel-canvas');
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            
             const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
             container.appendChild(renderer.domElement);
 
-            const geometry = new THREE.BoxGeometry(3.5, 0.05, 2);
-            const material = new THREE.MeshPhongMaterial({ color: 0x1e293b, specular: 0x3b82f6 });
-            const panel = new THREE.Mesh(geometry, material);
-            scene.add(panel);
+            // Create Solar Panel Array Representation
+            const group = new THREE.Group();
+            const geometry = new THREE.BoxGeometry(1.5, 0.05, 1);
+            const material = new THREE.MeshPhongMaterial({ 
+                color: 0x1e293b, 
+                specular: 0x3b82f6,
+                shininess: 100 
+            });
 
-            const light = new THREE.DirectionalLight(0xffffff, 1);
+            // Grid layout based on inputs
+            for(let i=0; i<2; i++) {
+                for(let j=0; j<4; j++) {
+                    const panel = new THREE.Mesh(geometry, material);
+                    panel.position.set(j * 1.6 - 2.4, 0, i * 1.1 - 0.5);
+                    group.add(panel);
+                }
+            }
+            
+            scene.add(group);
+            group.rotation.x = 0.3; // Slight tilt
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+
+            const light = new THREE.DirectionalLight(0xff9800, 1);
             light.position.set(5, 5, 5);
             scene.add(light);
-            camera.position.z = 4;
-            panel.rotation.x = 0.5;
+
+            camera.position.z = 6;
 
             function animate() {
                 requestAnimationFrame(animate);
-                panel.rotation.y += 0.01;
+                group.rotation.y += 0.005;
                 renderer.render(scene, camera);
             }
             animate();
+
+            // Handle Resize
+            window.addEventListener('resize', () => {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
         }
 
         window.onload = () => {
             init3D();
-            updateUI();
+            updateUI(); // Load existing data on start
         };
     </script>
 </body>
