@@ -1,5 +1,13 @@
 {
-    "vlogs": [],
+    "vlogs": [
+        {
+            "category": "News",
+            "title": "test",
+            "image": "https://raw.githubusercontent.com/ussmikedelta-ops/udbhavs/main/pic/44013954100-mascot_(1).png",
+            "link": "https://www.youtube.com/",
+            "description": "test"
+        }
+    ],
     "photos": [],
     "featured_video": "https://www.youtube.com/watch?v=HlIo-yX3f80"
 }
