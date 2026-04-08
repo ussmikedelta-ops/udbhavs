@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Udbhav Control Panel | Executive Command</title>
+    <link rel="icon" type="image/jpeg" href="Donna Stroupe.jpg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        // SECURITY GATE: Redirect if not logged in via panel.html
+        (function() {
+            if (sessionStorage.getItem("isSolarAdmin") !== "true") {
+                window.location.replace("panel.html");
+            }
+        })();
+    </script>
+    <style>
+        body { background-color: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; }
+        .glow-orange { filter: drop-shadow(0 0 8px rgba(249, 115, 22, 0.6)); }
+        .nav-card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .nav-card:hover {
+            transform: translateY(-8px);
+            border-color: #f97316;
+            box-shadow: 0 10px 30px -10px rgba(249, 115, 22, 0.3);
+            background: rgba(30, 41, 59, 0.8);
+        }
+        .animate-pulse-slow { animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    </style>
+</head>
+<body class="min-h-screen p-6 md:p-12">
+
+    <div class="max-w-6xl mx-auto">
+        <header class="flex flex-col md:flex-row justify-between items-center mb-12 gap-6 border-b border-slate-800 pb-10">
+            <div class="flex items-center gap-5">
+                <div class="relative">
+                    <img src="Donna Stroupe.jpg" class="w-20 h-20 rounded-2xl border-2 border-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.4)] object-cover" alt="Logo">
+                    <div class="absolute -bottom-2 -right-2 bg-green-500 w-5 h-5 rounded-full border-4 border-slate-950 animate-pulse"></div>
+                </div>
+                <div>
+                    <h1 class="text-4xl font-black tracking-tighter uppercase text-white">Control <span class="text-orange-500">Panel</span></h1>
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-[0.4em]">Udbhav Solar Solutions</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4 bg-slate-900/50 p-4 rounded-3xl border border-slate-800">
+                <img src="udbhav.jpg" class="w-12 h-12 rounded-full object-cover border border-orange-500/50" alt="Udbhav branding">
+                <div class="text-right">
+                    <p id="admin-name" class="text-sm font-black text-orange-500 uppercase">Administrator</p>
+                    <button onclick="sessionStorage.clear(); window.location.replace('panel.html');" class="text-[10px] font-bold text-red-500 hover:text-red-400 uppercase tracking-widest">Terminate Session</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <a href="sir.html" class="nav-card p-8 rounded-[2rem] flex flex-col items-center text-center group">
+                <div class="w-16 h-16 bg-orange-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-orange-500 transition-colors">
+                    <i data-lucide="clipboard-check" class="text-orange-500 group-hover:text-white w-8 h-8 glow-orange"></i>
+                </div>
+                <h3 class="text-xl font-black uppercase tracking-tight mb-2">SIR</h3>
+                <p class="text-xs text-slate-400 font-medium">Site Inspection Report & Documentation</p>
+            </a>
+
+            <a href="admin-vlogs.html" class="nav-card p-8 rounded-[2rem] flex flex-col items-center text-center group">
+                <div class="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-500 transition-colors">
+                    <i data-lucide="video" class="text-blue-500 group-hover:text-white w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-black uppercase tracking-tight mb-2">Vlog Manager</h3>
+                <p class="text-xs text-slate-400 font-medium">Manage News, Installations & Gallery</p>
+            </a>
+
+            <a href="oa.html" class="nav-card p-8 rounded-[2rem] flex flex-col items-center text-center group">
+                <div class="w-16 h-16 bg-yellow-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-yellow-500 transition-colors">
+                    <i data-lucide="sun" class="text-yellow-500 group-hover:text-white w-8 h-8 animate-spin-slow"></i>
+                </div>
+                <h3 class="text-xl font-black uppercase tracking-tight mb-2">OA Engine</h3>
+                <p class="text-xs text-slate-400 font-medium">3D Obstruction & Shading Analysis</p>
+            </a>
+
+            <a href="log.html" class="nav-card p-8 rounded-[2rem] flex flex-col items-center text-center group">
+                <div class="w-16 h-16 bg-green-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-500 transition-colors">
+                    <i data-lucide="qr-code" class="text-green-500 group-hover:text-white w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-black uppercase tracking-tight mb-2">Bill Scanner</h3>
+                <p class="text-xs text-slate-400 font-medium">Generate Dynamic Bill Scan Links</p>
+            </a>
+
+            <a href="aigent.html" class="nav-card p-8 rounded-[2rem] flex flex-col items-center text-center group">
+                <div class="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-500 transition-colors">
+                    <i data-lucide="bot" class="text-purple-500 group-hover:text-white w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-black uppercase tracking-tight mb-2">AI Consultant</h3>
+                <p class="text-xs text-slate-400 font-medium">Speak with Udbhav Intelligence</p>
+            </a>
+
+            <div class="nav-card p-8 rounded-[2rem] flex flex-col justify-center border-dashed border-slate-700 opacity-60">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase">Cloud Sync</span>
+                    <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                </div>
+                <div class="h-1 w-full bg-slate-800 rounded-full overflow-hidden">
+                    <div class="h-full bg-orange-500 w-3/4 animate-pulse-slow"></div>
+                </div>
+                <p class="text-[9px] mt-4 text-center text-slate-500 font-bold uppercase tracking-widest">Udbhav Solar Solutions Ajmer</p>
+            </div>
+
+        </div>
+
+        <footer class="mt-20 text-center">
+            <p class="text-[10px] text-slate-600 font-bold uppercase tracking-[0.5em]">Secure Intelligent System v2.0</p>
+        </footer>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        
+        // Load the admin name from session
+        window.onload = () => {
+            const name = sessionStorage.getItem("adminName");
+            if(name) {
+                document.getElementById('admin-name').innerText = name;
+            }
+        };
+    </script>
+</body>
+</html>
