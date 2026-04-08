@@ -1,11 +1,56 @@
 {
-    "last_updated": "2026-04-08 10:20:00",
-    "summary": "Peak shading risk: 12.5%. Based on 3 obstructions.",
-    "plant_capacity": 4.5,
+    "last_updated": "2026-04-08 13:19:45",
+    "summary": "Udbhav Analysis: Capacity: 4.4kW (8 Panels). Max Shading: 12.5%.",
+    "plant_capacity": 4.4,
     "subsidy_amount": 95000.0,
     "monthly_losses": [
-        {"Month": "Jan", "Loss %": 5.2},
-        {"Month": "Feb", "Loss %": 4.1},
-        {"Month": "Mar", "Loss %": 2.0}
+        {
+            "Month": "Jan",
+            "Loss %": 5.2
+        },
+        {
+            "Month": "Feb",
+            "Loss %": 4.1
+        },
+        {
+            "Month": "Mar",
+            "Loss %": 3.8
+        },
+        {
+            "Month": "Apr",
+            "Loss %": 6.5
+        },
+        {
+            "Month": "May",
+            "Loss %": 8.2
+        },
+        {
+            "Month": "Jun",
+            "Loss %": 12.5
+        },
+        {
+            "Month": "Jul",
+            "Loss %": 10.1
+        },
+        {
+            "Month": "Aug",
+            "Loss %": 9.4
+        },
+        {
+            "Month": "Sep",
+            "Loss %": 7.3
+        },
+        {
+            "Month": "Oct",
+            "Loss %": 5.8
+        },
+        {
+            "Month": "Nov",
+            "Loss %": 4.9
+        },
+        {
+            "Month": "Dec",
+            "Loss %": 6.1
+        }
     ]
 }
