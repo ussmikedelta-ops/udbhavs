@@ -2,10 +2,10 @@
     "vlogs": [
         {
             "category": "News",
-            "title": "test",
+            "description": "test",
             "image": "https://raw.githubusercontent.com/ussmikedelta-ops/udbhavs/main/pic/44013954100-mascot_(1).png",
             "link": "https://www.youtube.com/",
-            "description": "test"
+            "title": "test"
         }
     ],
     "photos": [
