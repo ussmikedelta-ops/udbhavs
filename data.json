@@ -1,13 +1,6 @@
 {
     "vlogs": [
         {
-            "category": "Installation",
-            "title": "test",
-            "image": "https://raw.githubusercontent.com/ussmikedelta-ops/udbhavs/main/pic/44214602280-Gemini_Generated_Image_a5ja4ca5ja4ca5ja.png",
-            "link": "https://www.youtube.com/watch?v=Y78NaSPP_d8",
-            "description": "test \n\n\ntest \n\n\n\ntest \n"
-        },
-        {
             "category": "News",
             "description": "test",
             "image": "https://raw.githubusercontent.com/ussmikedelta-ops/udbhavs/main/pic/44013954100-mascot_(1).png",
