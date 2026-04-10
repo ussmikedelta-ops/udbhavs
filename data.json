@@ -1,6 +1,13 @@
 {
     "vlogs": [
         {
+            "category": "Technical Guide",
+            "title": "test",
+            "image": "https://raw.githubusercontent.com/ussmikedelta-ops/udbhavs/main/pic/44215101990-Gemini_Generated_Image_w5c0w1w5c0w1w5c0.png",
+            "link": "https://www.youtube.com/",
+            "description": "test ere r e "
+        },
+        {
             "category": "Installation",
             "title": "test",
             "image": "https://raw.githubusercontent.com/ussmikedelta-ops/udbhavs/main/pic/44215005100-Gemini_Generated_Image_w5c0w1w5c0w1w5c0.png",
