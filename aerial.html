@@ -1,425 +1,371 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>
-    /**
-     * UDBHAV SECURITY PROTOCOL: SIR ACCESS CONTROL
-     * 1. Validates Admin Session
-     * 2. Validates Entry Origin (Must come from control.html)
-     */
-    (function() {
-        const isLoggedIn = sessionStorage.getItem("isSolarAdmin") === "true";
-        const cameFromControl = document.referrer.includes("control.html");
-
-        // If not logged in OR accessed directly/wrongly, kick back to panel
-        if (!isLoggedIn || !cameFromControl) {
-            console.warn("Security Alert: Unauthorized access attempt to SIR.");
-            window.location.replace("panel.html");
-        }
-    })();
-</script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Udbhav Aerial | Pro Site Surveyor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Udbhav Solar | AI Intelligence Hub Pro</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-<style>
-    /* Floating Disclaimer Bar */
-    .ai-disclaimer {
-        position: fixed;
-        bottom: 24px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 2000;
-        background: rgba(15, 23, 42, 0.7);
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 10px 24px;
-        border-radius: 99px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        white-space: nowrap;
-    }
 
-    .ai-disclaimer p {
-        margin: 0;
-        color: rgba(255,255,255,0.8);
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-    }
-
-    .ai-disclaimer a {
-        color: #f97316;
-        text-decoration: none;
-        font-weight: 800;
-        transition: color 0.3s;
-    }
-
-    .ai-disclaimer a:hover { color: #ffffff; }
-
-    /* Floating WhatsApp Button */
-    .whatsapp-float {
-        position: fixed;
-        bottom: 24px;
-        right: 24px;
-        z-index: 2001;
-        width: 60px;
-        height: 60px;
-        background-color: #25d366;
-        border-radius: 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
-        transition: all 0.3s ease;
-        animation: pulse-wa 2s infinite;
-    }
-
-    .whatsapp-float:hover {
-        transform: scale(1.1);
-        background-color: #128c7e;
-    }
-
-    .whatsapp-icon {
-        width: 32px;
-        height: 32px;
-        fill: white;
-    }
-
-    @keyframes pulse-wa {
-        0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
-        70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
-    }
-
-    /* Mobile Responsiveness */
-    @media (max-width: 768px) {
-        .ai-disclaimer {
-            width: 90%;
-            padding: 8px 16px;
-            bottom: 100px;
-        }
-        .ai-disclaimer p { font-size: 9px; white-space: normal; text-align: center; }
-    }
-</style>
-
-<div class="ai-disclaimer">
-    <div class="w-2 h-2 rounded-full bg-orange-500"></div>
-    <p>
-        AI-Generated Visualization. For Precision Surveys: 
-        <a href="tel:+919660711101">Call Now</a> or 
-        <a href="https://wa.me/919660711101">WhatsApp +91 9660711101</a>
-    </p>
-</div>
-
-<a href="https://wa.me/919660711101" class="whatsapp-float" target="_blank" aria-label="Contact on WhatsApp">
-    <svg class="whatsapp-icon" viewBox="0 0 24 24">
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.395 0 .01 5.388 0 12.044c0 2.129.54 4.207 1.579 6.075L0 24l6.135-1.61a11.803 11.803 0 005.911 1.586h.005c6.654 0 12.05-5.39 12.056-12.047a11.82 11.82 0 00-3.536-8.509z"/>
-    </svg>
-</a>
     <style>
-        body { background: #020617; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; overflow: hidden; }
-        #map { height: 100vh; width: 100vw; z-index: 1; cursor: crosshair; }
-
-        /* Floating Transparent Controls */
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.65);
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-        .dock-hidden { transform: translateX(-115%); opacity: 0; pointer-events: none; }
-
-        /* Custom Inputs */
-        input[type="number"], input[type="text"] { 
-            background: rgba(255,255,255,0.05); 
-            border: 1px solid rgba(255,255,255,0.1); 
-            border-radius: 12px; 
-            padding: 10px; 
-            color: white; 
-            font-weight: 800;
-            outline: none; 
-            text-align: center;
-        }
-        input:focus { border-color: #f97316; background: rgba(249, 115, 22, 0.1); }
-
-        input[type="range"] { 
-            accent-color: #f97316; 
-            height: 6px; 
-            width: 100%; 
-            cursor: pointer; 
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            appearance: none;
-        }
-
-        .danger-zone { border: 2px solid #ef4444; background: rgba(239, 68, 68, 0.2); animation: pulse-red 2s infinite; }
-        @keyframes pulse-red { 0% { opacity: 0.4; } 50% { opacity: 0.8; } 100% { opacity: 0.4; } }
-
-        /* Scrollbar */
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        body { background: #020617; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; overflow: hidden; touch-action: manipulation; }
+        #map { height: 100vh; width: 100vw; z-index: 1; position: absolute; top: 0; left: 0; }
+        .glass { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px); border-right: 1px solid rgba(255, 255, 255, 0.1); }
+        .sidebar { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); width: 380px; z-index: 2000; position: relative; height: 100vh; overflow-y: auto; }
+        .sidebar-hidden { transform: translateX(-100%); position: absolute; }
+        @media (max-width: 768px) { .sidebar { width: 100%; max-width: 100%; position: absolute; left: 0; } }
         
-        /* Location Button specific animation */
-        .loc-loading { animation: spin 1s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .tab-btn { padding: 10px; font-size: 10px; font-weight: 800; text-transform: uppercase; border-radius: 12px; transition: 0.3s; flex: 1; text-align: center; color: #64748b; background: rgba(255,255,255,0.05); }
+        .tab-active { background: #f97316; color: white; box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3); }
+        
+        .wa-float { position: fixed; bottom: 30px; right: 20px; z-index: 3000; background: #25d366; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(37, 211,102,0.4); }
+        
+        /* Ensure Leaflet controls are visible but not blocking UI */
+        .leaflet-top.leaflet-left { top: 80px !important; }
+        .custom-control { background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body>
-    <div class="fixed top-6 left-6 z-[1001] flex flex-col gap-4">
-        <button onclick="toggleUI()" class="bg-orange-600 text-white p-4 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all" title="Toggle Sidebar">
-            <i id="toggle-icon" data-lucide="layers"></i>
-        </button>
-        
-        <button id="loc-btn" onclick="getLiveLocation()" class="bg-white text-slate-900 p-4 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all" title="Get My Location">
-            <i id="loc-icon" data-lucide="navigation"></i>
+
+<div id="map"></div>
+
+<div class="fixed top-6 right-6 z-[2001] flex flex-col gap-3 items-end">
+    <div id="status-pill" class="hidden bg-orange-600 text-white px-5 py-2.5 rounded-full shadow-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 animate-pulse">
+        <i data-lucide="scan-eye" class="w-4 h-4"></i> Designing Layout...
+    </div>
+    <button id="finish-draw-btn" onclick="finishDrawing()" class="hidden bg-green-500 text-white px-6 py-3 rounded-full shadow-2xl font-black text-xs uppercase tracking-widest flex items-center gap-2">
+        <i data-lucide="check-circle" class="w-5 h-5"></i> Confirm Roof Area
+    </button>
+</div>
+
+<button onclick="toggleSidebar()" class="fixed top-6 left-6 z-[2001] bg-orange-600 p-4 rounded-full shadow-2xl text-white lg:hidden">
+    <i data-lucide="menu"></i>
+</button>
+
+<aside id="sidebar" class="sidebar glass p-6 flex flex-col gap-5 shadow-2xl">
+    <div class="flex items-center justify-between mb-2">
+        <div>
+            <h1 class="text-2xl font-black italic tracking-tighter text-white">UDBHAV SOLAR</h1>
+            <p class="text-[9px] text-orange-500 font-bold tracking-[0.4em] uppercase">AI Energy Intelligence Hub</p>
+        </div>
+        <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 p-2"><i data-lucide="x"></i></button>
+    </div>
+
+    <div class="bg-white/5 rounded-2xl p-4 border border-white/10 space-y-3">
+        <h3 class="text-[10px] font-black text-slate-400 uppercase flex items-center gap-2">
+            <i data-lucide="globe" class="w-3 h-3 text-orange-500"></i> Site Selection
+        </h3>
+        <div class="flex gap-2">
+            <input type="text" id="search-input" placeholder="Search city or pincode..." class="w-full bg-black/40 border border-white/10 rounded-lg p-2.5 text-xs text-white outline-none focus:border-blue-500" onkeypress="if(event.key === 'Enter') searchLocation()">
+            <button onclick="searchLocation()" class="bg-white/10 hover:bg-white/20 p-2.5 rounded-lg transition-all">
+                <i data-lucide="search" class="w-4 h-4"></i>
+            </button>
+        </div>
+        <button onclick="locateUser()" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-900/40">
+            <i data-lucide="navigation" class="w-4 h-4"></i> Auto-Detect My Roof
         </button>
     </div>
 
-    <aside id="controls" class="glass-panel fixed top-0 left-0 h-full w-85 z-[1000] p-8 flex flex-col gap-6 shadow-2xl overflow-y-auto custom-scrollbar">
-        <div class="pt-12">
-            <h1 class="text-2xl font-black uppercase tracking-tighter italic leading-none">Udbhav Aerial</h1>
-            <p class="text-[9px] text-orange-500 font-bold uppercase tracking-[0.3em] mt-2">AI Site Surveyor Pro</p>
+    <div class="bg-white/5 rounded-2xl p-4 border border-white/10 space-y-4">
+        <h3 class="text-[10px] font-black text-slate-400 uppercase flex items-center gap-2">
+            <i data-lucide="zap" class="w-3 h-3 text-orange-500"></i> Capacity Wizard
+        </h3>
+        <div class="flex gap-2 bg-black/40 p-1.5 rounded-xl">
+            <button id="tab-bill" onclick="switchTab('bill')" class="tab-btn tab-active">By Bill</button>
+            <button id="tab-life" onclick="switchTab('life')" class="tab-btn">By Lifestyle</button>
         </div>
-
-        <div class="space-y-2">
-            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Active Target</label>
-            <div id="coord-display" class="bg-white/5 border border-white/10 p-3 rounded-xl text-[10px] font-mono text-orange-400 flex items-center gap-2">
-                <i data-lucide="map-pin" class="w-3 h-3"></i> Click map or use GPS...
-            </div>
-        </div>
-
-        <div class="space-y-4 py-4 border-y border-white/5">
-            <h3 class="text-[10px] font-black uppercase text-slate-400">Panel Configuration (4'x8')</h3>
-            <div class="grid grid-cols-2 gap-3">
-                <div class="flex flex-col gap-1">
-                    <span class="text-[8px] font-bold text-slate-500 ml-1">TOTAL QTY</span>
-                    <input type="number" id="qty" value="10" oninput="updateSurvey()">
-                </div>
-                <div class="flex flex-col gap-1">
-                    <span class="text-[8px] font-bold text-slate-500 ml-1">MAX ROWS</span>
-                    <input type="number" id="rows" value="2" oninput="updateSurvey()">
-                </div>
-            </div>
-
-            <div class="space-y-2 mt-4">
-                <div class="flex justify-between text-[9px] font-bold">
-                    <span class="text-slate-400 uppercase">Roof Alignment</span>
-                    <span id="v-rot" class="text-orange-500 font-black">0°</span>
-                </div>
-                <input type="range" id="rot" min="0" max="360" value="0" oninput="updateSurvey()">
-            </div>
-        </div>
-
-        <div id="ai-status" class="p-5 rounded-2xl border border-white/5 bg-white/5 transition-all duration-500">
-            <div class="flex items-center gap-3 mb-3">
-                <div id="status-led" class="w-2 h-2 rounded-full bg-slate-500"></div>
-                <span id="status-text" class="text-[10px] font-black uppercase italic">Awaiting Input...</span>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <p class="text-[8px] font-bold text-slate-500 uppercase">Irradiance</p>
-                    <p class="text-sm font-black" id="irrad">--</p>
-                </div>
-                <div>
-                    <p class="text-[8px] font-bold text-slate-500 uppercase">Est. Monthly</p>
-                    <p class="text-sm font-black text-orange-500" id="prod">--</p>
-                </div>
-            </div>
-
-            <div id="danger-msg" class="hidden mt-4 p-3 bg-red-500/20 border border-red-500/50 rounded-xl text-[9px] font-bold text-red-400 animate-pulse text-center uppercase tracking-widest">
-                <i data-lucide="alert-octagon" class="inline w-3 h-3 mr-1"></i> Roof Overflow Detected
-            </div>
-        </div>
-
-        <div class="mt-auto pt-6">
-            <button class="w-full bg-white text-black py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-orange-500 hover:text-white transition-all shadow-xl">
-                Generate Quotation
-            </button>
-            <p class="text-[7px] text-center text-slate-600 uppercase font-bold tracking-[0.2em] mt-4">Property of Udbhav Solar Solutions</p>
-        </div>
-    </aside>
-
-    <div id="map"></div>
-
-    <script>
-        lucide.createIcons();
         
-        let map;
-        let mainMarker;
-        let solarPolygon;
-        let gridLines = [];
+        <div id="view-bill">
+            <label class="text-[9px] font-bold text-slate-500 uppercase block mb-1">Monthly Units (kWh)</label>
+            <input type="number" id="bill-units" placeholder="e.g. 450" class="w-full bg-black/60 border border-white/10 rounded-lg p-2.5 text-sm text-white outline-none" oninput="calcFromWizard()">
+        </div>
 
-        // 4ft x 8ft in meters (Standard Industrial Size)
-        const P_WIDTH = 1.22; 
-        const P_HEIGHT = 2.44;
+        <div id="view-life" class="hidden grid grid-cols-2 gap-3">
+            <div>
+                <label class="text-[9px] font-bold text-slate-500 uppercase block mb-1">No. of ACs</label>
+                <input type="number" id="life-ac" value="1" class="w-full bg-black/60 border border-white/10 rounded-lg p-2.5 text-sm text-white" oninput="calcFromWizard()">
+            </div>
+            <div>
+                <label class="text-[9px] font-bold text-slate-500 uppercase block mb-1">Electric Car?</label>
+                <select id="life-ev" class="w-full bg-black/60 border border-white/10 rounded-lg p-2.5 text-xs text-white" onchange="calcFromWizard()">
+                    <option value="0">No</option>
+                    <option value="200">Yes</option>
+                </select>
+            </div>
+        </div>
+    </div>
 
-        function initMap() {
-            // Default to Ajmer, Rajasthan
-            map = L.map('map', { zoomControl: false }).setView([26.4499, 74.6399], 19);
-            
-            L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
-                maxZoom: 22,
-                subdomains:['mt0','mt1','mt2','mt3'],
-                attribution: 'Google Maps'
-            }).addTo(map);
+    <div class="bg-white/5 rounded-2xl p-4 border border-white/10 space-y-3">
+        <h3 class="text-[10px] font-black text-slate-400 uppercase flex items-center gap-2">
+            <i data-lucide="layout" class="w-3 h-3 text-orange-500"></i> Layout Engine
+        </h3>
+        <select id="tool-mode" class="w-full bg-black/40 border border-white/10 rounded-lg p-2.5 text-xs text-white outline-none" onchange="handleModeChange()">
+            <option value="pan">Mode: View Map</option>
+            <option value="draw">Mode: Draw Roof Boundary</option>
+            <option value="auto">Action: Auto-Fill Roof</option>
+        </select>
+        <div class="grid grid-cols-2 gap-3">
+            <button onclick="undo()" class="bg-white/5 hover:bg-white/10 p-2 rounded-lg text-[10px] font-bold uppercase"><i data-lucide="undo-2" class="w-3 h-3 inline mr-1"></i> Undo</button>
+            <button onclick="clearMap()" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 p-2 rounded-lg text-[10px] font-bold uppercase"><i data-lucide="trash-2" class="w-3 h-3 inline mr-1"></i> Reset</button>
+        </div>
+    </div>
 
-            map.on('click', function(e) {
-                placeMarker(e.latlng);
-            });
+    <div class="bg-gradient-to-br from-orange-600/20 to-orange-900/30 border border-orange-500/30 rounded-2xl p-5 shadow-xl">
+        <div class="flex justify-between items-end mb-4">
+            <div class="text-left">
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Recommended</p>
+                <h2 id="rec-kw" class="text-2xl font-black text-white italic">0.0 <span class="text-xs">kW</span></h2>
+            </div>
+            <div class="text-right">
+                <p class="text-[9px] font-black text-orange-500 uppercase tracking-widest">Layout Area</p>
+                <h2 id="area-val" class="text-2xl font-black text-orange-400 italic">0 <span class="text-xs">sqm</span></h2>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 mb-4">
+            <div class="bg-black/40 p-3 rounded-xl border border-white/5">
+                <p class="text-[8px] font-bold text-slate-500 uppercase">Est. Annual Generation</p>
+                <p id="est-gen" class="text-sm font-black text-white">0 kWh</p>
+            </div>
+            <div class="bg-black/40 p-3 rounded-xl border border-white/5">
+                <p class="text-[8px] font-bold text-slate-500 uppercase">Monthly Savings</p>
+                <p id="mo-savings" class="text-sm font-black text-green-400">₹ 0</p>
+            </div>
+        </div>
+
+        <div class="pt-3 border-t border-white/10 flex justify-between items-center">
+            <div>
+                <p class="text-[8px] font-bold text-slate-400 uppercase">CO₂ Offset</p>
+                <p id="co2-val" class="text-xs font-bold text-blue-300">0 Tons/yr</p>
+            </div>
+            <div class="text-right">
+                <p class="text-[8px] font-bold text-slate-400 uppercase">Sun Peak</p>
+                <p id="sun-angle" class="text-xs font-bold text-yellow-400">Calculating...</p>
+            </div>
+        </div>
+    </div>
+
+    <button onclick="bookConsultation()" class="w-full bg-white text-black py-4 rounded-xl font-black text-[12px] uppercase tracking-widest hover:bg-orange-500 hover:text-white transition-all shadow-2xl mt-auto">
+        Finalize Design & Book Survey
+    </button>
+</aside>
+
+<a href="https://wa.me/919660711101" target="_blank" class="wa-float" title="Contact Technical Support">
+    <svg class="w-8 h-8 fill-white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.395.01 5.388 0 12.044 0c2.129 0 4.207.54 6.075 1.579L24 16.135l-1.61-5.911a11.803 11.803 0 001.586-5.911h.005c0-6.654-5.39-12.05-12.047-12.056a11.82 11.82 0 00-8.509 3.536z"/></svg>
+</a>
+
+<script>
+lucide.createIcons();
+
+/* --- GLOBAL STATE --- */
+let map, roofPoly, sunMarker;
+let panelLayers = L.layerGroup();
+let drawPoints = [];
+let drawingActive = false;
+
+/* --- INITIALIZATION --- */
+function initMap() {
+    // Standard Leaflet Init
+    map = L.map('map', { zoomControl: false, preferCanvas: true }).setView([26.4499, 74.6399], 19);
+    
+    // Google Satellite Hybrid
+    L.tileLayer('https://{s}.google.com/vt/lyrs=y,h&x={x}&y={y}&z={z}', {
+        maxZoom: 22,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+    }).addTo(map);
+
+    panelLayers.addTo(map);
+    map.on('click', handleMapClick);
+    
+    // Initial Sun Calculation
+    updateSunStats();
+}
+
+/* --- LOCATION HUB --- */
+async function searchLocation() {
+    const q = document.getElementById('search-input').value;
+    if(!q) return;
+    
+    try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        if(data.length > 0) {
+            map.flyTo([data[0].lat, data[0].lon], 20);
+            updateSunStats(data[0].lat, data[0].lon);
         }
+    } catch(e) { console.error("Search Failed", e); }
+}
 
-        // NEW: Live Location Function
-        function getLiveLocation() {
-            const btnIcon = document.getElementById('loc-icon');
-            if (navigator.geolocation) {
-                btnIcon.classList.add('loc-loading');
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const lat = position.coords.latitude;
-                        const lng = position.coords.longitude;
-                        const latlng = L.latLng(lat, lng);
-                        
-                        map.flyTo(latlng, 20); // Zoom in close to house
-                        placeMarker(latlng);
-                        btnIcon.classList.remove('loc-loading');
-                    },
-                    (error) => {
-                        alert("Error getting location: " + error.message);
-                        btnIcon.classList.remove('loc-loading');
-                    },
-                    { enableHighAccuracy: true }
-                );
-            } else {
-                alert("Geolocation is not supported by this browser.");
+function locateUser() {
+    if (!navigator.geolocation) return alert("Browser does not support GPS");
+    navigator.geolocation.getCurrentPosition(pos => {
+        const coords = [pos.coords.latitude, pos.coords.longitude];
+        map.flyTo(coords, 21);
+        updateSunStats(coords[0], coords[1]);
+    }, () => alert("Location access denied."));
+}
+
+/* --- CAPACITY WIZARD --- */
+function switchTab(t) {
+    document.getElementById('view-bill').classList.toggle('hidden', t !== 'bill');
+    document.getElementById('view-life').classList.toggle('hidden', t !== 'life');
+    document.getElementById('tab-bill').classList.toggle('tab-active', t === 'bill');
+    document.getElementById('tab-life').classList.toggle('tab-active', t === 'life');
+}
+
+function calcFromWizard() {
+    let kw = 0;
+    if(!document.getElementById('view-bill').classList.contains('hidden')) {
+        const units = document.getElementById('bill-units').value || 0;
+        kw = (units / 120).toFixed(1);
+    } else {
+        const ac = document.getElementById('life-ac').value || 0;
+        const ev = document.getElementById('life-ev').value || 0;
+        kw = ((ac * 1.5) + (ev > 0 ? 1.5 : 0)).toFixed(1);
+    }
+    updateDashboard(kw);
+}
+
+/* --- DRAW ENGINE --- */
+function handleModeChange() {
+    const mode = document.getElementById('tool-mode').value;
+    drawingActive = (mode === 'draw');
+    document.getElementById('finish-draw-btn').classList.toggle('hidden', !drawingActive);
+    
+    if(mode === 'auto') {
+        autoFillRoof();
+        document.getElementById('tool-mode').value = 'pan';
+    }
+}
+
+function handleMapClick(e) {
+    if(!drawingActive) return;
+    drawPoints.push(e.latlng);
+    
+    if(window.tempLine) map.removeLayer(window.tempLine);
+    window.tempLine = L.polyline(drawPoints, {color: '#f97316', weight: 4}).addTo(map);
+}
+
+function finishDrawing() {
+    if(drawPoints.length < 3) return alert("Click at least 3 points on the roof corners");
+    
+    if(roofPoly) map.removeLayer(roofPoly);
+    roofPoly = L.polygon(drawPoints, {color: '#3b82f6', weight: 2, fillOpacity: 0.3}).addTo(map);
+    
+    // Calculate Area
+    const area = L.GeometryUtil.geodesicArea(drawPoints);
+    document.getElementById('area-val').innerHTML = `${Math.round(area)} <span class="text-xs">sqm</span>`;
+    
+    drawPoints = [];
+    if(window.tempLine) map.removeLayer(window.tempLine);
+    drawingActive = false;
+    document.getElementById('tool-mode').value = 'pan';
+    handleModeChange();
+}
+
+function autoFillRoof() {
+    if(!roofPoly) return alert("Draw roof boundary first!");
+    panelLayers.clearLayers();
+    
+    const bounds = roofPoly.getBounds();
+    const pW = 1.1, pH = 2.2; // Standard 550W Panel Dimensions
+    const latStep = (pH + 0.1) / 111320;
+    const lngStep = (pW + 0.1) / (111320 * Math.cos(bounds.getCenter().lat * Math.PI/180));
+    
+    let count = 0;
+    for(let lat = bounds.getSouth(); lat <= bounds.getNorth(); lat += latStep) {
+        for(let lng = bounds.getWest(); lng <= bounds.getEast(); lng += lngStep) {
+            const center = L.latLng(lat, lng);
+            if(isInside(center, roofPoly)) {
+                createPanel(center, pW, pH);
+                count++;
             }
         }
+    }
+    updateDashboard((count * 0.55).toFixed(1));
+}
 
-        function placeMarker(latlng) {
-            if(mainMarker) map.removeLayer(mainMarker);
-            
-            const solarIcon = L.divIcon({
-                className: 'custom-div-icon',
-                html: `<div class="w-4 h-4 bg-orange-500 rounded-full border-2 border-white shadow-lg"></div>`,
-                iconSize: [16, 16],
-                iconAnchor: [8, 8]
-            });
+function createPanel(center, w, h) {
+    const mToLat = 1/111320;
+    const mToLng = 1/(111320 * Math.cos(center.lat * Math.PI/180));
+    const dLat = (h/2) * mToLat, dLng = (w/2) * mToLng;
 
-            mainMarker = L.marker(latlng, { icon: solarIcon, draggable: true }).addTo(map);
-            document.getElementById('coord-display').innerHTML = `<i data-lucide="map-pin" class="w-3 h-3"></i> ${latlng.lat.toFixed(6)}, ${latlng.lng.toFixed(6)}`;
-            lucide.createIcons();
-            
-            updateSurvey();
-            mainMarker.on('drag', updateSurvey);
-        }
+    const corners = [
+        [center.lat + dLat, center.lng - dLng],
+        [center.lat + dLat, center.lng + dLng],
+        [center.lat - dLat, center.lng + dLng],
+        [center.lat - dLat, center.lng - dLng]
+    ];
+    L.polygon(corners, {color: '#f97316', weight: 1, fillOpacity: 0.7}).addTo(panelLayers);
+}
 
-        function toggleUI() {
-            document.getElementById('controls').classList.toggle('dock-hidden');
-        }
+function isInside(point, poly) {
+    const x = point.lat, y = point.lng;
+    const vs = poly.getLatLngs()[0];
+    let inside = false;
+    for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+        const xi = vs[i].lat, yi = vs[i].lng;
+        const xj = vs[j].lat, yj = vs[j].lng;
+        const intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+    }
+    return inside;
+}
 
-        function rotatePoint(center, point, angle) {
-            const radians = (Math.PI / 180) * angle;
-            const cos = Math.cos(radians);
-            const sin = Math.sin(radians);
-            const nx = (cos * (point.lng - center.lng)) + (sin * (point.lat - center.lat)) + center.lng;
-            const ny = (cos * (point.lat - center.lat)) - (sin * (point.lng - center.lng)) + center.lat;
-            return [ny, nx];
-        }
+/* --- MATH & DASHBOARD --- */
+function updateDashboard(kw) {
+    document.getElementById('rec-kw').innerHTML = `${kw} <span class="text-xs">kW</span>`;
+    const gen = Math.round(kw * 1450);
+    document.getElementById('est-gen').innerText = `${gen.toLocaleString()} kWh`;
+    document.getElementById('mo-savings').innerText = `₹ ${Math.round(gen * 8 / 12).toLocaleString()}`;
+    document.getElementById('co2-val').innerText = `${(kw * 1.2).toFixed(1)} Tons/yr`;
+}
 
-        function updateSurvey() {
-            if(!mainMarker) return;
+function updateSunStats(lat = 26.44, lng = 74.63) {
+    const times = SunCalc.getTimes(new Date(), lat, lng);
+    const sunPos = SunCalc.getPosition(times.solarNoon, lat, lng);
+    const altitude = (sunPos.altitude * 180 / Math.PI).toFixed(1);
+    document.getElementById('sun-angle').innerText = `${altitude}° Elevation`;
+}
 
-            const qty = parseInt(document.getElementById('qty').value) || 1;
-            const rows = parseInt(document.getElementById('rows').value) || 1;
-            const cols = Math.ceil(qty / rows);
-            const rotation = parseFloat(document.getElementById('rot').value);
-            
-            document.getElementById('v-rot').innerText = rotation + '°';
+function clearMap() {
+    panelLayers.clearLayers();
+    if(roofPoly) map.removeLayer(roofPoly);
+    roofPoly = null;
+    updateDashboard(0);
+}
 
-            const center = mainMarker.getLatLng();
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('sidebar-hidden');
+}
 
-            const latDegreeMeters = 111320;
-            const lngDegreeMeters = 111320 * Math.cos(center.lat * Math.PI / 180);
+function bookConsultation() {
+    const kw = document.getElementById('rec-kw').innerText.split(' ')[0];
+    const msg = `Hi Udbhav Solar! I've used the AI Hub and designed a *${kw} kW* system. Please check for technical feasibility.`;
+    window.open(`https://wa.me/919660711101?text=${encodeURIComponent(msg)}`);
+}
 
-            const totalWidthM = cols * P_WIDTH;
-            const totalHeightM = rows * P_HEIGHT;
-            const halfW = (totalWidthM / 2) / lngDegreeMeters;
-            const halfH = (totalHeightM / 2) / latDegreeMeters;
-
-            const corners = [
-                { lat: center.lat + halfH, lng: center.lng - halfW }, 
-                { lat: center.lat + halfH, lng: center.lng + halfW }, 
-                { lat: center.lat - halfH, lng: center.lng + halfW }, 
-                { lat: center.lat - halfH, lng: center.lng - halfW }  
-            ];
-
-            const rotatedCorners = corners.map(p => rotatePoint(center, p, rotation));
-
-            if(solarPolygon) map.removeLayer(solarPolygon);
-            
-            const area = totalWidthM * totalHeightM;
-            const isDanger = area > 75; 
-
-            solarPolygon = L.polygon(rotatedCorners, {
-                color: isDanger ? '#ef4444' : '#fb923c',
-                fillColor: '#1e3a8a',
-                fillOpacity: 0.6,
-                weight: 2,
-                className: isDanger ? 'danger-zone' : ''
-            }).addTo(map);
-
-            gridLines.forEach(l => map.removeLayer(l));
-            gridLines = [];
-
-            for(let i = 1; i < cols; i++) {
-                const ratio = i / cols;
-                const p1 = rotatePoint(center, { lat: center.lat + halfH, lng: center.lng - halfW + (ratio * totalWidthM / lngDegreeMeters) }, rotation);
-                const p2 = rotatePoint(center, { lat: center.lat - halfH, lng: center.lng - halfW + (ratio * totalWidthM / lngDegreeMeters) }, rotation);
-                const line = L.polyline([p1, p2], { color: 'rgba(255,255,255,0.4)', weight: 1 }).addTo(map);
-                gridLines.push(line);
+// Leaflet Geometry Utility Fallback
+L.GeometryUtil = L.extend(L.GeometryUtil || {}, {
+    geodesicArea: function (latLngs) {
+        var pointsCount = latLngs.length, area = 0.0, d2r = Math.PI / 180, p1, p2;
+        if (pointsCount > 2) {
+            for (var i = 0; i < pointsCount; i++) {
+                p1 = latLngs[i]; p2 = latLngs[(i + 1) % pointsCount];
+                area += ((p2.lng - p1.lng) * d2r) * (2 + Math.sin(p1.lat * d2r) + Math.sin(p2.lat * d2r));
             }
-
-            for(let j = 1; j < rows; j++) {
-                const ratio = j / rows;
-                const p1 = rotatePoint(center, { lat: center.lat + halfH - (ratio * totalHeightM / latDegreeMeters), lng: center.lng - halfW }, rotation);
-                const p2 = rotatePoint(center, { lat: center.lat + halfH - (ratio * totalHeightM / latDegreeMeters), lng: center.lng + halfW }, rotation);
-                const line = L.polyline([p1, p2], { color: 'rgba(255,255,255,0.4)', weight: 1 }).addTo(map);
-                gridLines.push(line);
-            }
-
-            const statusBox = document.getElementById('ai-status');
-            const led = document.getElementById('status-led');
-            const txt = document.getElementById('status-text');
-            const danger = document.getElementById('danger-msg');
-
-            if(isDanger) {
-                statusBox.classList.add('border-red-500/50');
-                led.className = 'w-2 h-2 rounded-full bg-red-500 shadow-[0_0_10px_red]';
-                txt.innerText = "System Size Alert";
-                danger.classList.remove('hidden');
-            } else {
-                statusBox.classList.remove('border-red-500/50');
-                led.className = 'w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]';
-                txt.innerText = "Optimal Alignment";
-                danger.classList.add('hidden');
-            }
-
-            const capacityKW = (qty * 550) / 1000;
-            document.getElementById('irrad').innerText = "5.5 kWh/m²";
-            document.getElementById('prod').innerText = Math.round(capacityKW * 4.2 * 30) + " Units";
+            area = area * 6378137.0 * 6378137.0 / 2.0;
         }
+        return Math.abs(area);
+    }
+});
 
-        window.onload = initMap;
-    </script>
+window.onload = initMap;
+</script>
 </body>
 </html>
