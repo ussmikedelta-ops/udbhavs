@@ -1,6 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+    /**
+     * UDBHAV SECURITY PROTOCOL: SIR ACCESS CONTROL
+     * 1. Validates Admin Session
+     * 2. Validates Entry Origin (Must come from control.html)
+     */
+    (function() {
+        const isLoggedIn = sessionStorage.getItem("isSolarAdmin") === "true";
+        const cameFromControl = document.referrer.includes("control.html");
+
+        // If not logged in OR accessed directly/wrongly, kick back to panel
+        if (!isLoggedIn || !cameFromControl) {
+            console.warn("Security Alert: Unauthorized access attempt to SIR.");
+            window.location.replace("panel.html");
+        }
+    })();
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Udbhav Solar | AI Intelligence Hub Pro</title>
