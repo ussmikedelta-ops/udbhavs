@@ -1,695 +1,604 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <link rel="icon" type="image/jpeg" href="Donna Stroupe.jpg">
-    <script>
-    /**
-     * UDBHAV SECURITY PROTOCOL: SIR ACCESS CONTROL
-     * 1. Validates Admin Session
-     * 2. Validates Entry Origin (Must come from control.html)
-     */
-    (function() {
-        const isLoggedIn = sessionStorage.getItem("isSolarAdmin") === "true";
-        const cameFromControl = document.referrer.includes("control.html");
+<link rel="icon" type="image/jpeg" href="Donna Stroupe.jpg">
+<script>
+/**
+ * UDBHAV SECURITY PROTOCOL: SIR ACCESS CONTROL
+ * 1. Validates Admin Session
+ * 2. Validates Entry Origin (Must come from control.html)
+ */
+(function() {
+const isLoggedIn = sessionStorage.getItem("isSolarAdmin") === "true";
+const cameFromControl = document.referrer.includes("control.html");
+// If not logged in OR accessed directly/wrongly, kick back to panel
+if (!isLoggedIn || !cameFromControl) {
+    console.warn("Security Alert: Unauthorized access attempt to SIR.");
+    // window.location.replace("panel.html"); // Commented out for local testing
+}
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Udbhav 3D Immersive | Solar Visualizer</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+--primary: #f97316; /* Orange 500 */
+--bg-dark: #020617;
+--glass-bg: rgba(15, 23, 42, 0.85);
+--text-main: #f8fafc;
+}
+body {
+background: var(--bg-dark);
+color: var(--text-main);
+font-family: 'Plus Jakarta Sans', sans-serif;
+margin: 0; padding: 0;
+overflow: hidden;
+height: 100vh; width: 100vw;
+}
+/* Floating Glass Controls */
+.glass-dock {
+background: var(--glass-bg);
+backdrop-filter: blur(25px);
+-webkit-backdrop-filter: blur(25px);
+border-right: 1px solid rgba(255, 255, 255, 0.1);
+transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+box-shadow: 20px 0 50px rgba(0,0,0,0.5);
+will-change: transform;
+}
+.dock-hidden { transform: translateX(-100%); opacity: 0; pointer-events: none; }
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255,0.05); border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+/* 3D Engine CSS */
+.visualizer-viewport {
+width: 100vw; height: 100vh;
+position: relative; overflow: hidden;
+background: #0f172a;
+}
+#solar-structure {
+position: absolute;
+top: 50%; left: 50%;
+z-index: 10;
+cursor: grab;
+transform-style: preserve-3d;
+will-change: transform, left, top;
+}
+#solar-structure:active { cursor: grabbing; }
+#solar-structure:focus { outline: 2px dashed var(--primary); outline-offset: 4px; }
+.scene-3d { transform-style: preserve-3d; will-change: transform; }
+.turntable {
+position: absolute;
+transform-style: preserve-3d;
+transition: transform 0.1s ease-out;
+will-change: transform;
+}
+/* 3D IRON RODS */
+.iron-rod {
+position: absolute;
+width: 8px;
+transform-style: preserve-3d;
+transform-origin: bottom center;
+transform: rotateX(-90deg);
+margin-left: -4px;
+}
+.iron-rod::after {
+content: ''; position: absolute;
+bottom: 6px; left: 4px;
+width: 16px; height: 16px;
+background: rgba(0,0,0,0.9);
+border-radius: 50%;
+transform: rotateX(90deg) translateZ(-1px);
+box-shadow: 0 0 10px rgba(0,0,0,1);
+}
+.rod-face { position: absolute; inset: 0; border: 0.5px solid rgba(0,0,0,0.6); }
+.face-front { transform: translate3d(0, 0, 4px); background: #64748b; }
+.face-back { transform: translate3d(0, 0, -4px) rotateY(180deg); background: #1e293b; }
+.face-left { transform: translate3d(-4px, 0, 0) rotateY(-90deg); background: #334155; }
+.face-right { transform: translate3d(4px, 0, 0) rotateY(90deg); background: #475569; }
 
-        // If not logged in OR accessed directly/wrongly, kick back to panel
-        if (!isLoggedIn || !cameFromControl) {
-            console.warn("Security Alert: Unauthorized access attempt to SIR.");
-            // Commented out for local testing. Uncomment in production.
-            // window.location.replace("panel.html");
-        }
-    })();
-    </script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Udbhav 3D Immersive | Solar Visualizer</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --primary: #f97316; /* Orange 500 */
-            --bg-dark: #020617;
-            --glass-bg: rgba(15, 23, 42, 0.85);
-            --text-main: #f8fafc;
-        }
-
-        body { 
-            background: var(--bg-dark); 
-            color: var(--text-main); 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            margin: 0; padding: 0;
-            overflow: hidden; 
-            height: 100vh; width: 100vw;
-        }
-        
-        /* Floating Glass Controls */
-        .glass-dock {
-            background: var(--glass-bg);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
-            box-shadow: 20px 0 50px rgba(0,0,0,0.5);
-            will-change: transform;
-        }
-        .dock-hidden { transform: translateX(-100%); opacity: 0; pointer-events: none; }
-
-        /* Custom Scrollbar for Accessibility & Clean UI */
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
-
-        /* 3D Engine CSS */
-        .visualizer-viewport { 
-            width: 100vw; height: 100vh; 
-            position: relative; overflow: hidden; 
-            background: #0f172a;
-        }
-
-        #solar-structure { 
-            position: absolute; 
-            top: 50%; left: 50%; 
-            z-index: 10; 
-            cursor: grab; 
-            transform-style: preserve-3d;
-            will-change: transform, left, top;
-        }
-        #solar-structure:active { cursor: grabbing; }
-        #solar-structure:focus { outline: 2px dashed var(--primary); outline-offset: 4px; }
-
-        .scene-3d { transform-style: preserve-3d; will-change: transform; }
-        
-        .turntable { 
-            position: absolute; 
-            transform-style: preserve-3d; 
-            transition: transform 0.1s ease-out;
-            will-change: transform;
-        }
-
-        /* 3D IRON RODS */
-        .iron-rod {
-            position: absolute;
-            width: 8px;
-            transform-style: preserve-3d;
-            transform-origin: bottom center;
-            transform: rotateX(-90deg);
-            margin-left: -4px;
-        }
-        .iron-rod::after {
-            content: ''; position: absolute;
-            bottom: -6px; left: -4px;
-            width: 16px; height: 16px;
-            background: rgba(0,0,0,0.9);
-            border-radius: 50%;
-            transform: rotateX(90deg) translateZ(-1px);
-            box-shadow: 0 0 10px rgba(0,0,0,1);
-        }
-
-        .rod-face { position: absolute; inset: 0; border: 0.5px solid rgba(0,0,0,0.6); }
-        .face-front { transform: translate3d(0, 0, 4px); background: #64748b; }
-        .face-back  { transform: translate3d(0, 0, -4px) rotateY(180deg); background: #1e293b; }
-        .face-left  { transform: translate3d(-4px, 0, 0) rotateY(-90deg); background: #334155; }
-        .face-right { transform: translate3d(4px, 0, 0) rotateY(90deg); background: #475569; }
-
-        /* PANEL AND GRID SYSTEM */
-        .panel-mount { 
-            position: absolute; 
-            transform-origin: bottom center; 
-            transform-style: preserve-3d; 
-        }
-
-        .panel-grid {
-            display: grid; gap: 2px; padding: 4px;
-            background: rgba(30, 41, 59, 0.9);
-            border: 1px solid #475569;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.8);
-            transform-style: preserve-3d;
-        }
-        .panel-grid::before {
-            content: ''; position: absolute; inset: 0;
-            background: #0f172a; transform: translateZ(-2px);
-        }
-
-        .solar-panel {
-            background: linear-gradient(145deg, #1e3a8a, #172554, #0f172a);
-            border: 0.2px solid rgba(255,255,255,0.15);
-            position: relative; overflow: hidden;
-            transform: translateZ(1px);
-        }
-        .solar-panel::after {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
-                        linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
-            background-size: 8px 8px;
-        }
-        .solar-panel::before {
-            content: ''; position: absolute;
-            top: -50%; left: -50%; width: 200%; height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05), transparent);
-            transform: rotate(45deg);
-        }
-
-        /* Accessible Sliders */
-        input[type="range"] { 
-            accent-color: var(--primary); 
-            height: 6px; width: 100%; 
-            cursor: pointer; 
-            background: rgba(255,255,255,0.2);
-            border-radius: 10px; appearance: none;
-        }
-        input[type="range"]:focus { outline: 2px solid var(--primary); outline-offset: 2px; }
-        input[type="range"]::-webkit-slider-thumb {
-            appearance: none; width: 18px; height: 18px;
-            background: var(--primary); border-radius: 50%;
-            border: 2px solid white; transition: transform 0.1s;
-        }
-        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
-
-        .val-badge {
-            font-size: 12px; font-weight: 800; /* Increased font size for accessibility */
-            background: rgba(249, 115, 22, 0.2); color: #fb923c;
-            padding: 2px 8px; border-radius: 4px;
-        }
-
-        /* Floating Components */
-        .ai-disclaimer {
-            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-            z-index: 2000; background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 12px 24px; border-radius: 99px;
-            display: flex; align-items: center; gap: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .ai-disclaimer p { margin: 0; color: #f8fafc; font-size: 12px; font-weight: 600; }
-        .ai-disclaimer a { color: var(--primary); text-decoration: none; font-weight: 800; transition: color 0.3s; }
-        .ai-disclaimer a:hover { color: #ffffff; text-decoration: underline; }
-
-        .whatsapp-float {
-            position: fixed; bottom: 24px; right: 24px; z-index: 2001;
-            width: 60px; height: 60px; background-color: #25d366;
-            border-radius: 50px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
-            transition: all 0.3s ease; animation: pulse-wa 2s infinite;
-        }
-        .whatsapp-float:hover { transform: scale(1.1); background-color: #128c7e; }
-        .whatsapp-float:focus-visible { outline: 3px solid white; outline-offset: 4px; }
-        .whatsapp-icon { width: 32px; height: 32px; fill: white; }
-
-        @keyframes pulse-wa {
-            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
-        }
-        
-        /* Loading Overlay */
-        #loader { transition: opacity 0.3s; pointer-events: none; }
-        
-        /* Mobile Adjustments */
-        @media (max-width: 768px) {
-            .glass-dock { width: 100%; max-width: 320px; padding: 1rem; }
-            .ai-disclaimer { width: 90%; bottom: 100px; padding: 10px 16px; flex-direction: column; text-align: center; }
-            .ai-disclaimer p { white-space: normal; line-height: 1.4; }
-        }
-    </style>
+/* PANEL AND GRID SYSTEM */
+.panel-mount {
+position: absolute;
+transform-origin: bottom center;
+transform-style: preserve-3d;
+}
+.panel-grid {
+display: grid; gap: 2px; padding: 4px;
+background: rgba(30, 41, 59, 0.9);
+border: 1px solid #475569;
+box-shadow: 0 40px 80px rgba(0,0,0,0.8);
+transform-style: preserve-3d;
+}
+.panel-grid::before {
+content: ''; position: absolute; inset: 0;
+background: #0f172a; transform: translateZ(-2px);
+}
+.solar-panel {
+background: linear-gradient(145deg, #1e3a8a, #172554, #0f172a);
+border: 0.2px solid rgba(255,255,255,0.15);
+position: relative; overflow: hidden;
+transform: translateZ(1px);
+}
+.solar-panel::after {
+content: ''; position: absolute; inset: 0;
+background: linear-gradient(to right, rgba(255, 255, 255,0.05) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255, 255, 255,0.05) 1px, transparent 1px);
+background-size: 8px 8px;
+}
+.solar-panel::before {
+content: ''; position: absolute;
+top: 50%; left: -50%; width: 200%; height: 200%;
+background: linear-gradient(45deg, transparent, rgba(255, 255, 255,0.05), transparent);
+transform: rotate(45deg);
+}
+/* Sliders */
+input[type="range"] {
+accent-color: var(--primary);
+height: 6px; width: 100%;
+cursor: pointer;
+background: rgba(255, 255, 255, 0.2);
+border-radius: 10px; appearance: none;
+}
+input[type="range"]:focus { outline: 2px solid var(--primary); outline-offset: 2px; }
+input[type="range"]::-webkit-slider-thumb {
+appearance: none; width: 18px; height: 18px;
+background: var(--primary); border-radius: 50%;
+border: 2px solid white; transition: transform 0.1s;
+}
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+.val-badge {
+font-size: 12px; font-weight: 800;
+background: rgba(249, 115, 22, 0.2); color: #fb923c;
+padding: 2px 8px; border-radius: 4px;
+}
+/* Floating Components */
+.ai-disclaimer {
+position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+z-index: 2000; background: rgba(15, 23, 42, 0.85);
+backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.2);
+padding: 12px 24px; border-radius: 99px;
+display: flex; align-items: center; gap: 12px;
+box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+.ai-disclaimer p { margin: 0; color: #f8fafc; font-size: 12px; font-weight: 600; white-space: normal; line-height: 1.4; }
+.ai-disclaimer a { color: var(--primary); text-decoration: none; font-weight: 800; transition: color 0.3s; }
+.ai-disclaimer a:hover { color: #ffffff; text-decoration: underline; }
+.whatsapp-float {
+position: fixed; bottom: 24px; right: 24px; z-index: 2001;
+width: 60px; height: 60px; background-color: #25d366;
+border-radius: 50px; display: flex; align-items: center; justify-content: center;
+box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+transition: all 0.3s ease; animation: pulse-wa 2s infinite;
+}
+.whatsapp-float:hover { transform: scale(1.1); background-color: #128c7e; }
+.whatsapp-icon { width: 32px; height: 32px; fill: white; }
+@keyframes pulse-wa {
+0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+#loader { transition: opacity 0.3s; pointer-events: none; }
+@media (max-width: 768px) {
+.glass-dock { width: 100%; max-width: 320px; padding: 1rem; }
+.ai-disclaimer { width: 90%; bottom: 100px; padding: 10px 16px; flex-direction: column; text-align: center; }
+}
+</style>
 </head>
 <body>
+<button onclick="toggleDock()" aria-label="Toggle Controls Dock"
+class="fixed top-6 left-6 z-50 bg-orange-600 text-white p-4 rounded-full shadow-[0_0_30px_rgba(234,88,12,0.4)] hover:scale-110 active:scale-95 transition-all focus:outline-none focus:ring-4 focus:ring-white">
+<i id="toggle-icon" data-lucide="settings"></i>
+</button>
+<aside id="main-dock" class="glass-dock fixed top-0 left-0 h-full w-80 z-40 p-6 flex flex-col gap-4">
+<div class="mt-16 mb-2">
+<h1 class="text-white font-black uppercase text-2xl tracking-tighter leading-none">Udbhav Solar</h1>
+<p class="text-xs text-orange-500 font-bold uppercase tracking-widest mt-1">3D Operator</p>
+</div>
+<div class="overflow-y-auto pr-2 space-y-6 custom-scrollbar flex-1">
+<section class="space-y-4">
+<label class="text-xs font-black text-slate-300 uppercase tracking-widest flex items-center gap-2">
+<i data-lucide="grid-3x3" class="w-4 h-4"></i> Matrix Config
+</label>
+<div class="grid grid-cols-2 gap-3">
+<div class="space-y-1">
+<span class="text-xs font-bold text-slate-400 uppercase ml-1" title="Total number of solar panels">Total Panels</span>
+<input type="number" id="total-p" value="6" min="1" max="100" class="w-full bg-white/5 border border-white/20 p-3 rounded-xl text-white font-black text-center outline-none focus:border-orange-500 transition-colors">
+</div>
+<div class="space-y-1">
+<span class="text-xs font-bold text-slate-400 uppercase ml-1" title="Panels arranged per row">Per Row</span>
+<input type="number" id="row-p" value="3" min="1" max="50" class="w-full bg-white/5 border border-white/20 p-3 rounded-xl text-white font-black text-center outline-none focus:border-orange-500 transition-colors">
+</div>
+</div>
+</section>
+<section class="space-y-5 py-6 border-y border-white/10">
+<label class="text-xs font-black text-orange-500 uppercase tracking-widest flex items-center gap-2">
+<i data-lucide="layers" class="w-4 h-4"></i> Structure (ft)
+</label>
+<div class="space-y-3">
+<div class="flex justify-between items-center" title="Height of the front mounting leg">
+<span class="text-xs font-bold uppercase text-slate-200">Front Leg</span>
+<span id="v-front" class="val-badge">1.3ft</span>
+</div>
+<input type="range" id="f-leg" min="0.2" max="8.2" step="0.1" value="1.3">
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center" title="Height of the back mounting leg">
+<span class="text-xs font-bold uppercase text-slate-200">Back Leg</span>
+<span id="v-back" class="val-badge">4.6ft</span>
+</div>
+<input type="range" id="b-leg" min="0.2" max="13.1" step="0.1" value="4.6">
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center" title="Number of mounting pillar pairs">
+<span class="text-xs font-bold uppercase text-slate-200">Mount Points</span>
+<span id="v-count" class="val-badge">3 Pairs</span>
+</div>
+<input type="range" id="l-count" min="2" max="10" value="3">
+</div>
+</section>
+<section class="space-y-5">
+<label class="text-xs font-black text-slate-300 uppercase tracking-widest flex items-center gap-2">
+<i data-lucide="move-3d" class="w-4 h-4"></i> Orientation
+</label>
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold uppercase text-slate-200">Azimuth (Rot)</span>
+<span id="v-rot" class="val-badge">0°</span>
+</div>
+<input type="range" id="rot" min="0" max="360" value="0">
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold uppercase text-slate-200">Roof Pitch</span>
+<span id="v-tilt" class="val-badge">60°</span>
+</div>
+<input type="range" id="tilt" min="0" max="88" value="60">
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold uppercase text-slate-200">Visual Scale</span>
+<span id="v-scale" class="val-badge">100%</span>
+</div>
+<input type="range" id="scale" min="20" max="350" value="100">
+</div>
+</section>
+<section id="metrics-panel" class="bg-black/30 p-3 rounded-lg border border-white/5 space-y-2 hidden">
+<h3 class="text-xs font-bold text-slate-400 uppercase">Physics Estimates</h3>
+<div class="flex justify-between text-xs"><span class="text-slate-300">Actual Panel Tilt:</span> <strong id="m-tilt" class="text-white">0°</strong></div>
+<div class="flex justify-between text-xs"><span class="text-slate-300">Est. Output:</span> <strong id="m-kw" class="text-green-400">0 kw</strong></div>
+<div class="flex justify-between text-xs"><span class="text-slate-300">Wind Load Risk:</span> <strong id="m-wind" class="text-orange-400">Normal</strong></div>
+</section>
+</div>
+<div class="mt-auto space-y-2 pt-2 border-t border-white/10">
+<div class="flex gap-2">
+<button onclick="exportJSON()" class="flex-1 bg-white/10 text-white py-2 rounded-lg text-xs font-bold hover:bg-white/20 transition-colors" title="Save Preset"><i data-lucide="download" class="w-4 h-4 mx-auto"></i></button>
+<button onclick="exportPNG()" class="flex-1 bg-white/10 text-white py-2 rounded-lg text-xs font-bold hover:bg-white/20 transition-colors" title="Export PNG"><i data-lucide="camera" class="w-4 h-4 mx-auto"></i></button>
+<button onclick="undo()" class="flex-1 bg-white/10 text-white py-2 rounded-lg text-xs font-bold hover:bg-white/20 transition-colors" title="Undo"><i data-lucide="undo" class="w-4 h-4 mx-auto"></i></button>
+</div>
+<button onclick="document.getElementById('upload').click()" class="w-full bg-white text-black py-3 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-orange-500 hover:text-white transition-all shadow-xl">
+Upload Roof Photo
+</button>
+<input type="file" id="upload" class="hidden" accept="image/*" onchange="loadPhoto(event)">
+<p class="text-[10px] text-center text-slate-500 uppercase font-bold tracking-widest">Udbhav Solar Ajmer</p>
+</div>
+</aside>
+<main class="visualizer-viewport" id="capture-area">
+<img id="bg-photo" alt="Roof Background" class="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-40 transition-opacity duration-700" src="">
+<div id="loader" class="absolute inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm opacity-0">
+<i data-lucide="loader-2" class="w-10 h-10 text-orange-500 animate-spin"></i>
+</div>
+<div id="solar-structure" tabindex="0" aria-label="3D Solar Model">
+<div id="scene" class="scene-3d">
+<div id="turntable" class="turntable"></div>
+</div>
+</div>
+<div class="absolute bottom-32 md:bottom-8 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md px-6 py-3 rounded-full border border-white/20 flex items-center gap-4 pointer-events-none">
+<div class="flex items-center gap-2">
+<div class="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]"></div>
+<span class="text-xs font-bold uppercase tracking-widest text-white/90">Engine Active</span>
+</div>
+<div class="w-px h-4 bg-white/30"></div>
+<span class="text-xs font-bold uppercase tracking-widest text-orange-400">Drag or Arrow Keys to Pan</span>
+</div>
+</main>
+<div class="ai-disclaimer">
+<div class="w-2.5 h-2.5 rounded-full bg-orange-500 shrink-0"></div>
+<p>AI-Generated Visualization. For Precision Surveys: <a href="tel:+919660711101">Call Now</a> or <a href="https://wa.me/919660711101">WhatsApp +91 9660711101</a></p>
+</div>
+<a href="https://wa.me/919660711101" class="whatsapp-float" target="_blank" aria-label="Contact on WhatsApp">
+<svg class="whatsapp-icon" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.395 0 0 5.395 0 12.05c0 2.129.54 4.207 1.579 6.075L0 24l6.135-1.61a11.803 11.803 0 005.911 1.586h.005c6.654 0 12.05-5.39 12.056-12.047a11.82 11.82 0 00-3.536-8.509z"/></svg>
+</a>
+<script>
+// Constants & Configuration (Updated for FEET)
+const PANEL_W_FT = 3.72; 
+const PANEL_H_FT = 7.47; 
+const KW_PER_PANEL = 0.55; 
+const VISUAL_SCALE_DIVISOR = 0.0656; // Updated to maintain visual size with foot units
+let historyStack = [];
+let isHidden = false;
 
-    <button onclick="toggleDock()" aria-label="Toggle Controls Dock" class="fixed top-6 left-6 z-50 bg-orange-600 text-white p-4 rounded-full shadow-[0_0_30px_rgba(234,88,12,0.4)] hover:scale-110 active:scale-95 transition-all focus:outline-none focus:ring-4 focus:ring-white">
-        <i id="toggle-icon" data-lucide="settings"></i>
-    </button>
+lucide.createIcons();
 
-    <aside id="main-dock" class="glass-dock fixed top-0 left-0 h-full w-80 z-40 p-6 flex flex-col gap-4">
-        <div class="mt-16 mb-2">
-            <h1 class="text-white font-black uppercase text-2xl tracking-tighter leading-none">Udbhav Solar</h1>
-            <p class="text-xs text-orange-500 font-bold uppercase tracking-widest mt-1">3D Operator</p>
-        </div>
-
-        <div class="overflow-y-auto pr-2 space-y-6 custom-scrollbar flex-1">
-            
-            <section class="space-y-4">
-                <label class="text-xs font-black text-slate-300 uppercase tracking-widest flex items-center gap-2">
-                    <i data-lucide="grid-3x3" class="w-4 h-4"></i> Matrix Config
-                </label>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="space-y-1">
-                        <span class="text-xs font-bold text-slate-400 uppercase ml-1" title="Total number of solar panels">Total Panels</span>
-                        <input type="number" id="total-p" aria-label="Total Panels" value="6" min="1" max="100" class="w-full bg-white/5 border border-white/20 p-3 rounded-xl text-white font-black text-center outline-none focus:border-orange-500 transition-colors">
-                    </div>
-                    <div class="space-y-1">
-                        <span class="text-xs font-bold text-slate-400 uppercase ml-1" title="Panels arranged per row">Per Row</span>
-                        <input type="number" id="row-p" aria-label="Panels Per Row" value="3" min="1" max="50" class="w-full bg-white/5 border border-white/20 p-3 rounded-xl text-white font-black text-center outline-none focus:border-orange-500 transition-colors">
-                    </div>
-                </div>
-            </section>
-
-            <section class="space-y-5 py-6 border-y border-white/10">
-                <label class="text-xs font-black text-orange-500 uppercase tracking-widest flex items-center gap-2">
-                    <i data-lucide="layers" class="w-4 h-4"></i> Structure (mm)
-                </label>
-                
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center" title="Height of the front mounting leg">
-                        <span class="text-xs font-bold uppercase text-slate-200">Front Leg</span>
-                        <span id="v-front" class="val-badge">400mm</span>
-                    </div>
-                    <input type="range" id="f-leg" aria-label="Front Leg Height" min="50" max="2500" value="400">
-                </div>
-
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center" title="Height of the back mounting leg">
-                        <span class="text-xs font-bold uppercase text-slate-200">Back Leg</span>
-                        <span id="v-back" class="val-badge">1400mm</span>
-                    </div>
-                    <input type="range" id="b-leg" aria-label="Back Leg Height" min="50" max="4000" value="1400">
-                </div>
-
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center" title="Number of mounting pillar pairs">
-                        <span class="text-xs font-bold uppercase text-slate-200">Mount Points</span>
-                        <span id="v-count" class="val-badge">3 Pairs</span>
-                    </div>
-                    <input type="range" id="l-count" aria-label="Mounting Points" min="2" max="10" value="3">
-                </div>
-            </section>
-
-            <section class="space-y-5">
-                <label class="text-xs font-black text-slate-300 uppercase tracking-widest flex items-center gap-2">
-                    <i data-lucide="move-3d" class="w-4 h-4"></i> Orientation
-                </label>
-                
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs font-bold uppercase text-slate-200">Azimuth (Rot)</span>
-                        <span id="v-rot" class="val-badge">0°</span>
-                    </div>
-                    <input type="range" id="rot" aria-label="Azimuth Rotation" min="0" max="360" value="0">
-                </div>
-
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs font-bold uppercase text-slate-200">Roof Pitch</span>
-                        <span id="v-tilt" class="val-badge">60°</span>
-                    </div>
-                    <input type="range" id="tilt" aria-label="Roof Pitch" min="0" max="88" value="60">
-                </div>
-
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs font-bold uppercase text-slate-200">Visual Scale</span>
-                        <span id="v-scale" class="val-badge">100%</span>
-                    </div>
-                    <input type="range" id="scale" aria-label="Visual Scale" min="20" max="350" value="100">
-                </div>
-            </section>
-            
-            <section id="metrics-panel" class="bg-black/30 p-3 rounded-lg border border-white/5 space-y-2 hidden">
-                <h3 class="text-xs font-bold text-slate-400 uppercase">Physics Estimates</h3>
-                <div class="flex justify-between text-xs"><span class="text-slate-300">Actual Panel Tilt:</span> <strong id="m-tilt" class="text-white">0°</strong></div>
-                <div class="flex justify-between text-xs"><span class="text-slate-300">Est. Output:</span> <strong id="m-kw" class="text-green-400">0 kW</strong></div>
-                <div class="flex justify-between text-xs"><span class="text-slate-300">Wind Load Risk:</span> <strong id="m-wind" class="text-orange-400">Normal</strong></div>
-            </section>
-        </div>
-
-        <div class="mt-auto space-y-2 pt-2 border-t border-white/10">
-            <div class="flex gap-2">
-                <button onclick="exportJSON()" aria-label="Export Configuration" class="flex-1 bg-white/10 text-white py-2 rounded-lg text-xs font-bold hover:bg-white/20 transition-colors" title="Save Preset"><i data-lucide="download" class="w-4 h-4 mx-auto"></i></button>
-                <button onclick="exportPNG()" aria-label="Export Snapshot" class="flex-1 bg-white/10 text-white py-2 rounded-lg text-xs font-bold hover:bg-white/20 transition-colors" title="Export PNG"><i data-lucide="camera" class="w-4 h-4 mx-auto"></i></button>
-                <button onclick="undo()" aria-label="Undo" class="flex-1 bg-white/10 text-white py-2 rounded-lg text-xs font-bold hover:bg-white/20 transition-colors" title="Undo"><i data-lucide="undo" class="w-4 h-4 mx-auto"></i></button>
-            </div>
-            <button onclick="document.getElementById('upload').click()" class="w-full bg-white text-black py-3 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-orange-500 hover:text-white transition-all shadow-xl">
-                Upload Roof Photo
-            </button>
-            <input type="file" id="upload" class="hidden" accept="image/*" onchange="loadPhoto(event)">
-            <p class="text-[10px] text-center text-slate-500 uppercase font-bold tracking-widest">Udbhav Solar Ajmer</p>
-        </div>
-    </aside>
-
-    <main class="visualizer-viewport" id="capture-area">
-        <img id="bg-photo" alt="Roof Background" class="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-40 transition-opacity duration-700" src="">
-        
-        <div id="loader" class="absolute inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm opacity-0">
-            <i data-lucide="loader-2" class="w-10 h-10 text-orange-500 animate-spin"></i>
-        </div>
-
-        <div id="solar-structure" tabindex="0" aria-label="3D Solar Model. Use arrow keys to pan.">
-            <div id="scene" class="scene-3d">
-                <div id="turntable" class="turntable"></div>
-            </div>
-        </div>
-
-        <div class="absolute bottom-32 md:bottom-8 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md px-6 py-3 rounded-full border border-white/20 flex items-center gap-4 pointer-events-none">
-            <div class="flex items-center gap-2">
-                <div class="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]"></div>
-                <span class="text-xs font-bold uppercase tracking-widest text-white/90">Engine Active</span>
-            </div>
-            <div class="w-px h-4 bg-white/30"></div>
-            <span class="text-xs font-bold uppercase tracking-widest text-orange-400">Drag or Arrow Keys to Pan</span>
-        </div>
-    </main>
-
-    <div class="ai-disclaimer">
-        <div class="w-2.5 h-2.5 rounded-full bg-orange-500 shrink-0"></div>
-        <p>AI-Generated Visualization. For Precision Surveys: <a href="tel:+919660711101">Call Now</a> or <a href="https://wa.me/919660711101" aria-label="WhatsApp">WhatsApp +91 9660711101</a></p>
-    </div>
-
-    <a href="https://wa.me/919660711101" class="whatsapp-float" target="_blank" aria-label="Contact on WhatsApp">
-        <svg class="whatsapp-icon" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.395 0 .01 5.388 0 12.044c0 2.129.54 4.207 1.579 6.075L0 24l6.135-1.61a11.803 11.803 0 005.911 1.586h.005c6.654 0 12.05-5.39 12.056-12.047a11.82 11.82 0 00-3.536-8.509z"/></svg>
-    </a>
-
-    <script>
-        // Constants & Configuration
-        const PANEL_W_MM = 1134; // standard panel width
-        const PANEL_H_MM = 2278; // standard panel height
-        const KW_PER_PANEL = 0.55; // 550W
-        const VISUAL_SCALE_DIVISOR = 20; // translates mm to pixels reasonably
-        
-        let historyStack = [];
-        let isHidden = false;
-
-        // Initialize Icons
-        lucide.createIcons();
-
-        // 1. LocalStorage & State Management
-        document.addEventListener("DOMContentLoaded", () => {
-            const savedDock = localStorage.getItem('udbhav_dock_hidden');
-            if(savedDock === 'true') toggleDock();
-
-            // Bind inputs to Debounced Draw
-            const inputs = document.querySelectorAll('input');
-            inputs.forEach(input => {
-                input.addEventListener('input', () => {
-                    debouncedDraw();
-                    saveStateToHistory();
-                });
-            });
-            
+document.addEventListener("DOMContentLoaded", () => {
+    const savedDock = localStorage.getItem('udbhav_dock_hidden');
+    if (savedDock === 'true') toggleDock();
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(input => {
+        input.addEventListener('input', () => {
+            debouncedDraw();
             saveStateToHistory();
-            draw();
         });
+    });
+    saveStateToHistory();
+    draw();
+});
 
-        function toggleDock() {
-            isHidden = !isHidden;
-            const dock = document.getElementById('main-dock');
-            const icon = document.getElementById('toggle-icon');
-            dock.classList.toggle('dock-hidden');
-            icon.setAttribute('data-lucide', isHidden ? 'eye' : 'settings');
-            lucide.createIcons();
-            localStorage.setItem('udbhav_dock_hidden', isHidden);
-        }
+function toggleDock() {
+    isHidden = !isHidden;
+    const dock = document.getElementById('main-dock');
+    const icon = document.getElementById('toggle-icon');
+    dock.classList.toggle('dock-hidden');
+    icon.setAttribute('data-lucide', isHidden ? 'eye' : 'settings');
+    lucide.createIcons();
+    localStorage.setItem('udbhav_dock_hidden', isHidden);
+}
 
-        // 2. Performance: Debounce Draw Calls
-        function debounce(func, wait) {
-            let timeout;
-            return function(...args) {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(this, args), wait);
-            };
-        }
-        const debouncedDraw = debounce(() => draw(), 30);
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+const debouncedDraw = debounce(() => draw(), 30);
 
-        // 3. Performance: Image Compression on Upload
-        function loadPhoto(e) {
-            const file = e.target.files[0];
-            if(!file) return;
-            const loader = document.getElementById('loader');
-            loader.style.opacity = '1';
-            
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                const img = new Image();
-                img.onload = () => {
-                    // Compress large images
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    const MAX_WIDTH = 1920;
-                    let width = img.width;
-                    let height = img.height;
-                    
-                    if (width > MAX_WIDTH) {
-                        height *= MAX_WIDTH / width;
-                        width = MAX_WIDTH;
-                    }
-                    
-                    canvas.width = width; canvas.height = height;
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    const bgPhoto = document.getElementById('bg-photo');
-                    bgPhoto.src = canvas.toDataURL('image/jpeg', 0.8);
-                    bgPhoto.style.opacity = "1";
-                    loader.style.opacity = '0';
-                };
-                img.src = ev.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // 4. Feature: Undo System
-        function saveStateToHistory() {
-            const state = {
-                total: document.getElementById('total-p').value,
-                row: document.getElementById('row-p').value,
-                fLeg: document.getElementById('f-leg').value,
-                bLeg: document.getElementById('b-leg').value,
-                lCount: document.getElementById('l-count').value,
-                rot: document.getElementById('rot').value,
-                tilt: document.getElementById('tilt').value,
-                scale: document.getElementById('scale').value
-            };
-            // Keep last 10 states
-            if (historyStack.length > 10) historyStack.shift();
-            historyStack.push(state);
-        }
-
-        function undo() {
-            if (historyStack.length > 1) {
-                historyStack.pop(); // remove current
-                const last = historyStack[historyStack.length - 1];
-                document.getElementById('total-p').value = last.total;
-                document.getElementById('row-p').value = last.row;
-                document.getElementById('f-leg').value = last.fLeg;
-                document.getElementById('b-leg').value = last.bLeg;
-                document.getElementById('l-count').value = last.lCount;
-                document.getElementById('rot').value = last.rot;
-                document.getElementById('tilt').value = last.tilt;
-                document.getElementById('scale').value = last.scale;
-                draw();
+function loadPhoto(e) {
+    const file = e.target.files[0];
+    if(!file) return;
+    const loader = document.getElementById('loader');
+    loader.style.opacity = '1';
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const MAX_WIDTH = 1920;
+            let width = img.width;
+            let height = img.height;
+            if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
             }
-        }
+            canvas.width = width; canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
+            const bgPhoto = document.getElementById('bg-photo');
+            bgPhoto.src = canvas.toDataURL('image/jpeg', 0.8);
+            bgPhoto.style.opacity = "1";
+            loader.style.opacity = '0';
+        };
+        img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+}
 
-        // 5. Feature: Export Systems
-        function exportJSON() {
-            const last = historyStack[historyStack.length - 1];
-            const blob = new Blob([JSON.stringify(last, null, 2)], {type: 'application/json'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = 'udbhav_solar_config.json'; a.click();
-        }
+function saveStateToHistory() {
+    const state = {
+        total: document.getElementById('total-p').value,
+        row: document.getElementById('row-p').value,
+        fLeg: document.getElementById('f-leg').value,
+        bLeg: document.getElementById('b-leg').value,
+        lCount: document.getElementById('l-count').value,
+        rot: document.getElementById('rot').value,
+        tilt: document.getElementById('tilt').value,
+        scale: document.getElementById('scale').value
+    };
+    if (historyStack.length > 10) historyStack.shift();
+    historyStack.push(state);
+}
 
-        function exportPNG() {
-            const captureArea = document.getElementById('capture-area');
-            const loader = document.getElementById('loader');
-            loader.style.opacity = '1';
-            
-            // Note: DOM 3D rendering might lose depth in HTML2Canvas, 
-            // but capturing layout works well.
-            html2canvas(captureArea, { backgroundColor: '#0f172a', scale: 2 }).then(canvas => {
-                const a = document.createElement('a');
-                a.href = canvas.toDataURL('image/png');
-                a.download = 'udbhav_layout.png';
-                a.click();
-                loader.style.opacity = '0';
-            });
-        }
+function undo() {
+    if (historyStack.length > 1) {
+        historyStack.pop();
+        const last = historyStack[historyStack.length - 1];
+        document.getElementById('total-p').value = last.total;
+        document.getElementById('row-p').value = last.row;
+        document.getElementById('f-leg').value = last.fLeg;
+        document.getElementById('b-leg').value = last.bLeg;
+        document.getElementById('l-count').value = last.lCount;
+        document.getElementById('rot').value = last.rot;
+        document.getElementById('tilt').value = last.tilt;
+        document.getElementById('scale').value = last.scale;
+        draw();
+    }
+}
 
-        // Factory function for True 3D Iron Rods
-        function create3DLeg(x, yDist, height) {
-            const rod = document.createElement('div');
-            rod.className = 'iron-rod';
-            rod.style.height = height + 'px';
-            rod.style.left = x + 'px';
-            rod.style.bottom = yDist + 'px';
-            
-            ['front', 'back', 'left', 'right'].forEach(side => {
-                const face = document.createElement('div');
-                face.className = `rod-face face-${side}`;
-                rod.appendChild(face);
-            });
-            return rod;
-        }
+function exportJSON() {
+    const last = historyStack[historyStack.length - 1];
+    const blob = new Blob([JSON.stringify(last, null, 2)], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'udbhav_solar_config.json'; a.click();
+}
 
-        // Core Rendering Engine
-        function draw() {
-            // Document Fragment for Performance (minimizes reflows)
-            const fragment = document.createDocumentFragment();
+function exportPNG() {
+    const captureArea = document.getElementById('capture-area');
+    const loader = document.getElementById('loader');
+    loader.style.opacity = '1';
+    html2canvas(captureArea, { backgroundColor: '#0f172a', scale: 2 }).then(canvas => {
+        const a = document.createElement('a');
+        a.href = canvas.toDataURL('image/png');
+        a.download = 'udbhav_layout.png';
+        a.click();
+        loader.style.opacity = '0';
+    });
+}
 
-            // Inputs Validation & Clamping
-            let total = parseInt(document.getElementById('total-p').value) || 1;
-            let perRow = parseInt(document.getElementById('row-p').value) || 1;
-            if(total > 100) { total = 100; document.getElementById('total-p').value = 100; }
-            
-            const scaleBase = document.getElementById('scale').value / 100;
-            const scale = scaleBase / VISUAL_SCALE_DIVISOR; 
-            
-            let fH_raw = parseInt(document.getElementById('f-leg').value);
-            let bH_raw = parseInt(document.getElementById('b-leg').value);
-            
-            // Clamp impossible physics
-            if (bH_raw <= fH_raw) {
-                bH_raw = fH_raw + 50; 
-                document.getElementById('b-leg').value = bH_raw;
-            }
+function create3DLeg(x, yDist, height) {
+    const rod = document.createElement('div');
+    rod.className = 'iron-rod';
+    rod.style.height = height + 'px';
+    rod.style.left = x + 'px';
+    rod.style.bottom = yDist + 'px';
+    ['front', 'back', 'left', 'right'].forEach(side => {
+        const face = document.createElement('div');
+        face.className = `rod-face face-${side}`;
+        rod.appendChild(face);
+    });
+    return rod;
+}
 
-            const fH = fH_raw * scale;
-            let bH = bH_raw * scale;
-            const lQty = parseInt(document.getElementById('l-count').value);
-            const rot = document.getElementById('rot').value;
-            const tilt = document.getElementById('tilt').value;
+function draw() {
+    const fragment = document.createDocumentFragment();
+    let total = parseInt(document.getElementById('total-p').value) || 1;
+    let perRow = parseInt(document.getElementById('row-p').value) || 1;
+    if(total > 100) total = 100;
+    
+    const scaleBase = document.getElementById('scale').value / 100;
+    const scale = scaleBase / VISUAL_SCALE_DIVISOR; 
+    
+    let fH_raw = parseFloat(document.getElementById('f-leg').value);
+    let bH_raw = parseFloat(document.getElementById('b-leg').value);
+    
+    if (bH_raw <= fH_raw) {
+        bH_raw = fH_raw + 0.5;
+        document.getElementById('b-leg').value = bH_raw.toFixed(1);
+    }
+    
+    const fH = fH_raw * scale;
+    let bH = bH_raw * scale;
+    const lQty = parseInt(document.getElementById('l-count').value);
+    const rot = document.getElementById('rot').value;
+    const tilt = document.getElementById('tilt').value;
+    
+    const pW = PANEL_W_FT * scale; 
+    const pH = PANEL_H_FT * scale;
+    const cols = Math.min(perRow, total);
+    const rows = Math.ceil(total / cols);
+    const gW = cols * pW;
+    const gH = rows * pH; 
+    
+    let diff = bH - fH;
+    if (diff >= gH) {
+        diff = gH * 0.99; 
+        bH = fH + diff;
+        document.getElementById('b-leg').value = (bH/scale).toFixed(1);
+    }
+    
+    const angleRad = Math.asin(diff / gH);
+    const pTilt = angleRad * (180 / Math.PI);
+    const footprintY = gH * Math.cos(angleRad); 
+    
+    document.getElementById('v-front').innerText = fH_raw.toFixed(1) + 'ft';
+    document.getElementById('v-back').innerText = (bH/scale).toFixed(1) + 'ft';
+    document.getElementById('v-count').innerText = lQty + ' Pairs';
+    document.getElementById('v-rot').innerText = rot + '°';
+    document.getElementById('v-tilt').innerText = tilt + '°';
+    document.getElementById('v-scale').innerText = Math.round(scaleBase * 100) + '%';
+    
+    document.getElementById('metrics-panel').classList.remove('hidden');
+    document.getElementById('m-tilt').innerText = pTilt.toFixed(1) + '°';
+    document.getElementById('m-kw').innerText = (total * KW_PER_PANEL).toFixed(2) + ' kW';
+    
+    const windStatus = document.getElementById('m-wind');
+    if(pTilt > 35 || bH_raw > 8.2) {
+        windStatus.innerText = "High Risk";
+        windStatus.className = "text-red-500 font-bold";
+    } else {
+        windStatus.innerText = "Normal";
+        windStatus.className = "text-green-400";
+    }
+    
+    const scene = document.getElementById('scene');
+    scene.style.transform = `perspective(1500px) rotateX(${tilt}deg)`;
+    const tt = document.getElementById('turntable');
+    tt.style.width = gW + 'px'; 
+    tt.style.height = footprintY + 'px';
+    tt.style.left = (-gW/2) + 'px'; 
+    tt.style.top = (-footprintY/2) + 'px';
+    tt.style.transform = `rotateZ(${rot}deg)`;
+    tt.innerHTML = ''; 
+    
+    for(let i=0; i<lQty; i++) {
+        let x = (lQty > 1) ? (i / (lQty-1)) * gW : (gW/2);
+        fragment.appendChild(create3DLeg(x, 0, fH));
+        fragment.appendChild(create3DLeg(x, footprintY, bH));
+    }
+    
+    const mount = document.createElement('div');
+    mount.className = 'panel-mount';
+    mount.style.width = gW + 'px';
+    mount.style.height = gH + 'px'; 
+    mount.style.bottom = '0'; 
+    mount.style.left = '0';
+    mount.style.transform = `translate3d(0, 0, ${fH + 2}px) rotateX(${-pTilt}deg)`;
+    
+    const grid = document.createElement('div');
+    grid.className = 'panel-grid';
+    grid.style.width = '100%'; grid.style.height = '100%';
+    grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+    for(let i=0; i<total; i++) {
+        const p = document.createElement('div');
+        p.className = 'solar-panel';
+        grid.appendChild(p);
+    }
+    mount.appendChild(grid);
+    fragment.appendChild(mount);
+    tt.appendChild(fragment);
+}
 
-            // Geometry calculations
-            const pW = PANEL_W_MM * scale; 
-            const pH = PANEL_H_MM * scale; 
-            const cols = Math.min(perRow, total);
-            const rows = Math.ceil(total / cols);
-            const gW = cols * pW; 
-            const gH = rows * pH; 
+// Interaction Logic
+let isDrag = false;
+let startX, startY, initialLeft, initialTop;
+const struct = document.getElementById('solar-structure');
 
-            // Physics clamp: Angle cannot exceed height of panel grid
-            let diff = bH - fH;
-            if (diff >= gH) {
-                diff = gH * 0.99; 
-                bH = fH + diff;
-                document.getElementById('b-leg').value = Math.round(bH/scale);
-            }
+function startInteraction(e) {
+    isDrag = true;
+    startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+    startY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+    initialLeft = struct.offsetLeft;
+    initialTop = struct.offsetTop;
+    struct.style.cursor = 'grabbing';
+    struct.focus();
+}
 
-            // TRIGONOMETRY
-            const angleRad = Math.asin(diff / gH);
-            const pTilt = angleRad * (180 / Math.PI);
-            const footprintY = gH * Math.cos(angleRad); 
+function moveInteraction(e) {
+    if (!isDrag) return;
+    if (e.cancelable) e.preventDefault();
+    const currentX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+    const currentY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+    const dx = currentX - startX;
+    const dy = currentY - startY;
+    struct.style.left = (initialLeft + dx) + 'px';
+    struct.style.top = (initialTop + dy) + 'px';
+}
 
-            // Update UI 
-            document.getElementById('v-front').innerText = Math.round(fH_raw) + 'mm';
-            document.getElementById('v-back').innerText = Math.round(bH/scale) + 'mm';
-            document.getElementById('v-count').innerText = lQty + ' Pairs';
-            document.getElementById('v-rot').innerText = rot + '°';
-            document.getElementById('v-tilt').innerText = tilt + '°';
-            document.getElementById('v-scale').innerText = Math.round(scaleBase * 100) + '%';
-            
-            // Update Metrics Panel
-            document.getElementById('metrics-panel').classList.remove('hidden');
-            document.getElementById('m-tilt').innerText = pTilt.toFixed(1) + '°';
-            document.getElementById('m-kw').innerText = (total * KW_PER_PANEL).toFixed(2) + ' kW';
-            
-            const windStatus = document.getElementById('m-wind');
-            if(pTilt > 35 || bH_raw > 2500) {
-                windStatus.innerText = "High Risk";
-                windStatus.className = "text-red-500 font-bold";
-            } else {
-                windStatus.innerText = "Normal";
-                windStatus.className = "text-green-400";
-            }
+function endInteraction() {
+    isDrag = false;
+    struct.style.cursor = 'grab';
+}
 
-            // Scene setup
-            const scene = document.getElementById('scene');
-            scene.style.transform = `perspective(1500px) rotateX(${tilt}deg)`;
+struct.addEventListener('mousedown', startInteraction);
+window.addEventListener('mousemove', moveInteraction);
+window.addEventListener('mouseup', endInteraction);
+struct.addEventListener('touchstart', startInteraction, {passive: false});
+window.addEventListener('touchmove', moveInteraction, {passive: false});
+window.addEventListener('touchend', endInteraction);
 
-            const tt = document.getElementById('turntable');
-            tt.style.width = gW + 'px'; 
-            tt.style.height = footprintY + 'px';
-            tt.style.left = (-gW/2) + 'px'; 
-            tt.style.top = (-footprintY/2) + 'px';
-            tt.style.transform = `rotateZ(${rot}deg)`;
-            tt.innerHTML = ''; 
-
-            // Generate Legs
-            for(let i=0; i<lQty; i++) {
-                let x = (lQty > 1) ? (i / (lQty-1)) * gW : (gW/2);
-                fragment.appendChild(create3DLeg(x, 0, fH));
-                fragment.appendChild(create3DLeg(x, footprintY, bH));
-            }
-
-            // Generate Panel Mount
-            const mount = document.createElement('div');
-            mount.className = 'panel-mount';
-            mount.style.width = gW + 'px'; 
-            mount.style.height = gH + 'px'; 
-            mount.style.bottom = '0'; 
-            mount.style.left = '0';
-            mount.style.transform = `translate3d(0, 0, ${fH + 2}px) rotateX(${-pTilt}deg)`;
-
-            // Generate Grid
-            const grid = document.createElement('div');
-            grid.className = 'panel-grid';
-            grid.style.width = '100%'; grid.style.height = '100%';
-            grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-            grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-
-            for(let i=0; i<total; i++) {
-                const p = document.createElement('div');
-                p.className = 'solar-panel';
-                grid.appendChild(p);
-            }
-
-            mount.appendChild(grid);
-            fragment.appendChild(mount);
-            
-            // Append fragment to DOM once
-            tt.appendChild(fragment);
-        }
-
-        // --- Interaction Logic (Touch & Mouse & Keyboard) ---
-        let isDrag = false; 
-        let startX, startY, initialLeft, initialTop;
-        const struct = document.getElementById('solar-structure');
-
-        function startInteraction(e) {
-            isDrag = true;
-            startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
-            startY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-            initialLeft = struct.offsetLeft;
-            initialTop = struct.offsetTop;
-            struct.style.cursor = 'grabbing';
-            struct.focus();
-        }
-
-        function moveInteraction(e) {
-            if (!isDrag) return;
-            e.preventDefault(); // prevent scrolling while panning
-            const currentX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
-            const currentY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-            const dx = currentX - startX;
-            const dy = currentY - startY;
-            struct.style.left = (initialLeft + dx) + 'px';
-            struct.style.top = (initialTop + dy) + 'px'; // Added vertical panning
-        }
-
-        function endInteraction() {
-            isDrag = false;
-            struct.style.cursor = 'grab';
-        }
-
-        // Mouse Events
-        struct.addEventListener('mousedown', startInteraction);
-        window.addEventListener('mousemove', moveInteraction);
-        window.addEventListener('mouseup', endInteraction);
-
-        // Touch Events (Mobile)
-        struct.addEventListener('touchstart', startInteraction, {passive: false});
-        window.addEventListener('touchmove', moveInteraction, {passive: false});
-        window.addEventListener('touchend', endInteraction);
-
-        // Keyboard Accessibility (Arrow Keys to Pan)
-        struct.addEventListener('keydown', (e) => {
-            const step = 15;
-            if(e.key === 'ArrowLeft') { struct.style.left = (struct.offsetLeft - step) + 'px'; e.preventDefault(); }
-            if(e.key === 'ArrowRight') { struct.style.left = (struct.offsetLeft + step) + 'px'; e.preventDefault(); }
-            if(e.key === 'ArrowUp') { struct.style.top = (struct.offsetTop - step) + 'px'; e.preventDefault(); }
-            if(e.key === 'ArrowDown') { struct.style.top = (struct.offsetTop + step) + 'px'; e.preventDefault(); }
-        });
-
-    </script>
+struct.addEventListener('keydown', (e) => {
+    const step = 15;
+    if(e.key === 'ArrowLeft') { struct.style.left = (struct.offsetLeft - step) + 'px'; e.preventDefault(); }
+    if(e.key === 'ArrowRight') { struct.style.left = (struct.offsetLeft + step) + 'px'; e.preventDefault(); }
+    if(e.key === 'ArrowUp') { struct.style.top = (struct.offsetTop - step) + 'px'; e.preventDefault(); }
+    if(e.key === 'ArrowDown') { struct.style.top = (struct.offsetTop + step) + 'px'; e.preventDefault(); }
+});
+</script>
 </body>
 </html>
