@@ -91,6 +91,15 @@
         .pulse-btn {
             animation: pulse-orange 2s infinite;
         }
+
+        /* Captcha Styles */
+        .captcha-box {
+            background: rgba(249, 115, 22, 0.1);
+            letter-spacing: 4px;
+            text-decoration: line-through;
+            font-style: italic;
+            user-select: none;
+        }
     </style>
 </head>
 <body class="bg-mesh min-h-screen">
@@ -222,6 +231,20 @@
                             </div>
                         </div>
 
+                        <div class="space-y-2">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Verification Code</label>
+                            <div class="flex gap-3">
+                                <div id="captchaDisplay" class="captcha-box flex-1 flex items-center justify-center rounded-2xl border border-white/10 text-orange-500 font-black text-xl tracking-[0.5em] italic select-none">
+                                    XXXX
+                                </div>
+                                <button type="button" onclick="generateCaptcha()" class="p-4 rounded-2xl bg-slate-800 text-slate-400 hover:text-white transition-colors border border-white/5">
+                                    <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                            <input type="text" id="captchaInput" required placeholder="Type Code (Case Sensitive)"
+                                   class="input-style w-full px-6 py-4 rounded-2xl font-bold tracking-tight text-center uppercase">
+                        </div>
+
                         <button type="submit" id="submitBtn"
                                 class="w-full bg-orange-600 hover:bg-orange-500 text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-orange-600/20 transition-all active:scale-[0.98] flex items-center justify-center gap-3 group relative overflow-hidden mt-2">
                             <span id="btnText" class="z-10 text-sm text-center">Send via WhatsApp</span>
@@ -236,6 +259,22 @@
 
     <script>
         lucide.createIcons();
+
+        // CAPTCHA LOGIC
+        let currentCaptcha = "";
+        function generateCaptcha() {
+            const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            let code = "";
+            for (let i = 0; i < 6; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            currentCaptcha = code;
+            document.getElementById('captchaDisplay').innerText = code;
+            document.getElementById('captchaInput').value = "";
+        }
+
+        // Initialize captcha on load
+        window.onload = generateCaptcha;
 
         // Function to generate the WQNO: USS/MONTH/DD/HHMM/SS
         function generateWQNO() {
@@ -257,6 +296,7 @@
             if (wrapper.classList.contains('hidden')) {
                 // Generate and set the ID when form opens
                 wqnoInput.value = generateWQNO();
+                generateCaptcha();
                 
                 wrapper.classList.remove('hidden');
                 setTimeout(() => {
@@ -279,6 +319,15 @@
 
         form.addEventListener('submit', e => {
             e.preventDefault();
+
+            // CAPTCHA VALIDATION
+            const userInput = document.getElementById('captchaInput').value;
+            if (userInput !== currentCaptcha) {
+                alert("Incorrect Verification Code. Please try again (Case Sensitive).");
+                generateCaptcha();
+                return;
+            }
+
             const submitBtn = document.getElementById('submitBtn');
             const btnText = document.getElementById('btnText');
 
