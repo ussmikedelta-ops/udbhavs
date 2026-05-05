@@ -248,14 +248,22 @@
                 </div>
 
                 <div id="step-4" class="step-container" style="text-align: center; padding: 20px 0;">
-                    <div style="width: 80px; height: 80px; background: rgba(34, 197, 94, 0.1); color: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 35px; border: 1px solid rgba(34, 197, 94, 0.3);">
-                        <i class="fa-solid fa-check"></i>
-                    </div>
-                    <h2 style="font-size: 28px; margin-bottom: 10px;">Lead Secured</h2>
-                    <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 30px;">The data has been synchronized with the master sheet. Your reference ID is <span style="color: var(--orange-main); font-weight: 800;" id="genRefId">USS-000</span>.</p>
-                    
-                    <button class="btn-glow" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); animation: none;" onclick="resetForm()">Submit Another Referral</button>
-                </div>
+    <div style="width: 80px; height: 80px; background: rgba(34, 197, 94, 0.1); color: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 35px; border: 1px solid rgba(34, 197, 94, 0.3);">
+        <i class="fa-solid fa-check"></i>
+    </div>
+    <h2 style="font-size: 28px; margin-bottom: 10px;">Lead Secured</h2>
+    <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 30px;">
+        The data has been synchronized. Your reference ID is 
+        <span style="color: var(--orange-main); font-weight: 800;" id="genRefId">USS-000</span>.
+    </p>
+    
+    <!-- New WhatsApp Button -->
+    <button class="btn-glow" style="background: #25d366; margin-bottom: 15px; animation: none;" id="btn-whatsapp">
+        <i class="fa-brands fa-whatsapp"></i> Notify on WhatsApp
+    </button>
+
+    <button class="btn-glow" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); animation: none;" onclick="resetForm()">Submit Another Referral</button>
+</div>
 
             </div>
         </div>
@@ -294,16 +302,187 @@
     </main>
 
     <script>
-    (function(_0x1b2c,_0x3d4e){const _0x5f61=function(_0x2a1b){while(--_0x2a1b){_0x1b2c['push'](_0x1b2c['shift']());}};_0x5f61(++_0x3d4e);}(['connected','action=ping','innerText','status-green','status-red','https://script.google.com/macros/s/AKfycbyz2OH0JvLRM414ltbsoJSlDOV--5ags2jIU1gq6DaNeajJD7oRDCPyV-sr2QCiavjQ/exec','getClientDetails','clientId=','success','genRefId','POST','getConversions','0'],0x1a4));const _0x4a21=function(_0x3e1a,_0x2b1c){const _0x1b2c_0x2a=['connected','action=ping','innerText','status-green','status-red','https://script.google.com/macros/s/AKfycbyz2OH0JvLRM414ltbsoJSlDOV--5ags2jIU1gq6DaNeajJD7oRDCPyV-sr2QCiavjQ/exec','getClientDetails','clientId=','success','genRefId','POST','getConversions','0'];return _0x1b2c_0x2a[_0x3e1a];};
-    const S_U = _0x4a21(0x5);
-    window['onload']=async function(){try{const r=await fetch(S_U+'?'+_0x4a21(0x1));const d=await r['json']();if(d['status']===_0x4a21(0x0)){const i=document['getElementById']('conn-indicator');i['classList']['remove'](_0x4a21(0x4));i['classList']['add'](_0x4a21(0x3));document['getElementById']('conn-text')[_0x4a21(0x2)]='Sheet Connected';}}catch(_0xe){document['getElementById']('conn-text')[_0x4a21(0x2)]='Sheet Disconnected';}};
-    function switchTab(_0x1){document['querySelectorAll']('.view-section')['forEach'](e=>e['classList']['remove']('active'));document['querySelectorAll']('.nav-tab')['forEach'](e=>e['classList']['remove']('active','active-blue'));const s=document['querySelector']('h1 span');if(_0x1==='referral'){document['getElementById']('view-referral')['classList']['add']('active');document['getElementById']('tab-referral')['classList']['add']('active');s['style']['color']='var(--orange-main)';s['className']='title-glow italic';}else{document['getElementById']('view-rewards')['classList']['add']('active');document['getElementById']('tab-rewards')['classList']['add']('active-blue');s['style']['color']='var(--blue-main)';s['className']='title-glow-blue italic';}}
-    function goToStep(_0x2){document['querySelectorAll']('.step-container')['forEach'](e=>e['classList']['remove']('active'));document['getElementById']('step-'+_0x2)['classList']['add']('active');const d2=document['getElementById']('dot-2'),d3=document['getElementById']('dot-3');d2['style']['background']=_0x2>=2?'var(--orange-main)':'rgba(255,255,255,0.1)';d3['style']['background']=_0x2>=3?'var(--orange-main)':'rgba(255,255,255,0.1)';if(_0x2===0x4)document['getElementById']('progress-dots')['style']['display']='none';}
-    function resetForm(){['custId','refName','refPhone']['forEach'](id=>document['getElementById'](id)['value']='');document['getElementById']('progress-dots')['style']['display']='flex';goToStep(0x1);}
-    async function handleVerify(){const i=document['getElementById']('custId')['value'];if(!i)return alert('ID Required');const b=document['getElementById']('btn-verify'),l=document['getElementById']('loader-verify');b['disabled']=!![];l['style']['display']='inline-block';try{const r=await fetch(S_U+'?action='+_0x4a21(0x6)+'&clientId='+encodeURIComponent(i));const d=await r['json']();if(d['status']===_0x4a21(0x8)){document['getElementById']('roName')['value']=d['name'];document['getElementById']('roPhone')['value']=d['phone'];goToStep(0x2);}else alert('ID Not Found');}catch(_0xe){alert('Network Error');}finally{b['disabled']=![];l['style']['display']='none';}}
-    async function handleSubmit(){const n=document['getElementById']('refName')['value'],p=document['getElementById']('refPhone')['value'];if(!n||!p)return alert('Fill all fields');const b=document['getElementById']('btn-submit'),l=document['getElementById']('loader-submit');b['disabled']=!![];l['style']['display']='inline-block';try{const u=new URLSearchParams();u['append']('clientId',document['getElementById']('custId')['value']);u['append']('refName',n);u['append']('phone',p);const r=await fetch(S_U,{'method':_0x4a21(0xa),'body':u});const d=await r['json']();if(d['status']===_0x4a21(0x8)){document['getElementById'](_0x4a21(0x9))[_0x4a21(0x2)]=d['refId'];goToStep(0x4);}else alert('Submit Failed');}catch(_0xe){alert('Data Error');}finally{b['disabled']=![];l['style']['display']='none';}}
-    async function handleTrack(){const i=document['getElementById']('rewardSearchId')['value'];if(!i)return alert('Enter ID');const b=document['getElementById']('btn-track'),l=document['getElementById']('loader-track'),res=document['getElementById']('reward-results');res['style']['display']='none';b['disabled']=!![];l['style']['display']='inline-block';try{const r=await fetch(S_U+'?action='+_0x4a21(0xb)+'&clientId='+encodeURIComponent(i));const d=await r['json']();if(d['status']===_0x4a21(0x8)){updateRewardUI(d['conversions']);res['style']['display']='block';}else alert('No Data');}catch(_0xe){alert('Track Error');}finally{b['disabled']=![];l['style']['display']='none';}}
-    function updateRewardUI(_0xc){document['getElementById']('conv-count')[_0x4a21(0x2)]=_0x4a21(0xc)+_0xc;let b='LEVEL 0',t='Keep Referring',d='Refer 1 to unlock',c='gray';if(_0xc>=0x5){b='LEVEL 3';t='1 Year FREE Pro Cleaning';d='Value: ₹18,000';c='var(--orange-main)';}else if(_0xc>=0x2){b='LEVEL 2';t='1 Yr Maint + Brush';d='Value: ₹15,000';c='var(--blue-main)';}else if(_0xc>=0x1){b='LEVEL 1';t='1 Year Maint';d='Value: ₹12,000';c='#22c55e';}const el=document['getElementById']('tier-badge');el[_0x4a21(0x2)]=b;el['style']['background']=c;document['getElementById']('tier-title')[_0x4a21(0x2)]=t;document['getElementById']('tier-desc')[_0x4a21(0x2)]=d;}
-</script>
+        // --- PASTE YOUR NEW APP SCRIPT URL HERE ---
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyz2OH0JvLRM414ltbsoJSlDOV--5ags2jIU1gq6DaNeajJD7oRDCPyV-sr2QCiavjQ/exec"; 
+
+        // GREEN LIGHT CONNECTION TEST - Runs automatically on page load
+        window.onload = async function() {
+            try {
+                const res = await fetch(`${SCRIPT_URL}?action=ping`);
+                const data = await res.json();
+                if(data.status === 'connected') {
+                    document.getElementById('conn-indicator').classList.remove('status-red');
+                    document.getElementById('conn-indicator').classList.add('status-green');
+                    document.getElementById('conn-text').innerText = 'Sheet Connected';
+                }
+            } catch(e) {
+                console.log("Could not ping sheet.", e);
+                document.getElementById('conn-text').innerText = 'Sheet Disconnected';
+            }
+        };
+
+        function switchTab(tab) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active', 'active-blue'));
+
+            if(tab === 'referral') {
+                document.getElementById('view-referral').classList.add('active');
+                document.getElementById('tab-referral').classList.add('active');
+                document.querySelector('h1 span').style.color = 'var(--orange-main)';
+                document.querySelector('h1 span').className = 'title-glow italic';
+            } else {
+                document.getElementById('view-rewards').classList.add('active');
+                document.getElementById('tab-rewards').classList.add('active-blue');
+                document.querySelector('h1 span').style.color = 'var(--blue-main)';
+                document.querySelector('h1 span').className = 'title-glow-blue italic';
+            }
+        }
+
+        function goToStep(step) {
+            document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step-${step}`).classList.add('active');
+
+            if(step >= 1) document.getElementById('dot-2').style.background = 'rgba(255,255,255,0.1)';
+            if(step >= 2) document.getElementById('dot-2').style.background = 'var(--orange-main)';
+            if(step >= 3) document.getElementById('dot-3').style.background = 'rgba(255,255,255,0.1)';
+            if(step >= 3) document.getElementById('dot-3').style.background = 'var(--orange-main)';
+            if(step === 4) document.getElementById('progress-dots').style.display = 'none';
+        }
+
+        function resetForm() {
+            document.getElementById('custId').value = '';
+            document.getElementById('refName').value = '';
+            document.getElementById('refPhone').value = '';
+            document.getElementById('progress-dots').style.display = 'flex';
+            goToStep(1);
+        }
+
+        // REAL API INTEGRATION: Verify Member
+        async function handleVerify() {
+            const id = document.getElementById('custId').value;
+            if(!id) return alert("Please enter your Customer ID.");
+
+            const btn = document.getElementById('btn-verify');
+            const loader = document.getElementById('loader-verify');
+            btn.disabled = true; loader.style.display = 'inline-block';
+
+            try {
+                const res = await fetch(`${SCRIPT_URL}?action=getClientDetails&clientId=${encodeURIComponent(id)}`);
+                const data = await res.json();
+                if(data.status === 'success') {
+                    document.getElementById('roName').value = data.name;
+                    document.getElementById('roPhone').value = data.phone;
+                    goToStep(2);
+                } else {
+                    alert("ID not found in master database.");
+                }
+            } catch(e) { 
+                alert("Network Error"); 
+            } finally {
+                btn.disabled = false; loader.style.display = 'none';
+            }
+        }
+
+        // REAL API INTEGRATION: Submit Form
+        async function handleSubmit() {
+    const custId = document.getElementById('custId').value;
+    const roName = document.getElementById('roName').value;
+    const refName = document.getElementById('refName').value;
+    const refPhone = document.getElementById('refPhone').value;
+
+    if(!refName || !refPhone) return alert("Please fill all fields.");
+
+    const btn = document.getElementById('btn-submit');
+    const loader = document.getElementById('loader-submit');
+    btn.disabled = true; loader.style.display = 'inline-block';
+
+    try {
+        const p = new URLSearchParams();
+        p.append('clientId', custId);
+        p.append('refName', refName);
+        p.append('phone', refPhone);
+
+        const res = await fetch(SCRIPT_URL, { method: 'POST', body: p });
+        const data = await res.json();
+        
+        if(data.status === 'success') {
+            document.getElementById('genRefId').innerText = data.refId;
+            
+            // Setup WhatsApp Forwarding
+            const waBtn = document.getElementById('btn-whatsapp');
+            waBtn.onclick = function() {
+                const adminPhone = "919660711101";
+                const message = `*New Referral Secured* 🚀\n\n` +
+                                `*Referrer ID:* ${custId}\n` +
+                                `*Referrer Name:* ${roName}\n\n` +
+                                `*Friend's Name:* ${refName}\n` +
+                                `*Friend's Phone:* ${refPhone}\n` +
+                                `*Ref ID:* ${data.refId}`;
+                
+                const waUrl = `https://wa.me/${adminPhone}?text=${encodeURIComponent(message)}`;
+                window.open(waUrl, '_blank');
+            };
+
+            goToStep(4);
+        } else {
+            alert("Failed to submit to Sheet.");
+        }
+    } catch(e) { 
+        alert("Network Error. Data may not have saved."); 
+    } finally {
+        btn.disabled = false; loader.style.display = 'none';
+    }
+}
+
+        // REAL API INTEGRATION: Track Rewards
+        async function handleTrack() {
+            const id = document.getElementById('rewardSearchId').value;
+            if(!id) return alert("Please enter Member ID.");
+
+            const btn = document.getElementById('btn-track');
+            const loader = document.getElementById('loader-track');
+            const results = document.getElementById('reward-results');
+            
+            results.style.display = 'none';
+            btn.disabled = true; loader.style.display = 'inline-block';
+
+            try {
+                const res = await fetch(`${SCRIPT_URL}?action=getConversions&clientId=${encodeURIComponent(id)}`);
+                const data = await res.json();
+                if(data.status === 'success') {
+                    updateRewardUI(data.conversions);
+                    results.style.display = 'block';
+                } else {
+                    alert("No data found for this ID.");
+                }
+            } catch(e) { 
+                alert("Network Error while checking rewards."); 
+            } finally {
+                btn.disabled = false; loader.style.display = 'none';
+            }
+        }
+
+        function updateRewardUI(count) {
+            document.getElementById('conv-count').innerText = "0" + count; 
+            
+            let badge = "LEVEL 0", title = "Keep Referring", desc = "Refer 1 friend to unlock maintenance.";
+            let color = "var(--text-muted)";
+
+            if(count >= 5) {
+                badge = "LEVEL 3"; title = "1 Year FREE Bimonthly Pro Cleaning"; desc = "Value: ₹18,000. Active Status."; color = "var(--orange-main)";
+            } else if (count >= 2) {
+                badge = "LEVEL 2"; title = "1 Yr Maintenance + Premium Brush"; desc = "Value: ₹15,000. Active Status."; color = "var(--blue-main)";
+            } else if (count >= 1) {
+                badge = "LEVEL 1"; title = "1 Year Comprehensive Maintenance"; desc = "Value: ₹12,000. Active Status."; color = "#22c55e"; // Green
+            }
+
+            document.getElementById('tier-badge').innerText = badge;
+            document.getElementById('tier-badge').style.background = color;
+            document.getElementById('tier-title').innerText = title;
+            document.getElementById('tier-desc').innerText = desc;
+            
+            document.getElementById('tier-badge').parentElement.style.borderColor = color.replace(')', ', 0.3)').replace('rgb', 'rgba').replace('var(--blue-main)', 'rgba(59, 130, 246, 0.3)').replace('var(--orange-main)', 'rgba(249, 115, 22, 0.3)');
+        }
+    </script>
 </body>
 </html>
