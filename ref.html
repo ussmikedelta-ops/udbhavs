@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privilege Portal | Udbhav Solar Solutions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Urbanist:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/jpeg" href="Donna Stroupe.jpg">
+    <style>
+        :root {
+            --bg-dark: #020617;
+            --orange-main: #f97316;
+            --orange-dark: #ea580c;
+            --blue-main: #3b82f6;
+            --text-muted: #94a3b8;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Urbanist', sans-serif; 
+            background-color: var(--bg-dark); 
+            color: #f8fafc; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .bg-mesh {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(at 0% 0%, hsla(222,47%,11%,1) 0, transparent 50%),
+                        radial-gradient(at 100% 0%, hsla(25,95%,53%,0.08) 0, transparent 50%),
+                        radial-gradient(at 50% 100%, hsla(217,91%,60%,0.05) 0, transparent 50%);
+            z-index: -1;
+        }
+
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; text-transform: uppercase; }
+        .title-glow { text-shadow: 0 0 30px rgba(249, 115, 22, 0.4); }
+        .title-glow-blue { text-shadow: 0 0 30px rgba(59, 130, 246, 0.4); }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 40px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .input-premium {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
+            padding: 18px 24px;
+            border-radius: 16px;
+            font-size: 16px;
+            width: 100%;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Urbanist', sans-serif;
+        }
+        .input-premium:focus { border-color: var(--orange-main); outline: none; box-shadow: 0 0 15px rgba(249, 115, 22, 0.2); }
+        .input-readonly { background: rgba(255, 255, 255, 0.02); border: 1px dashed rgba(249, 115, 22, 0.3); color: var(--text-muted); cursor: not-allowed; }
+
+        @keyframes breathing-glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(249, 115, 22, 0.2); transform: translateY(0); }
+            50% { box-shadow: 0 0 25px rgba(249, 115, 22, 0.5); transform: translateY(-2px); }
+        }
+
+        .btn-glow {
+            background: linear-gradient(135deg, var(--orange-dark), var(--orange-main));
+            color: white;
+            padding: 18px 30px;
+            border-radius: 16px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            animation: breathing-glow 3s infinite ease-in-out;
+            transition: all 0.3s ease;
+        }
+        .btn-glow:hover { filter: brightness(1.1); }
+        .btn-glow:disabled { opacity: 0.5; cursor: not-allowed; animation: none; }
+        
+        .btn-blue { background: linear-gradient(135deg, #2563eb, #3b82f6); animation: none; }
+        .btn-blue:hover { box-shadow: 0 0 25px rgba(59, 130, 246, 0.5); transform: translateY(-2px); }
+
+        .nav-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 40px 0;
+            padding: 0 20px;
+        }
+        .nav-tab {
+            padding: 12px 25px;
+            border-radius: 100px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 12px;
+        }
+        .nav-tab.active { background: rgba(249, 115, 22, 0.1); color: var(--orange-main); border-color: rgba(249, 115, 22, 0.3); }
+        .nav-tab.active-blue { background: rgba(59, 130, 246, 0.1); color: var(--blue-main); border-color: rgba(59, 130, 246, 0.3); }
+
+        .step-container { display: none; animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
+        .step-container.active { display: block; }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+
+        .form-group { margin-bottom: 25px; }
+        .form-label { display: block; font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; margin-left: 5px; }
+        
+        .loader { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid white; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; display: none; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Header & Status styling */
+        .main-header {
+            width: 100%; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky; top: 0; z-index: 1000; font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .brand-area { display: flex; align-items: center; gap: 15px; }
+        .logo-box { width: 42px; height: 42px; background: linear-gradient(135deg, #ea580c, #f97316); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: white; box-shadow: 0 0 15px rgba(249, 115, 22, 0.4); }
+        .brand-text { font-weight: 800; font-size: 18px; text-transform: uppercase; letter-spacing: -0.5px; color: #f8fafc; }
+        .brand-text span { color: #f97316; font-weight: 400; margin-left: 5px; }
+        
+        .status-panel { display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.05); padding: 8px 15px; border-radius: 100px; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .status-indicator { width: 10px; height: 10px; border-radius: 50%; transition: all 0.3s ease; }
+        .status-red { background-color: #ef4444; box-shadow: 0 0 10px #ef4444; }
+        .status-green { background-color: #22c55e; box-shadow: 0 0 10px #22c55e; }
+        .status-text { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; }
+    </style>
+</head>
+<body>
+
+<header class="main-header">
+    <div class="brand-area">
+        <div class="logo-box">US</div>
+        <div class="brand-text">Udbhav Solar <span>Solutions</span></div>
+    </div>
+    <div class="status-panel">
+        <div id="conn-indicator" class="status-indicator status-red"></div>
+        <div id="conn-text" class="status-text">Connecting...</div>
+    </div>
+</header>
+
+    <div class="bg-mesh"></div>
+
+    <header style="text-align: center; padding-top: 50px;">
+        <span style="background: rgba(249, 115, 22, 0.1); color: var(--orange-main); padding: 8px 20px; border-radius: 100px; font-weight: 800; text-transform: uppercase; letter-spacing: 4px; font-size: 10px;">Udbhav Solar Solutions</span>
+        <h1 style="font-size: 42px; font-weight: 800; margin-top: 15px; letter-spacing: -1px;">Privilege <span class="title-glow italic" style="color: var(--orange-main);">Portal.</span></h1>
+    </header>
+
+    <div class="nav-container">
+        <button class="nav-tab active" id="tab-referral" onclick="switchTab('referral')"><i class="fa-solid fa-user-plus"></i> New Referral</button>
+        <button class="nav-tab" id="tab-rewards" onclick="switchTab('rewards')"><i class="fa-solid fa-gift"></i> My Rewards</button>
+    </div>
+
+    <main style="padding: 0 20px 60px;">
+
+        <div id="view-referral" class="view-section active">
+            <div class="glass-card">
+                
+                <div style="display: flex; gap: 5px; margin-bottom: 30px;" id="progress-dots">
+                    <div style="height: 4px; flex: 1; background: var(--orange-main); border-radius: 2px; transition: all 0.3s;"></div>
+                    <div style="height: 4px; flex: 1; background: rgba(255,255,255,0.1); border-radius: 2px; transition: all 0.3s;" id="dot-2"></div>
+                    <div style="height: 4px; flex: 1; background: rgba(255,255,255,0.1); border-radius: 2px; transition: all 0.3s;" id="dot-3"></div>
+                </div>
+
+                <div id="step-1" class="step-container active">
+                    <h2 style="font-size: 24px; margin-bottom: 10px;">Member Identity</h2>
+                    <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 30px; line-height: 1.6;">Enter your unique Customer ID. This secure step ensures all rewards are credited accurately.</p>
+                    
+                    <div class="form-group relative">
+                        <label class="form-label">Customer ID</label>
+                        <div style="position: relative;">
+                            <i class="fa-solid fa-hashtag" style="position: absolute; left: 20px; top: 20px; color: var(--orange-main);"></i>
+                            <input type="text" id="custId" class="input-premium" style="padding-left: 50px;" placeholder="e.g. USS/2026/01">
+                        </div>
+                    </div>
+                    
+                    <button class="btn-glow" id="btn-verify" onclick="handleVerify()">
+                        <div class="loader" id="loader-verify"></div> Verify Account
+                    </button>
+                </div>
+
+                <div id="step-2" class="step-container">
+                    <h2 style="font-size: 24px; margin-bottom: 10px;">Data Validation</h2>
+                    <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 30px;">System synchronized. Please confirm your details fetched from the master database.</p>
+                    
+                    <div style="background: rgba(249, 115, 22, 0.03); padding: 20px; border-radius: 20px; border: 1px dashed rgba(249, 115, 22, 0.2); margin-bottom: 30px;">
+                        <div class="form-group">
+                            <label class="form-label">Authenticated Name</label>
+                            <input type="text" id="roName" class="input-premium input-readonly" readonly>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Registered Mobile</label>
+                            <input type="text" id="roPhone" class="input-premium input-readonly" readonly>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px;">
+                        <button class="btn-glow" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); animation: none;" onclick="goToStep(1)">Back</button>
+                        <button class="btn-glow" onclick="goToStep(3)">Confirm & Proceed</button>
+                    </div>
+                </div>
+
+                <div id="step-3" class="step-container">
+                    <h2 style="font-size: 24px; margin-bottom: 10px;">Reference Capture</h2>
+                    <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 30px;">Submit your friend's details. Our executive team will initiate contact within 24 hours.</p>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Friend's Full Name</label>
+                        <input type="text" id="refName" class="input-premium" placeholder="Enter Full Name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Friend's Contact Number</label>
+                        <input type="tel" id="refPhone" class="input-premium" placeholder="+91">
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px;">
+                        <button class="btn-glow" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); animation: none;" onclick="goToStep(2)">Back</button>
+                        <button class="btn-glow" id="btn-submit" onclick="handleSubmit()">
+                            <div class="loader" id="loader-submit"></div> Submit Lead
+                        </button>
+                    </div>
+                </div>
+
+                <div id="step-4" class="step-container" style="text-align: center; padding: 20px 0;">
+                    <div style="width: 80px; height: 80px; background: rgba(34, 197, 94, 0.1); color: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 35px; border: 1px solid rgba(34, 197, 94, 0.3);">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <h2 style="font-size: 28px; margin-bottom: 10px;">Lead Secured</h2>
+                    <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 30px;">The data has been synchronized with the master sheet. Your reference ID is <span style="color: var(--orange-main); font-weight: 800;" id="genRefId">USS-000</span>.</p>
+                    
+                    <button class="btn-glow" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); animation: none;" onclick="resetForm()">Submit Another Referral</button>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="view-rewards" class="view-section">
+            <div class="glass-card" style="border-color: rgba(59, 130, 246, 0.2);">
+                
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <h2 style="font-size: 28px; margin-bottom: 10px;">My <span class="title-glow-blue italic" style="color: var(--blue-main);">Rewards.</span></h2>
+                    <p style="color: var(--text-muted); font-size: 14px;">Track your successful conversions and unlocked privilege tiers.</p>
+                </div>
+
+                <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 40px;">
+                    <input type="text" id="rewardSearchId" class="input-premium" placeholder="Enter Member ID">
+                    <button class="btn-glow btn-blue" id="btn-track" style="width: auto;" onclick="handleTrack()">
+                        <div class="loader" id="loader-track"></div> Track
+                    </button>
+                </div>
+
+                <div id="reward-results" style="display: none; animation: slideUp 0.5s ease forwards;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <p style="font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 5px;">Successful Conversions</p>
+                        <div style="font-size: 80px; font-weight: 800; line-height: 1; color: var(--blue-main); text-shadow: 0 0 30px rgba(59, 130, 246, 0.3);" id="conv-count">0</div>
+                    </div>
+
+                    <div style="background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 20px; padding: 25px; text-align: center;">
+                        <span id="tier-badge" style="background: var(--blue-main); color: white; padding: 4px 12px; border-radius: 6px; font-size: 10px; font-weight: 800; letter-spacing: 1px;">LEVEL 0</span>
+                        <h3 id="tier-title" style="margin: 15px 0 5px; font-size: 18px;">Start Referring</h3>
+                        <p id="tier-desc" style="color: var(--text-muted); font-size: 13px;">Refer 1 friend to unlock your first maintenance package.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // --- PASTE YOUR NEW APP SCRIPT URL HERE ---
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyz2OH0JvLRM414ltbsoJSlDOV--5ags2jIU1gq6DaNeajJD7oRDCPyV-sr2QCiavjQ/exec"; 
+
+        // GREEN LIGHT CONNECTION TEST - Runs automatically on page load
+        window.onload = async function() {
+            try {
+                const res = await fetch(`${SCRIPT_URL}?action=ping`);
+                const data = await res.json();
+                if(data.status === 'connected') {
+                    document.getElementById('conn-indicator').classList.remove('status-red');
+                    document.getElementById('conn-indicator').classList.add('status-green');
+                    document.getElementById('conn-text').innerText = 'Sheet Connected';
+                }
+            } catch(e) {
+                console.log("Could not ping sheet.", e);
+                document.getElementById('conn-text').innerText = 'Sheet Disconnected';
+            }
+        };
+
+        function switchTab(tab) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active', 'active-blue'));
+
+            if(tab === 'referral') {
+                document.getElementById('view-referral').classList.add('active');
+                document.getElementById('tab-referral').classList.add('active');
+                document.querySelector('h1 span').style.color = 'var(--orange-main)';
+                document.querySelector('h1 span').className = 'title-glow italic';
+            } else {
+                document.getElementById('view-rewards').classList.add('active');
+                document.getElementById('tab-rewards').classList.add('active-blue');
+                document.querySelector('h1 span').style.color = 'var(--blue-main)';
+                document.querySelector('h1 span').className = 'title-glow-blue italic';
+            }
+        }
+
+        function goToStep(step) {
+            document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step-${step}`).classList.add('active');
+
+            if(step >= 1) document.getElementById('dot-2').style.background = 'rgba(255,255,255,0.1)';
+            if(step >= 2) document.getElementById('dot-2').style.background = 'var(--orange-main)';
+            if(step >= 3) document.getElementById('dot-3').style.background = 'rgba(255,255,255,0.1)';
+            if(step >= 3) document.getElementById('dot-3').style.background = 'var(--orange-main)';
+            if(step === 4) document.getElementById('progress-dots').style.display = 'none';
+        }
+
+        function resetForm() {
+            document.getElementById('custId').value = '';
+            document.getElementById('refName').value = '';
+            document.getElementById('refPhone').value = '';
+            document.getElementById('progress-dots').style.display = 'flex';
+            goToStep(1);
+        }
+
+        // REAL API INTEGRATION: Verify Member
+        async function handleVerify() {
+            const id = document.getElementById('custId').value;
+            if(!id) return alert("Please enter your Customer ID.");
+
+            const btn = document.getElementById('btn-verify');
+            const loader = document.getElementById('loader-verify');
+            btn.disabled = true; loader.style.display = 'inline-block';
+
+            try {
+                const res = await fetch(`${SCRIPT_URL}?action=getClientDetails&clientId=${encodeURIComponent(id)}`);
+                const data = await res.json();
+                if(data.status === 'success') {
+                    document.getElementById('roName').value = data.name;
+                    document.getElementById('roPhone').value = data.phone;
+                    goToStep(2);
+                } else {
+                    alert("ID not found in master database.");
+                }
+            } catch(e) { 
+                alert("Network Error"); 
+            } finally {
+                btn.disabled = false; loader.style.display = 'none';
+            }
+        }
+
+        // REAL API INTEGRATION: Submit Form
+        async function handleSubmit() {
+            const name = document.getElementById('refName').value;
+            const phone = document.getElementById('refPhone').value;
+            if(!name || !phone) return alert("Please fill all fields.");
+
+            const btn = document.getElementById('btn-submit');
+            const loader = document.getElementById('loader-submit');
+            btn.disabled = true; loader.style.display = 'inline-block';
+
+            try {
+                const p = new URLSearchParams();
+                p.append('clientId', document.getElementById('custId').value);
+                p.append('refName', name);
+                p.append('phone', phone);
+
+                const res = await fetch(SCRIPT_URL, { method: 'POST', body: p });
+                const data = await res.json();
+                
+                if(data.status === 'success') {
+                    document.getElementById('genRefId').innerText = data.refId;
+                    goToStep(4);
+                } else {
+                    alert("Failed to submit to Sheet.");
+                }
+            } catch(e) { 
+                alert("Network Error. Data may not have saved."); 
+            } finally {
+                btn.disabled = false; loader.style.display = 'none';
+            }
+        }
+
+        // REAL API INTEGRATION: Track Rewards
+        async function handleTrack() {
+            const id = document.getElementById('rewardSearchId').value;
+            if(!id) return alert("Please enter Member ID.");
+
+            const btn = document.getElementById('btn-track');
+            const loader = document.getElementById('loader-track');
+            const results = document.getElementById('reward-results');
+            
+            results.style.display = 'none';
+            btn.disabled = true; loader.style.display = 'inline-block';
+
+            try {
+                const res = await fetch(`${SCRIPT_URL}?action=getConversions&clientId=${encodeURIComponent(id)}`);
+                const data = await res.json();
+                if(data.status === 'success') {
+                    updateRewardUI(data.conversions);
+                    results.style.display = 'block';
+                } else {
+                    alert("No data found for this ID.");
+                }
+            } catch(e) { 
+                alert("Network Error while checking rewards."); 
+            } finally {
+                btn.disabled = false; loader.style.display = 'none';
+            }
+        }
+
+        function updateRewardUI(count) {
+            document.getElementById('conv-count').innerText = "0" + count; 
+            
+            let badge = "LEVEL 0", title = "Keep Referring", desc = "Refer 1 friend to unlock maintenance.";
+            let color = "var(--text-muted)";
+
+            if(count >= 5) {
+                badge = "LEVEL 3"; title = "1 Year FREE Bimonthly Pro Cleaning"; desc = "Value: ₹18,000. Active Status."; color = "var(--orange-main)";
+            } else if (count >= 2) {
+                badge = "LEVEL 2"; title = "1 Yr Maintenance + Premium Brush"; desc = "Value: ₹15,000. Active Status."; color = "var(--blue-main)";
+            } else if (count >= 1) {
+                badge = "LEVEL 1"; title = "1 Year Comprehensive Maintenance"; desc = "Value: ₹12,000. Active Status."; color = "#22c55e"; // Green
+            }
+
+            document.getElementById('tier-badge').innerText = badge;
+            document.getElementById('tier-badge').style.background = color;
+            document.getElementById('tier-title').innerText = title;
+            document.getElementById('tier-desc').innerText = desc;
+            
+            document.getElementById('tier-badge').parentElement.style.borderColor = color.replace(')', ', 0.3)').replace('rgb', 'rgba').replace('var(--blue-main)', 'rgba(59, 130, 246, 0.3)').replace('var(--orange-main)', 'rgba(249, 115, 22, 0.3)');
+        }
+    </script>
+</body>
+</html>
