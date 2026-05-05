@@ -445,5 +445,36 @@
             document.querySelector('.theme-icon').setAttribute('data-lucide', 'sun');
         }
     </script>
+    <!-- Rupee Eruption Effect CSS -->
+<style>
+    @keyframes erupt {
+        0% { transform: translateY(0) scale(0.5); opacity: 0; }
+        20% { opacity: 1; }
+        100% { transform: translateY(-60px) translateX(var(--x-move)) scale(1.3); opacity: 0; }
+    }
+    .rupee-particle {
+        position: absolute; top: 0; left: 50%;
+        color: #f97316; font-weight: 900; pointer-events: none;
+        animation: erupt 2.5s infinite linear;
+        font-size: 14px;
+    }
+</style>
+
+<!-- Refer & Earn Floating Button -->
+<a href="ref.html" class="fixed bottom-[100px] right-[30px] z-40 bg-blue-900 text-white p-4 rounded-full shadow-2xl hover:shadow-[0_0_20px_rgba(34,197,94,0.4)] transition-all flex items-center gap-2 group border border-white/10">
+    <div class="relative flex items-center justify-center w-8 h-8 bg-white rounded-full shadow-inner">
+        <!-- Erupting Orange Symbols -->
+        <span class="rupee-particle" style="--x-move: -20px; animation-delay: 0s;">₹</span>
+        <span class="rupee-particle" style="--x-move: 0px; animation-delay: 0.8s;">₹</span>
+        <span class="rupee-particle" style="--x-move: 20px; animation-delay: 1.6s;">₹</span>
+        
+        <!-- Central Green Rupee -->
+        <span class="text-green-600 font-black text-xl leading-none relative z-10">₹</span>
+    </div>
+    
+    <span class="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 font-black whitespace-nowrap text-[11px] uppercase tracking-[0.1em] ml-1">
+        Refer & Earn <span class="text-green-400">₹30,000</span>
+    </span>
+</a>
 </body>
 </html>
