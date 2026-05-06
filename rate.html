@@ -1,21 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>
-/**
- * UDBHAV SECURITY PROTOCOL: SIR ACCESS CONTROL
- * 1. Validates Admin Session
- * 2. Validates Entry Origin (Must come from control.html)
- */
-(function() {
-const isLoggedIn = sessionStorage.getItem("isSolarAdmin") === "true";
-const cameFromControl = document.referrer.includes("control.html");
-// If not logged in OR accessed directly/wrongly, kick back to panel
-if (!isLoggedIn || !cameFromControl) {
-    console.warn("Security Alert: Unauthorized access attempt to SIR.");
-     window.location.replace("panel.html"); // Commented out for local testing
-}
-})();
+   <script>
+(function(_0x1e2b,_0x4a2c){const _0x5501=(_0x3910)=>{while(--_0x3910){_0x1e2b['push'](_0x1e2b['shift']());}};_0x5501(++_0x4a2c);}(['\x69\x73\x53\x6f\x6c\x61\x72\x41\x64\x6d\x69\x6e','\x74\x72\x75\x65','\x63\x6f\x6e\x74\x72\x6f\x6c\x2e\x68\x74\x6d\x6c','\x70\x61\x6e\x65\x6c\x2e\x68\x74\x6d\x6c','\x72\x65\x70\x6c\x61\x63\x65'],0x1a4));const _0x302a=function(_0x1e2b,_0x4a2c){_0x1e2b=_0x1e2b-0x0;let _0x5501=['\x69\x73\x53\x6f\x6c\x61\x72\x41\x64\x6d\x69\x6e','\x74\x72\x75\x65','\x63\x6f\x6e\x74\x72\x6f\x6c\x2e\x68\x74\x6d\x6c','\x70\x61\x6e\x65\x6c\x2e\x68\x74\x6d\x6c','\x72\x65\x70\x6c\x61\x63\x65'][_0x1e2b];return _0x5501;};(function(){const _0x17ca=sessionStorage['getItem'](_0x302a(0x0))===_0x302a(0x1);const _0x45bc=document['referrer']['includes'](_0x302a(0x2));if(!_0x17ca||!_0x45bc){window['location'][_0x302a(0x4)](_0x302a(0x3));}})();
 </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
