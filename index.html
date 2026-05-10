@@ -14,6 +14,88 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+   
+    
+    <style>
+        /* Overlay background */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        /* The Modal Box */
+        .modal-box {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .modal-box img {
+            max-width: 150px;
+            margin-bottom: 20px;
+        }
+
+        .modal-box h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+
+        .modal-box p {
+            color: #555;
+            line-height: 1.6;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        /* Buttons */
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            text-decoration: none;
+            flex: 1;
+        }
+
+        .btn-yes {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .btn-yes:hover {
+            background-color: #219150;
+        }
+
+        .btn-decline {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-decline:hover {
+            background-color: #c0392b;
+        }
+    </style>
     <style>
         html { scroll-behavior: smooth; }
         .glass-morphism { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
@@ -83,6 +165,24 @@
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 selection:bg-orange-100 transition-colors duration-500">
+    <!-- Dialogue Box Structure -->
+    <div class="modal-overlay" id="termsModal">
+        <div class="modal-box">
+            <!-- Your Logo -->
+            <img src="udbhav.jpg" alt="UDBHAV SOLAR SOLUTIONS Logo">
+            
+            <h2>Terms & Conditions</h2>
+            <p>
+                By visiting this site and entering your details in the query for our <strong>Reward Scheme</strong>, 
+                you agree to the terms and conditions of <strong>UDBHAV SOLAR SOLUTIONS AJMER</strong>.
+            </p>
+
+            <div class="btn-container">
+                <a href="index.html" class="btn btn-yes">Yes, I Agree</a>
+                <a href="https://www.google.com" class="btn btn-decline">Decline</a>
+            </div>
+        </div>
+    </div>
 
     <button onclick="toggleTheme()" class="theme-float bg-slate-900 text-orange-500 p-4 rounded-full shadow-2xl border border-orange-500/50 hover:bg-orange-500 hover:text-white transition-all flex items-center justify-center group" title="Toggle AI Theme">
         <i data-lucide="moon" class="w-6 h-6 theme-icon"></i>
