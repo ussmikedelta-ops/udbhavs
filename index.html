@@ -14,94 +14,12 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-   
-    
-    <style>
-        /* Overlay background */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        /* The Modal Box */
-        .modal-box {
-            background: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 450px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .modal-box img {
-            max-width: 150px;
-            margin-bottom: 20px;
-        }
-
-        .modal-box h2 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 22px;
-        }
-
-        .modal-box p {
-            color: #555;
-            line-height: 1.6;
-            font-size: 14px;
-            margin-bottom: 25px;
-        }
-
-        /* Buttons */
-        .btn-container {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-        }
-
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-            text-decoration: none;
-            flex: 1;
-        }
-
-        .btn-yes {
-            background-color: #27ae60;
-            color: white;
-        }
-
-        .btn-yes:hover {
-            background-color: #219150;
-        }
-
-        .btn-decline {
-            background-color: #e74c3c;
-            color: white;
-        }
-
-        .btn-decline:hover {
-            background-color: #c0392b;
-        }
-    </style>
     <style>
         html { scroll-behavior: smooth; }
         .glass-morphism { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
         .whatsapp-float { position: fixed; bottom: 30px; right: 30px; z-index: 40; }
         .quote-float { position: fixed; bottom: 30px; left: 30px; z-index: 40; }
-        .theme-float { position: fixed; bottom: 100px; left: 30px; z-index: 40; } /* Theme Button */
+        .theme-float { position: fixed; bottom: 100px; left: 30px; z-index: 40; } 
         
         .brand-card { transition: all 0.3s ease; border: 1px solid #f1f5f9; }
         .brand-card:hover { transform: translateY(-5px); border-color: #f97316; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
@@ -124,8 +42,71 @@
         .stat-card:hover { transform: scale(1.05); background: #1e3a8a; color: white; }
 
         /* ==================================================
+           MODAL / DIALOGUE BOX STYLES
+        ================================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999; /* Highest priority */
+            backdrop-filter: blur(5px);
+        }
+        .modal-box {
+            background: #fff;
+            padding: 40px 30px;
+            border-radius: 20px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            transition: all 0.3s ease;
+        }
+        .modal-box img { 
+            max-width: 120px; 
+            margin: 0 auto 20px; 
+            border-radius: 50%;
+            border: 3px solid #f97316;
+        }
+        .modal-box h2 {
+            color: #1e3a8a; 
+            margin-bottom: 15px;
+            font-size: 24px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+        .modal-box p {
+            color: #64748b; 
+            line-height: 1.6;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        .btn-container-modal { display: flex; gap: 15px; justify-content: center; }
+        .btn-modal {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 900;
+            transition: 0.3s;
+            text-decoration: none;
+            flex: 1;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.1em;
+        }
+        .btn-yes { background-color: #f97316; color: white; }
+        .btn-yes:hover { background-color: #ea580c; transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.4); }
+        .btn-decline { background-color: #f1f5f9; color: #475569; }
+        .btn-decline:hover { background-color: #e2e8f0; transform: translateY(-3px); }
+
+        /* ==================================================
            DARK/ORANGE AI THEME OVERRIDES 
-           These trigger only when <body class="theme-dark"> 
         ================================================== */
         body.theme-dark { background-color: #020617; color: #f8fafc; }
         body.theme-dark .bg-white, 
@@ -162,14 +143,25 @@
         body.theme-dark .side-link { background: rgba(255,255,255,0.03) !important; border-color: transparent !important; }
         body.theme-dark .side-link:hover { background: rgba(249, 115, 22, 0.1) !important; border-color: #f97316 !important; }
         body.theme-dark .shadow-xl, body.theme-dark .shadow-2xl { box-shadow: 0 10px 25px -5px rgba(249, 115, 22, 0.1); }
+
+        /* Dark Theme Modal Overrides */
+        body.theme-dark .modal-box {
+            background: #0f172a; 
+            border: 1px solid rgba(249, 115, 22, 0.3);
+        }
+        body.theme-dark .modal-box h2 { color: #f8fafc; }
+        body.theme-dark .modal-box p { color: #94a3b8; }
+        body.theme-dark .btn-decline { background-color: #1e293b; color: #f8fafc; }
+        body.theme-dark .btn-decline:hover { background-color: #334155; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 selection:bg-orange-100 transition-colors duration-500">
-    <!-- Dialogue Box Structure -->
+
+    <!-- TERMS & CONDITIONS DIALOGUE BOX (Merged Here) -->
     <div class="modal-overlay" id="termsModal">
         <div class="modal-box">
-            <!-- Your Logo -->
-            <img src="udbhav.jpg" alt="UDBHAV SOLAR SOLUTIONS Logo">
+            <!-- Modal Logo -->
+            <img src="udbhav.jpg" alt="UDBHAV SOLAR Logo" onerror="this.src='Donna Stroupe.jpg'"> <!-- Fallback if udbhav.jpg is missing -->
             
             <h2>Terms & Conditions</h2>
             <p>
@@ -177,13 +169,14 @@
                 you agree to the terms and conditions of <strong>UDBHAV SOLAR SOLUTIONS AJMER</strong>.
             </p>
 
-            <div class="btn-container">
-                <a href="index.html" class="btn btn-yes">Yes, I Agree</a>
-                <a href="https://www.google.com" class="btn btn-decline">Decline</a>
+            <div class="btn-container-modal">
+                <a href="index.html" class="btn-modal btn-yes" onclick="acceptTerms(event)">Yes, I Agree</a>
+                <a href="https://www.google.com" class="btn-modal btn-decline">Decline</a>
             </div>
         </div>
     </div>
 
+    <!-- Theme Toggle Button -->
     <button onclick="toggleTheme()" class="theme-float bg-slate-900 text-orange-500 p-4 rounded-full shadow-2xl border border-orange-500/50 hover:bg-orange-500 hover:text-white transition-all flex items-center justify-center group" title="Toggle AI Theme">
         <i data-lucide="moon" class="w-6 h-6 theme-icon"></i>
     </button>
@@ -493,6 +486,35 @@
     <script>
         lucide.createIcons();
 
+        /* ==================================================
+           MODAL LOGIC ADDED HERE
+        ================================================== */
+        document.addEventListener("DOMContentLoaded", function() {
+            const modal = document.getElementById('termsModal');
+            // Check local storage to see if they already agreed
+            if (localStorage.getItem('udbhav-terms-agreed') === 'true') {
+                modal.style.display = 'none';
+            } else {
+                document.body.style.overflow = 'hidden'; // Stop scrolling while terms are shown
+            }
+        });
+
+        function acceptTerms(event) {
+            // Prevent link from refreshing page if already on index.html
+            if(window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
+                event.preventDefault(); 
+            }
+            
+            // Save choice so it doesn't appear again
+            localStorage.setItem('udbhav-terms-agreed', 'true');
+            
+            // Hide modal and restore scrolling
+            document.getElementById('termsModal').style.display = 'none';
+            document.body.style.overflow = ''; 
+        }
+        /* ================================================== */
+
+
         function toggleSidePanel() {
             const panel = document.getElementById('sidePanel');
             const overlay = document.getElementById('sidePanelOverlay');
@@ -520,7 +542,6 @@
             }
         }
 
-        // NEW: Theme Toggle Functionality
         function toggleTheme() {
             const body = document.body;
             body.classList.toggle('theme-dark');
@@ -545,36 +566,37 @@
             document.querySelector('.theme-icon').setAttribute('data-lucide', 'sun');
         }
     </script>
-    <!-- Rupee Eruption Effect CSS -->
-<style>
-    @keyframes erupt {
-        0% { transform: translateY(0) scale(0.5); opacity: 0; }
-        20% { opacity: 1; }
-        100% { transform: translateY(-60px) translateX(var(--x-move)) scale(1.3); opacity: 0; }
-    }
-    .rupee-particle {
-        position: absolute; top: 0; left: 50%;
-        color: #f97316; font-weight: 900; pointer-events: none;
-        animation: erupt 2.5s infinite linear;
-        font-size: 14px;
-    }
-</style>
-
-<!-- Refer & Earn Floating Button -->
-<a href="ref.html" class="fixed bottom-[100px] right-[30px] z-40 bg-blue-900 text-white p-4 rounded-full shadow-2xl hover:shadow-[0_0_20px_rgba(34,197,94,0.4)] transition-all flex items-center gap-2 group border border-white/10">
-    <div class="relative flex items-center justify-center w-8 h-8 bg-white rounded-full shadow-inner">
-        <!-- Erupting Orange Symbols -->
-        <span class="rupee-particle" style="--x-move: -20px; animation-delay: 0s;">₹</span>
-        <span class="rupee-particle" style="--x-move: 0px; animation-delay: 0.8s;">₹</span>
-        <span class="rupee-particle" style="--x-move: 20px; animation-delay: 1.6s;">₹</span>
-        
-        <!-- Central Green Rupee -->
-        <span class="text-green-600 font-black text-xl leading-none relative z-10">₹</span>
-    </div>
     
-    <span class="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 font-black whitespace-nowrap text-[11px] uppercase tracking-[0.1em] ml-1">
-        Refer & Earn Benefits of more <span class="text-green-400">than ₹50,000</span>
-    </span>
-</a>
+    <!-- Rupee Eruption Effect CSS -->
+    <style>
+        @keyframes erupt {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateY(-60px) translateX(var(--x-move)) scale(1.3); opacity: 0; }
+        }
+        .rupee-particle {
+            position: absolute; top: 0; left: 50%;
+            color: #f97316; font-weight: 900; pointer-events: none;
+            animation: erupt 2.5s infinite linear;
+            font-size: 14px;
+        }
+    </style>
+
+    <!-- Refer & Earn Floating Button -->
+    <a href="ref.html" class="fixed bottom-[100px] right-[30px] z-40 bg-blue-900 text-white p-4 rounded-full shadow-2xl hover:shadow-[0_0_20px_rgba(34,197,94,0.4)] transition-all flex items-center gap-2 group border border-white/10">
+        <div class="relative flex items-center justify-center w-8 h-8 bg-white rounded-full shadow-inner">
+            <!-- Erupting Orange Symbols -->
+            <span class="rupee-particle" style="--x-move: -20px; animation-delay: 0s;">₹</span>
+            <span class="rupee-particle" style="--x-move: 0px; animation-delay: 0.8s;">₹</span>
+            <span class="rupee-particle" style="--x-move: 20px; animation-delay: 1.6s;">₹</span>
+            
+            <!-- Central Green Rupee -->
+            <span class="text-green-600 font-black text-xl leading-none relative z-10">₹</span>
+        </div>
+        
+        <span class="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 font-black whitespace-nowrap text-[11px] uppercase tracking-[0.1em] ml-1">
+            Refer & Earn Benefits of more <span class="text-green-400">than ₹50,000</span>
+        </span>
+    </a>
 </body>
 </html>
