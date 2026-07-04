@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Udbhav Solar Solution - Proposal Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --solar-black: #020617; --solar-orange: #f97316; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--solar-black); color: #f8fafc; padding-bottom: 80px; min-height: 100vh; }
+
+        .bg-mesh {
+            background-color: #020617;
+            background-image:
+                radial-gradient(at 0% 0%, hsla(222,47%,11%,1) 0, transparent 50%),
+                radial-gradient(at 50% 0%, hsla(217,91%,60%,0.15) 0, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(25,95%,53%,0.1) 0, transparent 50%);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+        }
+
+        .input-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px; 
+            padding: 12px 16px; 
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+        }
+        .input-card:focus-within {
+            border-color: var(--solar-orange);
+            background: rgba(249, 115, 22, 0.05);
+        }
+
+        label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; display: block; margin-bottom: 4px; letter-spacing: 0.1em; }
+        select, input { background: transparent; border: none; width: 100%; font-size: 16px; font-weight: 700; color: white; outline: none; }
+        input::placeholder { color: #475569; font-weight: 600; }
+        option { background: #0f172a; color: white; }
+
+        .mode-btn { transition: all 0.3s ease; border-radius: 12px; font-weight: 800; color: #64748b; }
+        .mode-active { 
+            background: var(--solar-orange) !important;
+            color: white !important;
+            box-shadow: 0 0 20px rgba(249, 115, 22, 0.2);
+        }
+
+        .step-section { display: none; }
+        .step-section.visible { display: block; animation: fadeIn 0.4s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.5; cursor: pointer; }
+    </style>
+</head>
+<body class="bg-mesh">
+
+    <header class="p-6">
+        <div class="max-w-xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-slate-900 rounded-2xl border-2 border-orange-500 overflow-hidden shadow-lg shadow-orange-500/20 flex items-center justify-center">
+                   <i data-lucide="sun" class="text-orange-500 w-8 h-8"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black text-white leading-none tracking-tight">UDBHAV</h1>
+                    <p class="text-[10px] font-bold text-orange-500 uppercase tracking-[0.3em]">Proposal Generator</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-xl mx-auto p-4">
+        <div class="flex gap-2 mb-8 p-1.5 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm">
+            <button id="btnNew" onclick="setMode('new')" class="mode-btn mode-active flex-1 py-3 text-xs tracking-widest">NEW QUOTE</button>
+            <button id="btnEdit" onclick="setMode('edit')" class="mode-btn flex-1 py-3 text-xs tracking-widest">EDIT EXISTING</button>
+        </div>
+
+        <div id="searchBar" class="hidden glass-card p-4 mb-6 border-orange-500/50">
+            <label class="text-orange-500">Search Existing Database</label>
+            <div class="flex gap-2">
+                <div class="input-card flex-1 !mb-0">
+                    <input type="text" id="searchInput" placeholder="Enter Phone No or SR.No">
+                </div>
+                <button onclick="searchQuote()" class="bg-orange-600 px-6 rounded-2xl font-black text-white text-xs uppercase tracking-widest hover:bg-orange-500 transition-colors">
+                    Search
+                </button>
+            </div>
+        </div>
+
+        <form id="quoteForm" onsubmit="submitForm(event)">
+            <input type="hidden" id="rowId" name="rowId">
+            <input type="hidden" id="editCount" name="editCount" value="0">
+
+            <div class="glass-card p-6">
+                
+                <div id="sec-client" class="step-section visible">
+                    <h3 class="text-[10px] font-black text-orange-500 mb-3 tracking-widest uppercase">1. Client Details</h3>
+                    
+                    <div id="editReasonSection" class="hidden">
+                        <div class="input-card border-orange-500 bg-orange-500/10">
+                            <label class="text-orange-400">Reason for Editing</label>
+                            <input type="text" id="editReason" name="editReason" placeholder="Required for revisions...">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="input-card"><label>S.NO (Auto)</label><input type="text" name="sNo" readonly class="text-gray-400"></div>
+                        <div class="input-card"><label>SR.No</label><input type="text" name="srNo" id="srNo" required placeholder="USS/2026/6/R/133"></div>
+                    </div>
+                    
+                    <div class="input-card"><label>Client Name</label><input type="text" name="name" required></div>
+                    <div class="input-card"><label>Phone Number</label><input type="tel" name="phone" required></div>
+                    
+                    <div class="input-card"><label>Address Line 1</label><input type="text" name="address1"></div>
+                    <div class="input-card"><label>Address Line 2</label><input type="text" name="address2"></div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="input-card"><label>PAN No</label><input type="text" name="panNo" class="uppercase"></div>
+                        <div class="input-card"><label>Aadhaar No</label><input type="text" name="aadhaar" placeholder="[Aadhaar Redacted]"></div>
+                    </div>
+
+                    <button type="button" onclick="showNext('sec-system')" class="w-full mt-4 bg-white text-black font-black py-4 rounded-2xl shadow-xl uppercase text-xs tracking-widest hover:bg-gray-200 transition-colors">Next: System Specs</button>
+                </div>
+
+                <div id="sec-system" class="step-section">
+                    <h3 class="text-[10px] font-black text-orange-500 mb-3 tracking-widest uppercase">2. Hardware & Specs</h3>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="input-card">
+                          <label>System Type</label>
+                          <select name="type1" id="systemTypeSelect" onchange="toggleHybridOptions()">
+                            <option value="">Select System Type</option>
+                            <option value="ON GRID">ON GRID</option>
+                            <option value="OFF GRID">OFF GRID</option>
+                            <option value="HYBRID">HYBRID</option>
+                          </select>
+
+                          <div id="hybridOptionsGroup" style="display: none; margin-top: 10px; border-left: 3px solid #ccc; padding-left: 10px;">
+                            <label style="font-size: 0.9em; display: block; margin-bottom: 5px;">Battery Requirement</label>
+                            <select name="hybridBatteryReq" id="hybridBatterySelect" onchange="toggleBatteryDetails()">
+                              <option value="">Select Option</option>
+                              <option value="WITH BATTERY">WITH BATTERY</option>
+                              <option value="WITHOUT BATTERY">WITHOUT BATTERY</option>
+                            </select>
+                          </div>
+
+                          <div id="batteryDetailsGroup" style="display: none; margin-top: 10px; border-left: 3px solid #ccc; padding-left: 10px;">
+                            <div style="margin-bottom: 8px;">
+                              <label style="font-size: 0.9em; display: block; margin-bottom: 3px;">No. of Batteries</label>
+  <input type="number" name="batteryCount" id="batteryCountInput" placeholder="e.g. 4" min="1" style="width: 100%;">
+  </div>
+                            <div>
+                              <label style="font-size: 0.9em; display: block; margin-bottom: 3px;">Brand Name</label>
+                              <input type="text" name="batteryBrand" id="batteryBrandInput" placeholder="e.g. Exide, Luminous" style="width: 100%;">
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="input-card">
+                          <label>Phase</label>
+                          <select name="phase" id="phaseSelect">
+                            <option value="">Select Phase</option>
+                            <option value="Single Phase">Single Phase</option>
+                            <option value="Three Phase">Three Phase</option>
+                          </select>
+                        </div>
+                        <div class="input-card"><label>Power Cap (WP)</label><input type="number" name="power" readonly class="text-gray-400"></div>
+                        <div class="input-card"><label>Total Capacity</label><input type="text" name="toCap" placeholder="e.g. 3 KWP"></div>
+                    </div>
+
+                    <label class="mt-4">Inverter Specs</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="input-card"><label>Power</label><input type="text" name="invPower" placeholder="3 KW"></div>
+                        <div class="input-card">
+                          <label>Make</label>
+                          <select name="invName" id="inverterSelect" onchange="toggleOtherInverter();">
+                            <option value="">Select Inverter Make</option>
+                            <option value="VSOLE">VSOLE</option>
+                            <option value="TATA KIT">TATA KIT</option>
+                            <option value="Growatt">Growatt</option>
+                            <option value="Sungrow">Sungrow</option>
+                            <option value="Sofar Solar">Sofar Solar</option>
+                            <option value="Waaree">Waaree</option>
+                            <option value="Solis">Solis</option>
+                            <option value="GoodWe">GoodWe</option>
+                            <option value="Luminous">Luminous</option>
+                            <option value="Microtek">Microtek</option>
+                            <option value="Fronius">Fronius</option>
+                            <option value="Enphase">Enphase (Microinverter)</option>
+                            <option value="Havells">Havells</option>
+                            <option value="Polycab">Polycab</option>
+                            <option value="Livguard">Livguard</option>
+                            <option value="V-Guard">V-Guard</option>
+                            <option value="OTHER">Other (Specify)</option>
+                          </select>
+                          <input type="text" id="otherInverterInput" name="other_invName" placeholder="Type inverter brand name" style="display: none; margin-top: 8px;">
+                        </div>
+                    </div>
+
+                    <label class="mt-4">Panel Specs</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="input-card">
+                          <label>Company</label>
+                          <select name="panelCo" id="companySelect" onchange="toggleOtherCompany();">
+                            <option value="">Select a Company</option>
+                            <option value="Waaree">Waaree Energies</option>
+                            <option value="Tata Power">Tata Power Solar</option>
+                            <option value="Adani">Adani Solar</option>
+                            <option value="Vikram">Vikram Solar</option>
+                            <option value="Rayzon">Rayzon Solar</option>
+                            <option value="Premier">Premier Energies</option>
+                            <option value="Goldi">Goldi Solar</option>
+                            <option value="Saatvik">Saatvik Green Energy</option>
+                            <option value="Loom">Loom Solar</option>
+                            <option value="RenewSys">RenewSys India</option>
+                            <option value="Insolation">Insolation Energy (INA)</option>
+                            <option value="Navitas">Navitas Solar</option>
+                            <option value="Emmvee">Emmvee Solar</option>
+                            <option value="OTHER">Other (Specify)</option>
+                          </select>
+                          <input type="text" id="otherCompanyInput" name="other_panelCo" placeholder="Type company name" style="display: none; margin-top: 8px;">
+                        </div>
+                        <div class="input-card">
+                          <label>Type</label>
+                          <select name="panelType" id="panelTypeSelect">
+                            <option value="">Select Panel Type</option>
+                            <option value="BI">Bifacial</option>
+                            <option value="MONO">Mono Perc</option>
+                            <option value="TOPCON">TopCon</option>
+                            <option value="HJT">HJT</option>
+                          </select>
+                        </div>
+                        <div class="input-card">
+                          <label>DCR/NDCR</label>
+                          <select name="dcr" id="dcrSelect">
+                            <option value="">Select Option</option>
+                            <option value="DCR">DCR</option>
+                            <option value="NDCR">NDCR</option>
+                            <option value="DCR +NDCR">DCR +NDCR</option>
+                          </select>
+                        </div>
+                        <div class="input-card"><label>No of Panels</label><input type="text" name="No of Panels" oninput="calculatePowerCap(); calculatePricePerWatt();"></div>
+                        <div class="input-card"><label>Capacity</label><input type="text" name="panelCap" placeholder="615 W" oninput="calculatePowerCap(); calculatePricePerWatt();"></div>
+                        <div class="input-card"><label>DCDB Make</label><input type="text" name="dcdb"></div>
+                        <div class="input-card"><label>ACDB Make</label><input type="text" name="acdb"></div>
+                    </div>
+
+                    <div class="flex gap-2 mt-4">
+                        <button type="button" onclick="showNext('sec-client')" class="w-1/3 bg-white/10 text-white font-black py-4 rounded-2xl uppercase text-xs tracking-widest">Back</button>
+                        <button type="button" onclick="showNext('sec-pricing')" class="w-2/3 bg-white text-black font-black py-4 rounded-2xl shadow-xl uppercase text-xs tracking-widest">Next: Pricing</button>
+                    </div>
+                </div>
+
+                <div id="sec-pricing" class="step-section">
+                    <h3 class="text-[10px] font-black text-orange-500 mb-3 tracking-widest uppercase">3. Commercials & Dates</h3>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="input-card"><label>Quote Date</label><input type="date" name="date"></div>
+                        <div class="input-card"><label>Valid Till</label><input type="date" name="dateVal"></div>
+                        <div class="input-card"><label>Entry Date</label><input type="date" name="dateEntry"></div>
+                        <div class="input-card">
+                          <label>Proposal Type</label>
+                          <select name="type2" id="proposalType" onchange="toggleOtherInput(); calculatePriceAfterSubsidy();">
+                            <option value="">Select an option</option>
+                            <option value="RES SUB">RES SUB</option>
+                            <option value="RES">RES</option>  
+                            <option value="COMMERCIAL">Commercial</option>
+                            <option value="INDUSTRIAL">Industrial</option>
+                            <option value="OTHER">Other</option>
+                          </select>
+                          <input type="text" id="otherProposalType" name="other_type2" placeholder="Please specify" style="display: none; margin-top: 8px;" oninput="calculatePriceAfterSubsidy()">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="input-card">
+                            <label>Central Subsidy</label>
+                            <input type="number" name="subsidy" value="78000" readonly class="text-gray-400">
+                        </div>
+                        <div class="input-card">
+                            <label>State Subsidy (₹17,000)</label>
+                            <select name="stateSubsidy" id="stateSubsidy">
+                                <option value="No">Not Eligible</option>
+                                <option value="Yes">Eligible (Cond. Apply)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="input-card"><label>Cost</label><input type="number" name="costPrice" placeholder="₹"></div>
+                        <div class="input-card"><label>Selling</label><input type="number" name="sellPrice" placeholder="₹" oninput="calculatePriceAfterSubsidy(); calculatePricePerWatt();"></div>
+                        <div class="input-card"><label>Price After Subsidy</label><input type="text" name="After Subsidy" readonly class="text-gray-400" placeholder="₹"></div>
+                        <div class="input-card"><label>Per Watt</label><input type="number" name="perWatt" placeholder="₹" step="0.01"></div>
+                    </div>
+
+                    <div class="flex gap-2 mt-6">
+                        <button type="button" onclick="showNext('sec-system')" class="w-1/4 bg-white/10 text-white font-black py-4 rounded-2xl uppercase text-xs tracking-widest flex items-center justify-center">
+                            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                        </button>
+                        <button type="submit" id="submitBtn" class="w-3/4 bg-orange-600 text-white font-black py-5 rounded-2xl shadow-2xl shadow-orange-500/20 uppercase tracking-widest active:scale-95 transition-transform text-xs">
+                            Save & Generate PDF
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </main>
+
+    <script>
+        // PASTE YOUR DEPLOYED WEB APP URL HERE
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwlpB7kmiLgw3VEac5Bv922ZBIwm-ZqFgcGUKmOx2m6PUIc6Whrd4jDmxgs3FM-FKK2/exec";
+
+        lucide.createIcons();
+
+        window.addEventListener('load', () => {
+            fetchNextSNo();
+            calculatePriceAfterSubsidy(); 
+            calculatePricePerWatt();
+        });
+
+        // Toggle UI Helper logics
+        function toggleHybridOptions() {
+          const systemType = document.getElementById('systemTypeSelect').value;
+          const hybridGroup = document.getElementById('hybridOptionsGroup');
+          const batterySelect = document.getElementById('hybridBatterySelect');
+          
+          if (systemType === 'HYBRID') {
+            hybridGroup.style.display = 'block';
+            batterySelect.required = true;
+          } else {
+            hybridGroup.style.display = 'none';
+            batterySelect.value = '';
+            batterySelect.required = false;
+            toggleBatteryDetails(); 
+          }
+        }
+
+        function toggleBatteryDetails() {
+          const batteryReq = document.getElementById('hybridBatterySelect').value;
+          const batteryDetailsGroup = document.getElementById('batteryDetailsGroup');
+          const countInput = document.getElementById('batteryCountInput');
+          const brandInput = document.getElementById('batteryBrandInput');
+          
+          if (batteryReq === 'WITH BATTERY') {
+            batteryDetailsGroup.style.display = 'block';
+            countInput.required = true;
+            brandInput.required = true;
+          } else {
+            batteryDetailsGroup.style.display = 'none';
+            countInput.value = '';
+            brandInput.value = '';
+            countInput.required = false;
+            brandInput.required = false;
+          }
+        }
+
+        function toggleOtherInverter() {
+          const selectBox = document.getElementById('inverterSelect');
+          const otherInput = document.getElementById('otherInverterInput');
+          
+          if (selectBox.value === 'OTHER') {
+            otherInput.style.display = 'block';
+            otherInput.required = true;
+          } else {
+            otherInput.style.display = 'none';
+            otherInput.value = ''; 
+            otherInput.required = false;
+          }
+        }
+
+        function toggleOtherCompany() {
+          const selectBox = document.getElementById('companySelect');
+          const otherInput = document.getElementById('otherCompanyInput');
+          
+          if (selectBox.value === 'OTHER') {
+            otherInput.style.display = 'block';
+            otherInput.required = true;
+          } else {
+            otherInput.style.display = 'none';
+            otherInput.value = ''; 
+            otherInput.required = false;
+          }
+        }
+
+        function toggleOtherInput() {
+          const selectBox = document.getElementById('proposalType');
+          const otherInput = document.getElementById('otherProposalType');
+          
+          if (selectBox.value === 'OTHER') {
+            otherInput.style.display = 'block';
+            otherInput.required = true; 
+          } else {
+            otherInput.style.display = 'none';
+            otherInput.value = ''; 
+            otherInput.required = false;
+          }
+        }
+
+        function fetchNextSNo() {
+            const sNoField = document.getElementsByName('sNo')[0];
+            if (sNoField) {
+                sNoField.value = "Loading...";
+                fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "getNextSNo" }),
+                    headers: { "Content-Type": "text/plain;charset=utf-8" }
+                })
+                .then(response => response.json())
+                .then(nextRow => {
+                    sNoField.value = nextRow;
+                })
+                .catch(error => {
+                    console.error("Error loading S.No:", error);
+                    sNoField.value = "Error";
+                });
+            }
+        }
+
+        function calculatePowerCap() {
+            const panelsField = document.getElementsByName('No of Panels')[0];
+            const capField = document.getElementsByName('panelCap')[0];
+            const powerField = document.getElementsByName('power')[0];
+
+            if (!panelsField || !capField || !powerField) return;
+
+            const numPanels = parseInt(panelsField.value.replace(/[^0-9]/g, ''), 10);
+            const panelCap = parseInt(capField.value.replace(/[^0-9]/g, ''), 10);
+
+            if (!isNaN(numPanels) && !isNaN(panelCap)) {
+                powerField.value = numPanels * panelCap;
+            } else {
+                powerField.value = '';
+            }
+        }
+
+        function calculatePriceAfterSubsidy() {
+            const typeField = document.getElementsByName('type2')[0];
+            const sellPriceField = document.getElementsByName('sellPrice')[0];
+            const subsidyField = document.getElementsByName('subsidy')[0];
+            const afterSubsidyField = document.getElementsByName('After Subsidy')[0];
+
+            if (!typeField || !sellPriceField || !subsidyField || !afterSubsidyField) return;
+
+            const proposalType = typeField.value.trim().toUpperCase();
+
+            if (proposalType === 'RES SUB') {
+                const sellPrice = parseFloat(sellPriceField.value);
+                const subsidy = parseFloat(subsidyField.value) || 78000;
+
+                if (!isNaN(sellPrice)) {
+                    afterSubsidyField.value = "₹ " + (sellPrice - subsidy);
+                } else {
+                    afterSubsidyField.value = '';
+                }
+            } else {
+                afterSubsidyField.value = 'Not Applicable';
+            }
+        }
+
+        function calculatePricePerWatt() {
+            const sellPriceField = document.getElementsByName('sellPrice')[0];
+            const powerField = document.getElementsByName('power')[0];
+            const perWattField = document.getElementsByName('perWatt')[0];
+
+            if (!sellPriceField || !powerField || !perWattField) return;
+
+            const sellPrice = parseFloat(sellPriceField.value);
+            const powerCap = parseFloat(powerField.value);
+
+            if (!isNaN(sellPrice) && !isNaN(powerCap) && powerCap > 0) {
+                perWattField.value = (sellPrice / powerCap).toFixed(2);
+            } else {
+                perWattField.value = '';
+            }
+        }
+
+        function setMode(mode) {
+            document.getElementById('btnNew').classList.toggle('mode-active', mode === 'new');
+            document.getElementById('btnEdit').classList.toggle('mode-active', mode === 'edit');
+            
+            if (mode === 'edit') {
+                document.getElementById('searchBar').classList.remove('hidden');
+            } else {
+                document.getElementById('searchBar').classList.add('hidden');
+                document.getElementById('quoteForm').reset();
+                document.getElementById('rowId').value = '';
+                document.getElementById('editReasonSection').classList.add('hidden');
+                
+                fetchNextSNo(); 
+                calculatePriceAfterSubsidy();
+                calculatePricePerWatt();
+                
+                // Reset toggle view components to blank state
+                toggleHybridOptions();
+                toggleOtherInverter();
+                toggleOtherCompany();
+                toggleOtherInput();
+
+                showNext('sec-client');
+            }
+        }
+
+        function showNext(id) {
+            document.querySelectorAll('.step-section').forEach(s => s.classList.remove('visible'));
+            document.getElementById(id).classList.add('visible');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function searchQuote() {
+            const query = document.getElementById('searchInput').value;
+            if(!query) return alert("Please enter a Phone No or SR.No to search.");
+            
+            const btn = document.querySelector('#searchBar button');
+            const originalText = btn.innerText;
+            btn.innerText = "Loading...";
+            
+            fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "searchRecord", query: query }),
+                headers: { "Content-Type": "text/plain;charset=utf-8" }
+            })
+            .then(response => response.json())
+            .then(result => {
+                btn.innerText = originalText;
+                if(result.found) {
+                    alert("Record found! The form has been populated.");
+                    
+                    const data = result.data;
+                    document.getElementById('rowId').value = result.rowId;
+                    document.getElementById('editCount').value = data[28] || 0; 
+                    document.getElementById('editReasonSection').classList.remove('hidden');
+                    
+                    // Map fundamental backend data to fields
+                    document.getElementsByName('sNo')[0].value = data[0];
+                    document.getElementsByName('name')[0].value = data[1];
+                    document.getElementsByName('address1')[0].value = data[2];
+                    document.getElementsByName('address2')[0].value = data[3];
+                    document.getElementsByName('phone')[0].value = data[4];
+                    
+                    if(data[5]) document.getElementsByName('date')[0].value = new Date(data[5]).toISOString().split('T')[0];
+                    if(data[6]) document.getElementsByName('dateVal')[0].value = new Date(data[6]).toISOString().split('T')[0];
+                    if(data[11]) document.getElementsByName('dateEntry')[0].value = new Date(data[11]).toISOString().split('T')[0];
+                    
+                    document.getElementsByName('type1')[0].value = data[7];
+                    document.getElementsByName('power')[0].value = data[8];
+                    document.getElementsByName('type2')[0].value = data[9];
+                    document.getElementById('srNo').value = data[10];
+                    document.getElementsByName('invPower')[0].value = data[12];
+                    document.getElementsByName('invName')[0].value = data[13];
+                    document.getElementsByName('panelCo')[0].value = data[14];
+                    document.getElementsByName('panelType')[0].value = data[15];
+                    document.getElementsByName('dcr')[0].value = data[16];
+                    document.getElementsByName('panelCap')[0].value = data[17];
+                    document.getElementsByName('panNo')[0].value = data[18];
+                    document.getElementsByName('toCap')[0].value = data[19];
+                    document.getElementsByName('costPrice')[0].value = data[20];
+                    document.getElementsByName('sellPrice')[0].value = data[21];
+                    document.getElementsByName('perWatt')[0].value = data[22];
+                    document.getElementsByName('dcdb')[0].value = data[23];
+                    document.getElementsByName('acdb')[0].value = data[24];
+                    document.getElementsByName('subsidy')[0].value = data[25];
+                    document.getElementsByName('phase')[0].value = data[26];
+                    document.getElementsByName('aadhaar')[0].value = data[27];
+
+                    // Fixed: Pulling previously unmapped deep data objects back into inputs
+                    if(data[30]) document.getElementsByName('hybridBatteryReq')[0].value = data[30];
+                    if(data[31]) document.getElementsByName('batteryCount')[0].value = data[31];
+                    if(data[32]) document.getElementsByName('batteryBrand')[0].value = data[32];
+                    if(data[33]) document.getElementsByName('other_invName')[0].value = data[33];
+                    if(data[34]) document.getElementsByName('other_panelCo')[0].value = data[34];
+                    if(data[35]) document.getElementsByName('other_type2')[0].value = data[35];
+                    if(data[36]) document.getElementById('stateSubsidy').value = data[36];
+                    if(data[37]) document.getElementsByName('No of Panels')[0].value = data[37];
+                    if(data[38]) document.getElementsByName('After Subsidy')[0].value = data[38];
+                    
+                    // Trigger dynamic conditional display sections
+                    toggleHybridOptions();
+                    toggleBatteryDetails();
+                    toggleOtherInverter();
+                    toggleOtherCompany();
+                    toggleOtherInput();
+
+                    calculatePowerCap();
+                    calculatePriceAfterSubsidy();
+                    calculatePricePerWatt();
+
+                    showNext('sec-client');
+                } else {
+                    alert("No quote found with that information.");
+                }
+            })
+            .catch(error => {
+                btn.innerText = originalText;
+                alert("Error searching for quote: " + error);
+            });
+        }
+
+        function submitForm(event) {
+            event.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const originalText = btn.innerText;
+            
+            if (document.getElementById('rowId').value && !document.getElementById('editReason').value) {
+                alert("Please provide a reason for editing this quote on Step 1.");
+                showNext('sec-client');
+                return;
+            }
+
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin mx-auto"></i>`;
+            btn.disabled = true;
+            lucide.createIcons();
+
+            const form = document.getElementById('quoteForm');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "processForm", data: data }),
+                headers: { "Content-Type": "text/plain;charset=utf-8" }
+            })
+            .then(response => response.json())
+            .then(response => {
+                // Fixed: Explicitly handle server exception returns safely without wiping form out blindly
+                if (response.error) {
+                     alert("Server Error Encountered: " + response.error);
+                     btn.innerText = originalText;
+                     btn.disabled = false;
+                     return;
+                }
+
+                alert(response.message);
+                
+                if (response.pdfBase64) {
+                    const link = document.createElement('a');
+                    link.href = 'data:application/pdf;base64,' + response.pdfBase64;
+                    link.download = response.filename || 'Quotation.pdf';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+                
+                form.reset();
+                document.getElementById('editReasonSection').classList.add('hidden');
+                document.getElementById('rowId').value = '';
+                setMode('new'); 
+                
+                btn.innerText = originalText;
+                btn.disabled = false;
+            })
+            .catch(error => {
+                alert("Error generating quote: " + error);
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>
