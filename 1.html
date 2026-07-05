@@ -547,12 +547,12 @@
             const logo = document.getElementById('logoImg');
             try {
                 const canvas = document.createElement("canvas");
-                canvas.width = logo.naturalWidth || 700;
+                canvas.width = logo.naturalWidth || 500;
                 canvas.height = logo.naturalHeight || 400;
                 const ctx = canvas.getContext("2d");
                 ctx.drawImage(logo, 0, 0);
                 const logoData = canvas.toDataURL("image/jpeg");
-                doc.addImage(logoData, 'JPEG', 15, 12, 45, 35);
+                doc.addImage(logoData, 'JPEG', 15, 12, 75, 35);
             } catch (e) {
                 doc.setTextColor(navy[0], navy[1], navy[2]);
                 doc.setFontSize(22);
