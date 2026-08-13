@@ -510,22 +510,30 @@
             const d = getQuoteData();
             if(!d.mobile) { alert("Please enter mobile number"); return; }
             
-            const message = `*SOLAR QUOTATION FROM UDBHAV SOLAR SOLUTIONS*%0A%0A` +
-                `*Customer:* ${d.name}%0A` +
-                `*Address:* ${d.address}%0A%0A` +
-                `*Project Type:* ${d.gridType} (${d.subsidyType})%0A%0A` +
-                `*System Details:*%0A` +
-                `- Inverter: ${d.invName} (${d.invCap}, ${d.invPhase})%0A` +
-                `- Panels: ${d.panelName} ${d.panelType} [${d.dcrSpec}]%0A` +
-                `- Config: ${d.panelCount} Nos of ${d.panelCap}W%0A` +
-                `- Plant Capacity: ${d.plantCap}%0A` +
-                `- Structure: ${d.structType} (${d.structCap})%0A` +
-                `- Meters: ${d.meters}%0A` +
-                `- Wires: ${d.wires}%0A%0A` +
-                `*Total Project Cost: ₹${parseFloat(d.cost).toLocaleString('en-IN')}*%0A%0A` +
+            // Replaced manual %0A with standard newlines (\n), added missing fields, 
+            // and safely encoded the entire string.
+            const message = `*SOLAR QUOTATION FROM UDBHAV SOLAR SOLUTIONS*\n\n` +
+                `*Date:* ${d.date}\n` +
+                `*Customer:* ${d.name}\n` +
+                `*Address:* ${d.address}\n\n` +
+                `*Project Type:* ${d.gridType} (${d.subsidyType})\n\n` +
+                `*System Details:*\n` +
+                `- Inverter: ${d.invName} (${d.invCap}, ${d.invPhase})\n` +
+                `- Panels: ${d.panelName} ${d.panelType} [${d.dcrSpec}]\n` +
+                `- Config: ${d.panelCount} Nos of ${d.panelCap}W\n` +
+                `- Plant Capacity: ${d.plantCap}\n` +
+                `- Structure: ${d.structType} (${d.structCap})\n` +
+                `- Pipe Dimensions: ${d.pipeDim}\n` +
+                `- Earthing: ${d.earthing}\n` +
+                `- Conduits: ${d.conduits}\n` +
+                `- Meters: ${d.meters}\n` +
+                `- Wires: ${d.wires}\n\n` +
+                (d.comments ? `*Notes / Comments:* ${d.comments}\n\n` : '') +
+                `*Total Project Cost: ₹${parseFloat(d.cost).toLocaleString('en-IN')}*\n\n` +
                 `Visit us: WWW.USSGREEN.IN.NET`;
             
-            const url = `https://wa.me/91${d.mobile}?text=${message}`;
+            // encodeURIComponent ensures special characters don't break the URL string
+            const url = `https://wa.me/91${d.mobile}?text=${encodeURIComponent(message)}`;
             window.open(url, '_blank');
         }
 
