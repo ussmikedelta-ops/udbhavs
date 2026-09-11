@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    :root {
+      --uss-green: #2e7d32;
+      --uss-yellow: #fbc02d;
+      --uss-light: #f1f8e9;
+    }
+    body { background-color: var(--uss-light); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .navbar { background-color: var(--uss-green); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .navbar-brand { color: var(--uss-yellow) !important; font-weight: bold; }
+    .logo { height: 50px; margin-right: 15px; border-radius: 5px; }
+    .card { border-radius: 10px; border-top: 4px solid var(--uss-green); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .btn-theme { background-color: var(--uss-yellow); color: #333; font-weight: bold; }
+    .btn-theme:hover { background-color: #f9a825; }
+    .btn-outline-theme { border-color: var(--uss-green); color: var(--uss-green); }
+    .btn-outline-theme:hover { background-color: var(--uss-green); color: white; }
+    .clickable-row { cursor: pointer; }
+    .clickable-row:hover { background-color: #e8f5e9; }
+    th { background-color: var(--uss-green) !important; color: white !important; }
+    
+    #loaderOverlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255, 255, 255, 0.7);
+      z-index: 99999;
+      align-items: center;
+      justify-content: center;
+    }
+    .total-highlight {
+      background-color: #e8f5e9;
+      font-weight: bold;
+      color: var(--uss-green);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loaderOverlay">
+    <div class="spinner-border text-success" style="width: 3rem; height: 3rem;" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <img src="logo.jpg" alt="Logo" class="logo" onerror="this.style.display='none'">
+        Udbhav Solar Solutions
+      </a>
+      <div>
+        <button class="btn btn-theme ms-2" onclick="openSearchModal()">Search Data</button>
+        <button class="btn btn-theme ms-2" onclick="openReportModal()">Reports & PDF</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mb-5">
+    <div class="card p-4">
+      <h4 class="mb-4 text-success border-bottom pb-2">Client Entry Form</h4>
+      <form id="clientForm" onsubmit="handleClientSubmit(event)">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label fw-bold">Client Name</label>
+            <input type="text" class="form-control" name="clientName" required>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Bank Name</label>
+            <input type="text" class="form-control" name="bankName">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Branch Name</label>
+            <input type="text" class="form-control" name="branchName">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Quotation Amount</label>
+            <input type="number" class="form-control" name="quotationAmount">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-bold">Vendor Name</label>
+            <select class="form-select" name="vendorName" id="vendorSelect" onchange="checkVendorSelection(this)">
+              <option value="">-- Select Vendor --</option>
+              <option value="ADD_NEW_VENDOR" class="text-success fw-bold">+ Add New Vendor</option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Bill To Vendor No.</label>
+            <div class="input-group">
+              <input type="text" class="form-control" name="billToVendorNo" id="formBillToNo" oninput="updateStatusBadges()">
+              <span class="input-group-text badge bg-secondary" id="formBillToBadge">Unbilled</span>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Bill From Vendor No.</label>
+            <div class="input-group">
+              <input type="text" class="form-control" name="billFromVendorNo" id="formBillFromNo" oninput="updateStatusBadges()">
+              <span class="input-group-text badge bg-secondary" id="formBillFromBadge">Unbilled</span>
+            </div>
+          </div>
+
+          <div class="col-md-3"><label>Amt Part 1</label><input type="number" class="form-control calc-amt" name="amt1" oninput="calculateFormTotal()"></div>
+          <div class="col-md-3"><label>Date 1</label><input type="date" class="form-control" name="date1"></div>
+          <div class="col-md-3"><label>Amt Part 2</label><input type="number" class="form-control calc-amt" name="amt2" oninput="calculateFormTotal()"></div>
+          <div class="col-md-3"><label>Date 2</label><input type="date" class="form-control" name="date2"></div>
+          <div class="col-md-3"><label>Amt Part 3</label><input type="number" class="form-control calc-amt" name="amt3" oninput="calculateFormTotal()"></div>
+          <div class="col-md-3"><label>Date 3</label><input type="date" class="form-control" name="date3"></div>
+          <div class="col-md-3"><label>Amt Part 4</label><input type="number" class="form-control calc-amt" name="amt4" oninput="calculateFormTotal()"></div>
+          <div class="col-md-3"><label>Date 4</label><input type="date" class="form-control" name="date4"></div>
+
+          <div class="col-md-6 mt-3">
+            <label class="form-label fw-bold">Total Amount Received (Auto Calculated)</label>
+            <input type="number" class="form-control total-highlight" name="totalAmountReceived" id="formTotalReceived" readonly value="0">
+          </div>
+
+          <div class="col-12 mt-4 text-end">
+            <button type="submit" class="btn btn-success px-4 py-2">Save Client Data</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal fade" id="vendorModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content border-success">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title">Add New Vendor</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="vendorForm" onsubmit="handleVendorSubmit(event)">
+            <div class="mb-2"><label>Vendor Name</label><input type="text" class="form-control" id="vName" required></div>
+            <div class="mb-2"><label>GST No</label><input type="text" class="form-control" id="vGst"></div>
+            <div class="mb-2"><label>Mobile No</label><input type="text" class="form-control" id="vMobile"></div>
+            <div class="mb-2"><label>Address</label><textarea class="form-control" id="vAddress"></textarea></div>
+            <button type="submit" class="btn btn-success w-100 mt-3">Save Vendor</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="searchModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title">Search Client / Vendor Records</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="input-group mb-3">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search by Client or Vendor Name...">
+            <button class="btn btn-theme" onclick="executeSearch()">Search</button>
+          </div>
+          <div id="searchResults" class="mt-3"></div>
+          <div class="d-flex justify-content-between mt-3">
+            <button class="btn btn-outline-secondary" id="prevBtn" onclick="changePage(-1)" style="display:none;">Previous</button>
+            <span id="pageInfo"></span>
+            <button class="btn btn-outline-secondary" id="nextBtn" onclick="changePage(1)" style="display:none;">Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="editClientModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-warning">
+          <h5 class="modal-title">Client Full Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-end mb-3">
+            <button class="btn btn-sm btn-outline-dark" onclick="toggleEditMode()">Enable Edit Mode</button>
+          </div>
+          <form id="editClientForm" onsubmit="handleClientUpdate(event)">
+            <input type="hidden" name="id" id="edit_id">
+            <div class="row g-3">
+              <div class="col-md-6"><label>Client Name</label><input type="text" class="form-control edit-field" name="clientName" id="edit_clientName" readonly required></div>
+              <div class="col-md-6"><label>Vendor Name</label><input type="text" class="form-control edit-field" name="vendorName" id="edit_vendorName" readonly></div>
+              <div class="col-md-6"><label>Bank Name</label><input type="text" class="form-control edit-field" name="bankName" id="edit_bankName" readonly></div>
+              <div class="col-md-6"><label>Branch Name</label><input type="text" class="form-control edit-field" name="branchName" id="edit_branchName" readonly></div>
+              <div class="col-md-6"><label>Quotation Amt</label><input type="number" class="form-control edit-field" name="quotationAmount" id="edit_quotationAmount" readonly></div>
+              
+              <div class="col-md-6">
+                <label>Bill To Vendor No.</label>
+                <input type="text" class="form-control edit-field" name="billToVendorNo" id="edit_billToVendorNo" readonly>
+              </div>
+              <div class="col-md-6">
+                <label>Bill From Vendor No.</label>
+                <input type="text" class="form-control edit-field" name="billFromVendorNo" id="edit_billFromVendorNo" readonly>
+              </div>
+
+              <div class="col-md-3"><label>Amt 1</label><input type="number" class="form-control edit-field edit-calc" name="amt1" id="edit_amt1" readonly oninput="calculateEditTotal()"></div>
+              <div class="col-md-3"><label>Date 1</label><input type="date" class="form-control edit-field" name="date1" id="edit_date1" readonly></div>
+              <div class="col-md-3"><label>Amt 2</label><input type="number" class="form-control edit-field edit-calc" name="amt2" id="edit_amt2" readonly oninput="calculateEditTotal()"></div>
+              <div class="col-md-3"><label>Date 2</label><input type="date" class="form-control edit-field" name="date2" id="edit_date2" readonly></div>
+              <div class="col-md-3"><label>Amt 3</label><input type="number" class="form-control edit-field edit-calc" name="amt3" id="edit_amt3" readonly oninput="calculateEditTotal()"></div>
+              <div class="col-md-3"><label>Date 3</label><input type="date" class="form-control edit-field" name="date3" id="edit_date3" readonly></div>
+              <div class="col-md-3"><label>Amt 4</label><input type="number" class="form-control edit-field edit-calc" name="amt4" id="edit_amt4" readonly oninput="calculateEditTotal()"></div>
+              <div class="col-md-3"><label>Date 4</label><input type="date" class="form-control edit-field" name="date4" id="edit_date4" readonly></div>
+              
+              <div class="col-md-6">
+                <label class="fw-bold">Total Amount Received</label>
+                <input type="number" class="form-control total-highlight" name="totalAmountReceived" id="edit_totalAmountReceived" readonly>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-warning w-100 mt-4 d-none" id="saveEditBtn">Update Record</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="reportModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title">Generate PDF Reports</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <button class="btn btn-outline-theme w-100 mb-2" onclick="generatePDF('ALL')">All Clients Tabular PDF</button>
+          <hr>
+          <h6>Clients in Date Range</h6>
+          <input type="date" id="repStartDate" class="form-control mb-2">
+          <input type="date" id="repEndDate" class="form-control mb-2">
+          <button class="btn btn-outline-theme w-100 mb-2" onclick="generatePDF('DATE')">Generate Date Range PDF</button>
+          <hr>
+          <h6>Clients by Specific Vendor</h6>
+          <select class="form-select mb-2" id="repVendorSelect"></select>
+          <button class="btn btn-outline-theme w-100" onclick="generatePDF('VENDOR')">Generate Vendor PDF</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="pdfContainer" style="display:none; padding:20px; background:white;"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Paste your deployed Google Apps Script Web App URL here:
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz7AfvrslhNskT_K7nRPYIi0eMIxFuDppEDVKczA46ErdSXxqNFKw74unTsAf1ra7CyGQ/exec";
+
+    let globalData = { vendors: [], clients: [] };
+    let currentSearchData = [];
+    let currentPage = 1;
+    const ITEMS_PER_PAGE = 3;
+
+    // Fetch helper to communicate with Google Apps Script from local files
+    async function callGAS(action, data = null, method = 'POST') {
+      showLoader();
+      try {
+        let options = { method: method, redirect: 'follow' };
+        let url = WEB_APP_URL;
+
+        if (method === 'GET') {
+          const params = new URLSearchParams({ action, ...(data || {}) });
+          url += '?' + params.toString();
+        } else {
+          options.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
+          options.body = JSON.stringify({ action, data });
+        }
+
+        const response = await fetch(url, options);
+        const json = await response.json();
+        hideLoader();
+        
+        if (json.status === 'error') {
+          alert('Error: ' + json.message);
+          return null;
+        }
+        return json.data !== undefined ? json.data : json;
+      } catch (error) {
+        hideLoader();
+        console.error('API Error:', error);
+        alert('Failed to communicate with Google Sheets backend.');
+        return null;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const data = await callGAS('getInitialData', null, 'GET');
+      if (data) {
+        globalData = data;
+        updateVendorDropdowns();
+      }
+    });
+
+    function showLoader() { document.getElementById('loaderOverlay').style.display = 'flex'; }
+    function hideLoader() { document.getElementById('loaderOverlay').style.display = 'none'; }
+
+    function calculateFormTotal() {
+      const form = document.getElementById('clientForm');
+      const a1 = Number(form.amt1.value) || 0;
+      const a2 = Number(form.amt2.value) || 0;
+      const a3 = Number(form.amt3.value) || 0;
+      const a4 = Number(form.amt4.value) || 0;
+      document.getElementById('formTotalReceived').value = a1 + a2 + a3 + a4;
+    }
+
+    function calculateEditTotal() {
+      const form = document.getElementById('editClientForm');
+      const a1 = Number(form.amt1.value) || 0;
+      const a2 = Number(form.amt2.value) || 0;
+      const a3 = Number(form.amt3.value) || 0;
+      const a4 = Number(form.amt4.value) || 0;
+      document.getElementById('edit_totalAmountReceived').value = a1 + a2 + a3 + a4;
+    }
+
+    function updateStatusBadges() {
+      const billToNo = document.getElementById('formBillToNo').value.trim();
+      const billFromNo = document.getElementById('formBillFromNo').value.trim();
+      
+      const billToBadge = document.getElementById('formBillToBadge');
+      const billFromBadge = document.getElementById('formBillFromBadge');
+      
+      if (billToNo !== "") {
+        billToBadge.className = "input-group-text badge bg-success";
+        billToBadge.innerText = "Billed";
+      } else {
+        billToBadge.className = "input-group-text badge bg-secondary";
+        billToBadge.innerText = "Unbilled";
+      }
+      
+      if (billFromNo !== "") {
+        billFromBadge.className = "input-group-text badge bg-success";
+        billFromBadge.innerText = "Billed";
+      } else {
+        billFromBadge.className = "input-group-text badge bg-secondary";
+        billFromBadge.innerText = "Unbilled";
+      }
+    }
+
+    function updateVendorDropdowns() {
+      const select = document.getElementById('vendorSelect');
+      const repSelect = document.getElementById('repVendorSelect');
+      
+      const defaultOpt = '<option value="">-- Select Vendor --</option>';
+      const addNewOpt = '<option value="ADD_NEW_VENDOR" class="text-success fw-bold">+ Add New Vendor</option>';
+      
+      let options = defaultOpt + globalData.vendors.map(v => `<option value="${v}">${v}</option>`).join('');
+      repSelect.innerHTML = options;
+      select.innerHTML = options + addNewOpt;
+    }
+
+    function checkVendorSelection(selectObj) {
+      if (selectObj.value === 'ADD_NEW_VENDOR') {
+        selectObj.value = ''; 
+        new bootstrap.Modal(document.getElementById('vendorModal')).show();
+      }
+    }
+
+    async function handleVendorSubmit(e) {
+      e.preventDefault();
+      const data = {
+        vendorName: document.getElementById('vName').value,
+        gstNo: document.getElementById('vGst').value,
+        mobileNo: document.getElementById('vMobile').value,
+        address: document.getElementById('vAddress').value
+      };
+      
+      const id = await callGAS('saveVendor', data, 'POST');
+      if (id) {
+        globalData.vendors.push(data.vendorName);
+        updateVendorDropdowns();
+        document.getElementById('vendorSelect').value = data.vendorName;
+        bootstrap.Modal.getInstance(document.getElementById('vendorModal')).hide();
+        document.getElementById('vendorForm').reset();
+        alert('Vendor added successfully');
+      }
+    }
+
+    async function handleClientSubmit(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = Object.fromEntries(new FormData(form).entries());
+      
+      const id = await callGAS('saveClient', data, 'POST');
+      if (id) {
+        form.reset();
+        calculateFormTotal();
+        updateStatusBadges();
+        alert('Client data saved successfully to Drive Spreadsheet!');
+        const d = await callGAS('getInitialData', null, 'GET');
+        if (d) globalData = d;
+      }
+    }
+
+    function openSearchModal() {
+      new bootstrap.Modal(document.getElementById('searchModal')).show();
+    }
+
+    async function executeSearch() {
+      const query = document.getElementById('searchInput').value;
+      if (!query) return;
+      const results = await callGAS('searchDatabase', query, 'POST');
+      if (results) {
+        currentSearchData = results.clients;
+        currentPage = 1;
+        renderPagination();
+      }
+    }
+
+    function renderPagination() {
+      const start = (currentPage - 1) * ITEMS_PER_PAGE;
+      const end = start + ITEMS_PER_PAGE;
+      const paginatedItems = currentSearchData.slice(start, end);
+      
+      if (paginatedItems.length === 0) {
+        document.getElementById('searchResults').innerHTML = '<p class="text-muted">No matching records found.</p>';
+        document.getElementById('prevBtn').style.display = 'none';
+        document.getElementById('nextBtn').style.display = 'none';
+        document.getElementById('pageInfo').innerText = '';
+        return;
+      }
+      
+      let html = `<table class="table table-bordered table-hover">
+                    <thead>
+                      <tr>
+                        <th>Client Name (Clickable)</th>
+                        <th>Vendor Name</th>
+                        <th>Quotation</th>
+                        <th>Total Received</th>
+                        <th>Bill To Vendor</th>
+                        <th>Bill From Vendor</th>
+                      </tr>
+                    </thead><tbody>`;
+      
+      paginatedItems.forEach(item => {
+        const billToTxt = item['Bill To Vendor No'] ? `Billed (${item['Bill To Vendor No']})` : 'Unbilled';
+        const billFromTxt = item['Bill From Vendor No'] ? `Billed (${item['Bill From Vendor No']})` : 'Unbilled';
+        
+        html += `<tr>
+                   <td>
+                     <a href="#" class="text-success fw-bold text-decoration-none" onclick='openEditModal(${JSON.stringify(item)}); return false;'>
+                       ${item['Client Name']}
+                     </a>
+                   </td>
+                   <td>${item['Vendor Name'] || '-'}</td>
+                   <td>${item['Quotation Amount'] || 0}</td>
+                   <td class="fw-bold text-success">${item['Total Amount Received'] || 0}</td>
+                   <td><span class="badge ${item['Bill To Vendor No'] ? 'bg-success' : 'bg-secondary'}">${billToTxt}</span></td>
+                   <td><span class="badge ${item['Bill From Vendor No'] ? 'bg-success' : 'bg-secondary'}">${billFromTxt}</span></td>
+                 </tr>`;
+      });
+      html += `</tbody></table>`;
+      document.getElementById('searchResults').innerHTML = html;
+
+      document.getElementById('prevBtn').style.display = currentPage > 1 ? 'block' : 'none';
+      document.getElementById('nextBtn').style.display = end < currentSearchData.length ? 'block' : 'none';
+      document.getElementById('pageInfo').innerText = `Page ${currentPage} of ${Math.ceil(currentSearchData.length / ITEMS_PER_PAGE)}`;
+    }
+
+    function changePage(dir) {
+      currentPage += dir;
+      renderPagination();
+    }
+
+    function openEditModal(clientData) {
+      document.getElementById('saveEditBtn').classList.add('d-none');
+      const fields = document.querySelectorAll('.edit-field');
+      fields.forEach(f => f.setAttribute('readonly', true));
+
+      document.getElementById('edit_id').value = clientData['ID'] || '';
+      document.getElementById('edit_clientName').value = clientData['Client Name'] || '';
+      document.getElementById('edit_vendorName').value = clientData['Vendor Name'] || '';
+      document.getElementById('edit_bankName').value = clientData['Bank Name'] || '';
+      document.getElementById('edit_branchName').value = clientData['Branch Name'] || '';
+      document.getElementById('edit_quotationAmount').value = clientData['Quotation Amount'] || 0;
+      
+      document.getElementById('edit_billToVendorNo').value = clientData['Bill To Vendor No'] || '';
+      document.getElementById('edit_billFromVendorNo').value = clientData['Bill From Vendor No'] || '';
+
+      document.getElementById('edit_amt1').value = clientData['Amt 1'] || 0;
+      document.getElementById('edit_amt2').value = clientData['Amt 2'] || 0;
+      document.getElementById('edit_amt3').value = clientData['Amt 3'] || 0;
+      document.getElementById('edit_amt4').value = clientData['Amt 4'] || 0;
+      
+      document.getElementById('edit_totalAmountReceived').value = clientData['Total Amount Received'] || 0;
+
+      try {
+        if(clientData['Date 1']) document.getElementById('edit_date1').value = new Date(clientData['Date 1']).toISOString().split('T')[0];
+        if(clientData['Date 2']) document.getElementById('edit_date2').value = new Date(clientData['Date 2']).toISOString().split('T')[0];
+        if(clientData['Date 3']) document.getElementById('edit_date3').value = new Date(clientData['Date 3']).toISOString().split('T')[0];
+        if(clientData['Date 4']) document.getElementById('edit_date4').value = new Date(clientData['Date 4']).toISOString().split('T')[0];
+      } catch(e) {}
+
+      new bootstrap.Modal(document.getElementById('editClientModal')).show();
+    }
+
+    function toggleEditMode() {
+      document.getElementById('saveEditBtn').classList.remove('d-none');
+      document.querySelectorAll('.edit-field').forEach(f => f.removeAttribute('readonly'));
+    }
+
+    async function handleClientUpdate(e) {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target).entries());
+      const success = await callGAS('updateClient', data, 'POST');
+      if (success) {
+        bootstrap.Modal.getInstance(document.getElementById('editClientModal')).hide();
+        alert('Data updated successfully');
+        executeSearch();
+      }
+    }
+
+    function openReportModal() { new bootstrap.Modal(document.getElementById('reportModal')).show(); }
+
+    function generatePDF(type) {
+      let filteredData = globalData.clients;
+      let title = "All Clients Report";
+
+      if (type === 'DATE') {
+        const sd = new Date(document.getElementById('repStartDate').value);
+        const ed = new Date(document.getElementById('repEndDate').value);
+        filteredData = filteredData.filter(row => {
+          const rowDate = new Date(row[1]);
+          return rowDate >= sd && rowDate <= ed;
+        });
+        title = "Client Report (Date Range)";
+      } else if (type === 'VENDOR') {
+        const v = document.getElementById('repVendorSelect').value;
+        filteredData = filteredData.filter(row => row[15] === v);
+        title = `Client Report - Vendor: ${v}`;
+      }
+
+      let html = `<div style="text-align:center; margin-bottom: 20px;">
+                    <h2 style="color: #2e7d32; margin:0;">Udbhav Solar Solutions</h2>
+                    <h4 style="margin-top:5px;">${title}</h4>
+                  </div>
+                  <table style="width:100%; border-collapse: collapse; font-size:10px;" border="1">
+                    <thead>
+                      <tr style="background-color:#2e7d32; color:white;">
+                        <th style="padding:6px;">Date</th>
+                        <th style="padding:6px;">Client Name</th>
+                        <th style="padding:6px;">Bank</th>
+                        <th style="padding:6px;">Quotation</th>
+                        <th style="padding:6px;">Total Received</th>
+                        <th style="padding:6px;">Vendor</th>
+                        <th style="padding:6px;">Bill To No</th>
+                        <th style="padding:6px;">Bill To Status</th>
+                        <th style="padding:6px;">Bill From No</th>
+                        <th style="padding:6px;">Bill From Status</th>
+                      </tr>
+                    </thead><tbody>`;
+      
+      filteredData.forEach(row => {
+        let d = row[1] ? new Date(row[1]).toLocaleDateString() : '';
+        html += `<tr>
+                  <td style="padding:5px;">${d}</td>
+                  <td style="padding:5px; font-weight:bold;">${row[2] || ''}</td>
+                  <td style="padding:5px;">${row[3] || ''}</td>
+                  <td style="padding:5px;">${row[5] || 0}</td>
+                  <td style="padding:5px; font-weight:bold;">${row[14] || 0}</td>
+                  <td style="padding:5px;">${row[15] || ''}</td>
+                  <td style="padding:5px;">${row[16] || ''}</td>
+                  <td style="padding:5px;">${row[17] || 'Unbilled'}</td>
+                  <td style="padding:5px;">${row[18] || ''}</td>
+                  <td style="padding:5px;">${row[19] || 'Unbilled'}</td>
+                 </tr>`;
+      });
+      html += `</tbody></table>`;
+
+      const container = document.getElementById('pdfContainer');
+      container.innerHTML = html;
+      container.style.display = 'block';
+
+      const opt = {
+        margin:       0.4,
+        filename:     'Udbhav_Solar_Report.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
+      };
+
+      html2pdf().set(opt).from(container).save().then(() => {
+        container.style.display = 'none';
+      });
+    }
+  </script>
+</body>
+</html>
